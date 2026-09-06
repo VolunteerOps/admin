@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F172A">
+    <title>VolunteerOps Admin</title>
+    <link type="text/css" rel="stylesheet" href="styles.css">
+    <style>
+        .startup { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 16px; font: 16px/1.5 system-ui,sans-serif; color: #475569; }
+        .startup svg { width: 88px; height: 88px; }
+        .startup .arc { transform-origin: 44px 44px; animation: turn 1.2s linear infinite; }
+        @keyframes turn { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .startup .arc { animation: none; } }
+    </style>
+</head>
+<body>
+<div class="startup" role="status" aria-label="Loading VolunteerOps Admin">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" aria-hidden="true">
+        <circle cx="44" cy="44" r="39" stroke="#DBEAFE" stroke-width="4" fill="none"/>
+        <circle class="arc" cx="44" cy="44" r="39" stroke="#2563EB" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="150 245"/>
+        <rect x="20" y="20" width="48" height="48" rx="14" fill="#0F172A"/>
+        <g transform="translate(20 20) scale(.171)"><path fill="white" d="M135,104 L129,106 L121,113 L117,121 L116,132 L119,141 L126,149 L132,152 L142,153 L151,150 L156,145 L160,139 L162,133 L162,124 L158,114 L152,108 L142,104ZM221,67 L218,67 L215,70 L213,76 L213,128 L207,142 L197,153 L190,157 L187,156 L189,151 L195,143 L199,135 L201,129 L201,125 L202,124 L200,116 L199,115 L195,115 L192,117 L188,123 L184,132 L176,144 L157,164 L149,178 L147,184 L146,192 L145,193 L145,201 L144,202 L145,203 L145,216 L146,217 L146,221 L148,226 L150,228 L153,227 L169,215 L175,212 L195,197 L212,180 L218,172 L224,160 L226,158 L226,156 L229,151 L231,145 L231,142 L233,137 L233,133 L234,132 L235,110 L234,109 L234,101 L233,100 L233,95 L232,94 L231,85 L225,70ZM58,67 L54,70 L50,77 L47,86 L47,89 L46,90 L45,101 L44,102 L44,110 L43,111 L44,132 L45,133 L45,137 L46,138 L46,141 L50,153 L57,167 L63,176 L76,191 L94,206 L108,215 L125,228 L127,228 L129,227 L130,225 L131,218 L132,217 L132,211 L133,210 L132,191 L131,190 L131,185 L127,176 L127,174 L117,159 L102,144 L96,133 L94,131 L88,118 L84,115 L80,115 L78,117 L77,120 L77,127 L80,136 L85,146 L91,155 L89,157 L81,153 L71,142 L68,136 L66,130 L66,125 L65,124 L65,90 L66,89 L65,73 L62,68Z"/></g>
+    </svg>
+    <strong>VolunteerOps Admin</strong>
+    <span>Preparing your workspace…</span>
+</div>
+<script type="application/javascript" src="webApp.js"></script>
+</body>
+</html>
