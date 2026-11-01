@@ -1,0 +1,26 @@
+import React from 'react';
+import { IconWrapper } from './IconWrapper';
+import { IconProps } from './types';
+
+/**
+ * ArrowSquareDownIcon
+ *
+ * Auto-generated from: arrow-square-down.svg
+ */
+export const ArrowSquareDownIcon: React.FC<IconProps> = (props) => {
+  return (
+    <IconWrapper {...props} viewBox="0 0 56 296">
+      <path d="M25 38H31C36 38 38 36 38 31V25C38 20 36 18 31 18H25C20 18 18 20 18 25V31C18 36 20 38 25 38Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24.4702 26.6401L28.0002 30.1601L31.5302 26.6401" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M32.19 66H23.81C20.17 66 18 68.17 18 71.81V80.18C18 83.83 20.17 86 23.81 86H32.18C35.82 86 37.99 83.83 37.99 80.19V71.81C38 68.17 35.83 66 32.19 66ZM32.06 75.17L28.53 78.7C28.38 78.85 28.19 78.92 28 78.92C27.81 78.92 27.62 78.85 27.47 78.7L23.94 75.17C23.65 74.88 23.65 74.4 23.94 74.11C24.23 73.82 24.71 73.82 25 74.11L28 77.11L31 74.11C31.29 73.82 31.77 73.82 32.06 74.11C32.35 74.4 32.35 74.87 32.06 75.17Z" fill="currentColor"/>
+      <path d="M31 134.75H25C19.57 134.75 17.25 132.43 17.25 127V121C17.25 115.57 19.57 113.25 25 113.25H31C36.43 113.25 38.75 115.57 38.75 121V127C38.75 132.43 36.43 134.75 31 134.75ZM25 114.75C20.39 114.75 18.75 116.39 18.75 121V127C18.75 131.61 20.39 133.25 25 133.25H31C35.61 133.25 37.25 131.61 37.25 127V121C37.25 116.39 35.61 114.75 31 114.75H25Z" fill="currentColor"/>
+      <path d="M28.0002 126.91C27.8102 126.91 27.6202 126.84 27.4702 126.69L23.9402 123.16C23.6502 122.87 23.6502 122.39 23.9402 122.1C24.2302 121.81 24.7102 121.81 25.0002 122.1L28.0002 125.1L31.0002 122.1C31.2902 121.81 31.7702 121.81 32.0602 122.1C32.3502 122.39 32.3502 122.87 32.0602 123.16L28.5302 126.69C28.3802 126.84 28.1902 126.91 28.0002 126.91Z" fill="currentColor"/>
+      <path d="M25 182H31C36 182 38 180 38 175V169C38 164 36 162 31 162H25C20 162 18 164 18 169V175C18 180 20 182 25 182Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M24.4702 170.64L28.0002 174.16L31.5302 170.64" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M32.19 210H23.81C20.17 210 18 212.17 18 215.81V224.18C18 227.83 20.17 230 23.81 230H32.18C35.82 230 37.99 227.83 37.99 224.19V215.81C38 212.17 35.83 210 32.19 210Z" fill="currentColor"/>
+      <path d="M28.0002 222.91C27.8102 222.91 27.6202 222.84 27.4702 222.69L23.9402 219.16C23.6502 218.87 23.6502 218.39 23.9402 218.1C24.2302 217.81 24.7102 217.81 25.0002 218.1L28.0002 221.1L31.0002 218.1C31.2902 217.81 31.7702 217.81 32.0602 218.1C32.3502 218.39 32.3502 218.87 32.0602 219.16L28.5302 222.69C28.3802 222.84 28.1902 222.91 28.0002 222.91Z" fill="currentColor"/>
+      <path d="M18 268.99V271C18 276 20 278 25 278H31C36 278 38 276 38 271V265C38 260 36 258 31 258H25C20 258 18 260 18 265" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24.4702 266.64L28.0002 270.16L31.5302 266.64" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </IconWrapper>
+  );
+};

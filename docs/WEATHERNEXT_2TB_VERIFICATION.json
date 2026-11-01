@@ -1,0 +1,28 @@
+{
+  "job_id": "resq_owner_approved_verification_20261030_nairobi_polygon_2tb_03",
+  "source": "resq-25be9.weathernext_3.weathernext_3_0_0_0p1deg",
+  "cycle": "2026-10-30T06:00:00.000Z",
+  "bounds": {
+    "west": 36.79,
+    "east": 36.81,
+    "south": -1.31,
+    "north": -1.29
+  },
+  "from_hour": 1,
+  "to_hour": 2,
+  "cap_bytes": "2000000000000",
+  "state": "DONE",
+  "provider_error": {
+    "reason": "quotaExceeded",
+    "location": "unbilled.analysis",
+    "message": "Quota exceeded: Your project exceeded quota for free query bytes scanned. For more information, see https://cloud.google.com/bigquery/docs/troubleshoot-quotas"
+  },
+  "processed_bytes": null,
+  "billed_bytes": null,
+  "cache_hit": false,
+  "checked_at": "2026-10-30T15:52:24.769Z",
+  "billing_status_check": {
+    "status": 403,
+    "message": "Cloud Billing API has not been used in project 3158004596 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudbilling.googleapis.com/overview?project=3158004596 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+  }
+}

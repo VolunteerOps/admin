@@ -17,3 +17,8 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+
+.render-tools/
+web-redesign-*.log
+portal-v2-*.log
+.work/

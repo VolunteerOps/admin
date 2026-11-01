@@ -1,0 +1,28 @@
+import React from 'react';
+import { IconWrapper } from './IconWrapper';
+import { IconProps } from './types';
+
+/**
+ * VelasvlxIcon
+ *
+ * Auto-generated from: velas-(vlx).svg
+ */
+export const VelasvlxIcon: React.FC<IconProps> = (props) => {
+  return (
+    <IconWrapper {...props} viewBox="0 0 56 296">
+      <path d="M18 19H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20.0004 22.3999H36.0004C36.9004 22.3999 37.4004 23.3999 36.9004 24.0999L28.9004 36.4999C28.5004 37.1999 27.5004 37.1999 27.0004 36.4999L19.0004 24.0999C18.6004 23.2999 19.2004 22.3999 20.0004 22.3999Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M37 67.1499H19C18.59 67.1499 18.25 67.4899 18.25 67.8999C18.25 68.3099 18.59 68.6499 19 68.6499H37C37.41 68.6499 37.75 68.3099 37.75 67.8999C37.75 67.4899 37.41 67.1499 37 67.1499Z" fill="currentColor"/>
+      <path d="M20.0399 70.24H35.9699C36.8499 70.24 37.3799 71.21 36.8999 71.95L28.9399 84.34C28.4999 85.02 27.5099 85.02 27.0699 84.34L19.1099 71.95C18.6299 71.21 19.1599 70.24 20.0399 70.24Z" fill="currentColor"/>
+      <path d="M38 115.78H18C17.59 115.78 17.25 115.44 17.25 115.03C17.25 114.62 17.59 114.28 18 114.28H38C38.41 114.28 38.75 114.62 38.75 115.03C38.75 115.44 38.41 115.78 38 115.78Z" fill="currentColor"/>
+      <path d="M27.9997 133.72C27.3597 133.72 26.7797 133.4 26.4297 132.87L18.4697 120.48C18.0997 119.91 18.0797 119.18 18.3997 118.58C18.7297 117.98 19.3497 117.61 20.0297 117.61H35.9597C36.6397 117.61 37.2697 117.98 37.5897 118.58C37.9197 119.18 37.8896 119.91 37.5196 120.48L29.5597 132.87C29.2197 133.4 28.6397 133.72 27.9997 133.72ZM20.0397 119.11C19.8497 119.11 19.7497 119.24 19.7197 119.3C19.6897 119.36 19.6297 119.51 19.7297 119.67L27.6897 132.06C27.7797 132.2 27.9196 132.23 27.9896 132.23C28.0596 132.23 28.1997 132.21 28.2897 132.06L36.2497 119.67C36.3497 119.51 36.2897 119.36 36.2597 119.3C36.2297 119.24 36.1397 119.11 35.9397 119.11H20.0397Z" fill="currentColor"/>
+      <path d="M18 163.03H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M20.0399 166.36H35.9699C36.8499 166.36 37.3799 167.33 36.8999 168.07L28.9399 180.46C28.4999 181.14 27.5099 181.14 27.0699 180.46L19.1099 168.07C18.6299 167.33 19.1599 166.36 20.0399 166.36Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M40 208H16V232H40V208Z" fill="currentColor"/>
+      <path d="M37 211.15H19C18.59 211.15 18.25 211.49 18.25 211.9C18.25 212.31 18.59 212.65 19 212.65H37C37.41 212.65 37.75 212.31 37.75 211.9C37.75 211.49 37.41 211.15 37 211.15Z" fill="currentColor"/>
+      <path d="M20.0401 214.24H35.9701C36.8501 214.24 37.38 215.21 36.9 215.95L28.9401 228.34C28.5001 229.02 27.5101 229.02 27.0701 228.34L19.1001 215.95C18.6301 215.21 19.1601 214.24 20.0401 214.24Z" fill="currentColor"/>
+      <path d="M18 259.03H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M19.7004 265L19.1103 264.07C18.6303 263.33 19.1704 262.36 20.0404 262.36H35.9704C36.8504 262.36 37.3804 263.33 36.9004 264.07L28.9404 276.46C28.5004 277.14 27.5104 277.14 27.0704 276.46L21.8104 268.28" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+    </IconWrapper>
+  );
+};

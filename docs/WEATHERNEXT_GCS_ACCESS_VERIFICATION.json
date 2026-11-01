@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-30T15:51:41.633Z",
+  "identity": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com",
+  "checks": [
+    {
+      "bucket": "weathernext3_statistics_spatial",
+      "requester_billing_project": null,
+      "status": 403,
+      "error": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource '//storage.googleapis.com/projects/_/buckets/weathernext3_statistics_spatial' (or it may not exist).",
+      "direct_metadata": {
+        "status": 403,
+        "message": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com does not have storage.objects.get access to the Google Cloud Storage object. Permission 'storage.objects.get' denied on resource '//storage.googleapis.com/projects/_/buckets/weathernext3_statistics_spatial/objects/weathernext_3_0_0_statistics/zarr/2026_to_present/20260826_00hr_01_preds/predictions.zarr/zarr.json' (or it may not exist)."
+      }
+    },
+    {
+      "bucket": "weathernext3_spatial",
+      "requester_billing_project": "resq-25be9",
+      "status": 403,
+      "error": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource '//storage.googleapis.com/projects/_/buckets/weathernext3_spatial' (or it may not exist).",
+      "direct_metadata": {
+        "status": 403,
+        "message": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com does not have storage.objects.get access to the Google Cloud Storage object. Permission 'storage.objects.get' denied on resource '//storage.googleapis.com/projects/_/buckets/weathernext3_spatial/objects/weathernext_3_0_0/zarr/2026_to_present/20260826_00hr_01_preds/predictions.zarr/zarr.json' (or it may not exist)."
+      }
+    }
+  ]
+}

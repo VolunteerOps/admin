@@ -15,8 +15,12 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
         )
         super.onCreate(savedInstanceState)
-        com.example.admin.core.platform.LocalStateStorage.initialize(this)
+        com.example.admin.core.platform.JourneyStateStorage.initialize(this)
 
+        com.example.admin.features.subscriptions.RevenueCatSubscriptions.install(BuildConfig.REVENUECAT_API_KEY, BuildConfig.DEBUG)
+        if (com.google.firebase.FirebaseApp.initializeApp(this) != null) {
+            com.example.admin.features.auth.IdentityServices.firebase = com.example.admin.auth.AndroidFirebaseIdentityProvider(this)
+        }
         setContent {
             App()
         }

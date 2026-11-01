@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+﻿import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -52,11 +52,26 @@ kotlin {
     }
 
     sourceSets {
+        commonMain { kotlin.srcDir("../business/src/commonMain/kotlin") }
+        val mobileMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation("com.revenuecat.purchases:purchases-kmp-core:3.10.1")
+                implementation("com.revenuecat.purchases:purchases-kmp-ui:3.10.1")
+            }
+        }
+        androidMain.get().dependsOn(mobileMain)
+        iosMain.get().dependsOn(mobileMain)
+
+        androidMain.dependencies { implementation(libs.androidx.activity.compose) }
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation("io.ktor:ktor-client-core:3.6.0")
+            implementation("io.ktor:ktor-client-engine-defaults:3.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -67,9 +82,12 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonTest.dependencies {
+            implementation("io.ktor:ktor-client-mock:3.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
             implementation(libs.kotlin.test)
         }
         jsMain.dependencies {
+            implementation(npm("firebase", "12.19.0"))
             implementation(libs.wrappers.browser)
         }
     }

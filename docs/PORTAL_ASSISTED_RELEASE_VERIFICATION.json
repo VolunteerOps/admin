@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-01",
+  "environment": "staging",
+  "admin_deployment": "a413c686-16a3-4c3a-bfb6-658a247e085a",
+  "api_deployment": "ae142cf3-b255-4817-9d7c-042c2d385253",
+  "forecast_worker_deployment": "d267aa9a-6683-4f5d-bd32-8c6d96e02cc6",
+  "deployment_status": "SUCCESS",
+  "browser_tests": 91,
+  "final_focused_browser_tests": 6,
+  "targeted_backend_tests": 34,
+  "synthetic_zarr_tests": 4,
+  "live_model_tools": [
+    "muse-wonder-1.0",
+    "muse-spark-1.3"
+  ],
+  "live_region_map": {
+    "canvases": 1,
+    "fallback": 0,
+    "mapbox_http_errors": 0
+  },
+  "deployed_browser_fixture_smoke": {
+    "routes": [
+      "people",
+      "sentinel",
+      "weather-analysis"
+    ],
+    "status": 200,
+    "weather_suggestions": 3,
+    "daily_briefing_button": 1,
+    "browser_errors": []
+  },
+  "api_health": 200,
+  "google_billing": "pending_owner_setup",
+  "gcs_runtime_grant": "pending_provider",
+  "live_weather_queries_executed_this_turn": 0
+}

@@ -1,4 +1,8 @@
+> Current implementation: see [WEB_WORKSPACE.md](WEB_WORKSPACE.md). The historical local/practice implementation described below has been removed.
+
 # Migration coverage and integration boundaries
+
+> Historical client redesign/migration record. The [seven-stage ResQ production roadmap](../../backend/docs/resq-production-implementation-roadmap.md) supersedes this document's project sequencing, hosting and old backend/authentication assumptions. Keep the UI requirements and dated evidence; checked boxes below describe the local-demo milestone, not full production completion. Current hosting guidance is the [Railway production runbook](../../backend/docs/railway-production-deployment-runbook.md).
 
 ## Design handoff
 

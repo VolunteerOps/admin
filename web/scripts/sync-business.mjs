@@ -1,0 +1,12 @@
+import {spawnSync} from 'node:child_process';
+import {readdirSync,copyFileSync,mkdirSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root=fileURLToPath(new URL('../../',import.meta.url));
+const command=process.platform==='win32'?'gradlew.bat':'./gradlew';
+const result=spawnSync(command,[':business:jsBrowserProductionLibraryDistribution','-PwebOnly=true','--no-daemon','--max-workers=1','-Dorg.gradle.jvmargs=-Xmx1000M','-Pkotlin.compiler.execution.strategy=in-process','--console=plain'],{cwd:root,stdio:'inherit',shell:process.platform==='win32'});
+if(result.status!==0)process.exit(result.status||1);
+const source=path.join(root,'business/build/dist/js/productionLibrary'),target=path.join(root,'web/src/generated/business');
+mkdirSync(target,{recursive:true});
+for(const file of readdirSync(source))if(file.endsWith('.mjs')||file.endsWith('.d.mts'))copyFileSync(path.join(source,file),path.join(target,file));
+console.log('Kotlin business module synchronized.');

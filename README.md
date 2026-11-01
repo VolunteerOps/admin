@@ -1,12 +1,16 @@
 # VolunteerOps administrator app
 
-A Kotlin and Compose Multiplatform coordination workspace for Android, iOS, desktop, JavaScript and Wasm. The interface uses Oswald headings, Overlock body text, supplied vector icons, a navy command header and readable light content surfaces.
+A coordination workspace with a React/Next.js web frontend and Kotlin/Compose native applications. The interface uses Oswald headings, Overlock body text, navy and blue, and readable light content surfaces. Both presentations consume shared Kotlin business rules.
 
-Phone navigation provides Overview, People, Missions, Messages and More. Wide screens use a rail. Incident, roster, mission, inventory, skill, communications, map, analytics, security, settings and help journeys have focused drilldowns and validated local mutations.
+Responsive navigation exposes missions, people, field reports, communications, resources, training, qualifications, analytics, security, support and account tools. Workspace membership and region scope are enforced by the backend.
 
-This build opens an explicitly labeled **practice workspace**. Actions persist on this device; they do not contact responders or an organisation. Live login, remote delivery, real geographic tracking and backend security enforcement are not connected. See [coverage and integration boundaries](docs/MIGRATION.md).
+The default web application is now [web/](web/README.md). Desktop browsers use persistent navigation, contextual review drawers and backend operations. The local practice workspace has been removed. See the [React migration inventory and verification](docs/NEXT_PORTAL_MIGRATION.md).
+
+`webApp/`, the retired Compose browser application, has been removed. Keep `web/` for the admin portal, `business/` for shared Kotlin policies, and `shared/` plus `androidApp/` for the native app. The sibling `../web/` is the separate marketing website deployed as `resq-web`.
 
 ## Run and verify
+
+Web: `npm ci --prefix web`, then `npm run dev --prefix web`. Open http://127.0.0.1:4173. Use `npm run business:sync --prefix web` after changing shared Kotlin rules.
 
 Use JDK 17, Android SDK 36 and the checked-in Gradle wrapper:
 
@@ -15,16 +19,15 @@ Use JDK 17, Android SDK 36 and the checked-in Gradle wrapper:
 ./gradlew :desktopApp:run
 ./gradlew :shared:compileCommonMainKotlinMetadata :shared:jvmTest
 ./gradlew :shared:compileKotlinJs :shared:compileKotlinWasmJs
-./gradlew :webApp:wasmJsBrowserDevelopmentRun
 ```
 
 Open `iosApp` in Xcode on macOS for Apple builds. Android debug artifacts are under `androidApp/build/outputs/apk/debug`. See [verification](docs/VERIFICATION.md) for completed checks and limits.
 
-Repository tests cover capacity, duplicate assignment, mission completion/reconciliation, lifecycle transitions, resource allocation, pause/release behavior, skill renaming, frozen broadcast recipients, Unicode persistence, corrupted snapshots and audit identity/storage errors. State stores no login credentials; Android backup is disabled. Local workspace data is not an operational system of record.
+Shared tests cover identity, onboarding, API authorization failures and export handling. Backend tests cover lifecycle transitions, dispatch pause policy, bulletin validation and scoped operations. Operational data is loaded from the backend; there is no seeded fallback after a network error.
 
 ## Installing the redesign on Android
 
-The redesigned Android build is **1.1.0 (version code 2)**. Its application ID remains unchanged, so a normal update replaces the previous app while retaining local data.
+Current Android source declares **1.3.0 (version code 4)**. Earlier installation records describe older debug builds and are historical evidence. Verify the installed package against the actual build before claiming a device update; retain the existing signing identity and local data.
 
 ```powershell
 ./tools/Run-Android.ps1
@@ -35,3 +38,9 @@ The redesigned Android build is **1.1.0 (version code 2)**. Its application ID r
 ```
 
 The script builds this project, installs its exact debug APK, verifies the installed version, and restarts the app. It does not uninstall the app, erase device data, or delete global Gradle caches. Android Settings > Apps > App info also shows the version. Use the `androidApp` run configuration for this project in Android Studio.
+
+## Production roadmap and Railway
+
+The [seven-stage ResQ roadmap](../backend/docs/resq-production-implementation-roadmap.md) is the current cross-platform implementation guide. Follow [Railway integration](docs/RAILWAY_INTEGRATION.md) for this app and the [shared deployment runbook](../backend/docs/railway-production-deployment-runbook.md) for infrastructure. The required coordinator hostname is `https://www.admin.resq-app.co.ke`.
+
+The workspace uses Firebase identity, the scoped operations API, Sentinel evidence map and the existing subscription controller. Regional bulletins and dispatch controls require the matching backend release. See the screen/action map for precise capabilities and boundaries. This source change does not deploy Railway services.

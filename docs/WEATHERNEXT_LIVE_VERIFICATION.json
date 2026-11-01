@@ -1,0 +1,31 @@
+{
+  "job_id": "resq_owner_approved_verification_20261030_nairobi_01",
+  "source": "resq-25be9.weathernext_3.weathernext_3_0_0_0p1deg",
+  "cycle": "2026-10-30T06:00:00.000Z",
+  "bounds": {
+    "west": 36.79,
+    "east": 36.81,
+    "south": -1.31,
+    "north": -1.29
+  },
+  "rows": 0,
+  "processed_bytes": "0",
+  "billed_bytes": "0",
+  "cache_hit": false,
+  "cap_bytes": "700000000000",
+  "indicators": {
+    "from": "2026-10-30T06:00:00.000Z",
+    "to": "2026-10-30T08:00:00.000Z",
+    "policy_version": 1,
+    "points": [],
+    "method": "Hourly ensemble mean rainfall is summed only for complete contiguous windows. Heat and wind durations use median threshold exceedance; gaps break runs.",
+    "validation": "WEATHER_INDICATORS_ONLY",
+    "flood_impact_estimate": null,
+    "missing_inputs": [
+      "Local gauge and river levels",
+      "Catchment response, drainage and soil saturation",
+      "Validated exposure and flood-impact model"
+    ],
+    "limitation": "Adverse weather is not a calibrated local flood prediction. Spatial averaging and percentile accumulation are not inferred."
+  }
+}

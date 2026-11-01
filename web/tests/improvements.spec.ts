@@ -1,0 +1,40 @@
+import {test,expect} from '@playwright/test';
+import {fixtures,org,region,missionRow} from './fixtures';
+import {commandSchema} from '../../../backend/src/modules/operations/operations.schema';
+
+test('navigation keeps workspace data and never flashes missing-region setup',async({page})=>{
+ await fixtures(page);const counts:Record<string,number>={};page.on('request',r=>{const p=new URL(r.url()).pathname;counts[p]=(counts[p]||0)+1;});
+ await page.goto('/overview');await expect(page.getByLabel('Region',{exact:true})).toHaveValue(region);
+ const before={...counts};await page.evaluate(()=>{(window as any).regionFlashes=0;new MutationObserver(()=>{if(document.body.innerText.includes('Set your operating region.'))(window as any).regionFlashes++;}).observe(document.body,{childList:true,subtree:true});});
+ await page.getByRole('link',{name:'People',exact:true}).first().click();await expect(page.getByRole('heading',{name:'People',exact:true})).toBeVisible();
+ await page.getByRole('link',{name:'Sentinel',exact:true}).click();await expect(page.getByRole('heading',{name:'Radar',exact:true})).toBeVisible();
+ expect(counts['/api/auth/firebase/bootstrap']).toBe(before['/api/auth/firebase/bootstrap']);expect(counts['/api/organizations/'+org+'/sentinel/regions']).toBe(before['/api/organizations/'+org+'/sentinel/regions']);expect(await page.evaluate(()=>(window as any).regionFlashes)).toBe(0);
+});
+
+test('real snake-case roster and hazard envelopes render without exceptions',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await fixtures(page);
+ await page.route('**/memberships',r=>r.fulfill({json:[{id:'member',user_id:8,region_ids:[],status:'ACTIVE',role:'ORG_ADMIN',user:{full_name:'Moses Mtengo',email:'moses@example.test'}}]}));
+ await page.goto('/people');await expect(page.getByRole('button',{name:'Review Moses Mtengo',exact:true})).toBeVisible();
+ await page.route('**/hazards',r=>r.fulfill({json:{source:'USGS',observations:[],truncated:false}}));await page.getByRole('link',{name:'Sentinel',exact:true}).click();await expect(page.getByRole('heading',{name:'Radar',exact:true})).toBeVisible();expect(errors).toEqual([]);
+});
+
+test('dark theme sets readable foregrounds and drawer restores page scroll',async({page})=>{
+ await fixtures(page);await page.goto('/settings');await page.getByLabel('Switch theme').click();
+ await expect(page.locator('html')).toHaveClass(/dark/);const colors=await page.locator('.app').evaluate(e=>({color:getComputedStyle(e).color,background:getComputedStyle(e).backgroundColor}));expect(colors.color).toBe('rgb(237, 243, 251)');expect(colors.background).toBe('rgb(11, 25, 43)');
+ await page.getByRole('button',{name:'Add region',exact:true}).first().click();await expect(page.getByRole('dialog')).toBeVisible();expect(await page.evaluate(()=>getComputedStyle(document.documentElement).overflow)).toBe('hidden');await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'../designs/next-portal/fixed-dark-region.png',fullPage:true});await page.getByLabel('Close panel').click();expect(await page.evaluate(()=>document.documentElement.style.overflow)).not.toBe('hidden');
+});
+
+test('region search fills coverage and saves reason with the real region contract',async({page})=>{
+ const mutations=await fixtures(page);await page.route('**/sentinel/places?*',r=>r.fulfill({json:{attribution:'Mapbox',items:[{id:'mombasa',name:'Mombasa',label:'Mombasa, Kenya',country:'Kenya',center:[39.67,-4.04],bounds:{west:39.5,east:39.8,south:-4.2,north:-3.9},policy:{version:1,heat_c:35,wind_mps:15,hourly_rain_mm:20,maximum_run_age_hours:12}}]}}));
+ await page.goto('/settings');await page.getByRole('button',{name:'Add region',exact:true}).first().click();await page.getByLabel('Region and country').fill('Mombasa, Kenya');await page.getByRole('button',{name:'Find region'}).click();await page.getByRole('button',{name:/Mombasa, Kenya/}).click();await page.getByRole('dialog').getByLabel('Reason for this decision').fill('Set up our coastal preparedness team.');await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'../designs/next-portal/guided-region.png',fullPage:true});await page.getByRole('button',{name:'Create region',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);expect(mutations.at(-1)?.body.bounds.west).toBe(39.5);
+});
+
+test('weather prompts, automatic briefing, follow-up and unavailable sources stay visible',async({page})=>{
+ await fixtures(page);const sent:any[]=[];await page.route('**/conversations/weather',async r=>{sent.push(r.request().postDataJSON());await r.fulfill({json:{id:'brief',payload:{status:'DRAFT',workflow:'WEATHER_CONVERSATION',coverage:'NO_FORECAST_EVIDENCE',sources:[{surface:'GCS',status:'UNAVAILABLE',code:'GCS_NOT_CONFIGURED',from:'2026-10-29T00:00:00Z',to:'2026-11-01T00:00:00Z'}],narrative:{summary:'No weather data was retrieved. We can still review general preparations.',preparedness:['Check the local authority bulletin before scheduling field work.'],assumptions:[],missing_inputs:['Observed rainfall'],source_ids:[],follow_up:'Which team activities are planned?'}}}});});
+ await page.goto('/weather-analysis');await expect(page.locator('.suggestion')).toHaveCount(3);await page.locator('.suggestion').nth(1).click();await expect(page.getByLabel('Ask about your region')).toHaveValue(/last three days/);await page.getByRole('button',{name:"Prepare today's briefing"}).click();await expect(page.getByText('No forecast data could be retrieved.',{exact:false})).toBeVisible();expect(sent[0].mode).toBe('DAILY_BRIEF');await page.getByLabel('Ask about your region').fill('What information do we need to check next?');await page.getByRole('button',{name:'Ask Sentinel',exact:true}).click();await expect.poll(()=>sent.length).toBe(2);expect(sent[1].history).toHaveLength(2);await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'../designs/next-portal/weather-conversation.png',fullPage:true});
+});
+
+test('mission conversation asks for corrections and only saves after explicit review',async({page})=>{
+ const mutations=await fixtures(page);let turn=0;await page.route('**/conversations/mission',async r=>{turn++;await r.fulfill({json:turn===1?{reply:'A mission can last at most 24 hours. What shorter shift should we use?',draft:{title:'Coastal response'},ready:false,issues:[{field:'ends_at',message:'Too long'}],notes:[]}:{reply:'Review your six-hour response shift.',draft:{title:'Coastal response',brief:'Support preparedness at the coastal community centre.',starts_at:'2026-11-02T06:00:00Z',ends_at:'2026-11-02T12:00:00Z',capacity:12,latitude:-4.04,longitude:39.67,meeting_point:'Community centre confirmed by coordinator',required_skills:['First aid']},ready:true,issues:[],notes:['Bring drinking water.']}});});
+ await page.goto('/missions');await page.getByRole('button',{name:'Plan a mission',exact:true}).first().click();await page.getByLabel('Your reply').fill('Plan a two-day coastal response mission');await page.getByRole('button',{name:'Continue planning'}).click();await expect(page.getByText('A mission can last at most 24 hours.',{exact:false})).toBeVisible();await expect(page.getByRole('button',{name:'Confirm and create mission'})).toHaveCount(0);await page.getByLabel('Your reply').fill('Use a six-hour shift tomorrow and bring drinking water.');await page.getByRole('button',{name:'Continue planning'}).click();await expect(page.getByRole('button',{name:'Confirm and create mission'})).toBeVisible();expect(mutations.filter(r=>r.body.action==='CREATE_MISSION')).toHaveLength(0);await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'../designs/next-portal/conversational-mission.png',fullPage:true});await page.getByRole('button',{name:'Confirm and create mission'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);const create=mutations.find(r=>r.body.action==='CREATE_MISSION');expect(commandSchema.safeParse(create?.body).success).toBe(true);
+});

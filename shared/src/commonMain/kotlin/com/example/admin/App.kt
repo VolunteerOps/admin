@@ -1,29 +1,30 @@
-﻿package com.example.admin
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+package com.example.admin
+
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import com.example.admin.core.data.AdminRepository
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.example.admin.core.splash.AdminSplashScreenCanvas
-import com.example.admin.core.theme.*
-import com.example.admin.features.auth.AdminAuthScreen
-import com.example.admin.features.navigation.AdminNavigationContainer
+import com.example.admin.core.theme.getAdminTypography
+import com.example.admin.core.theme.PortalTheme
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.admin.features.auth.EntryJourney
+import com.example.admin.features.operations.LiveWorkspace
+
+/** All targets use the same authenticated workspace; there is no local operations mode. */
 @Composable fun App() {
-    val repository = remember { AdminRepository() }
-    var stage by rememberSaveable { mutableStateOf("splash") }
-    MaterialTheme(colorScheme = lightColorScheme(primary = AdminColors.VolunteerBlue, onPrimary = AdminColors.CleanWhite, primaryContainer = Color(0xFFEAF1FF), onPrimaryContainer = AdminColors.VolunteerBlue, secondaryContainer = Color(0xFFEAF1FF), onSecondaryContainer = AdminColors.VolunteerBlue, secondary = AdminColors.HealingTeal, background = AdminColors.CanvasBg, surface = AdminColors.SurfaceWhite, onSurface = AdminColors.Navy, onBackground = AdminColors.Navy, outline = AdminColors.BorderLight, error = AdminColors.CompassionCoral), typography = getAdminTypography()) {
-        Crossfade(stage, animationSpec = tween(300)) { current ->
-            when(current) {
-                "splash" -> AdminSplashScreenCanvas(onSplashFinished = { stage = "auth" }, modifier = Modifier.background(AdminColors.Navy).safeDrawingPadding())
-                "auth" -> AdminAuthScreen { stage = "main" }
-                else -> AdminNavigationContainer(repository) { stage = "auth" }
-            }
-        }
+    var dark by rememberSaveable { mutableStateOf(false) }
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    PortalTheme(dark, maxWidth < 600.dp, { dark = !dark }) {
+        var showSplash by remember { mutableStateOf(true) }
+        var authenticated by remember { mutableStateOf(false) }
+        if(showSplash) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center) {
+            AdminSplashScreenCanvas(onSplashFinished={showSplash=false},modifier=Modifier.widthIn(max=640.dp).fillMaxWidth().fillMaxHeight())
+        } else if(!authenticated) EntryJourney(onAuthenticated={authenticated=true})
+        else LiveWorkspace(onLogout={authenticated=false})
+    }
     }
 }
-

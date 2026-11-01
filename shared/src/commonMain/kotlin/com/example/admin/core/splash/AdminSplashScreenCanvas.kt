@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -70,7 +73,7 @@ fun AdminSplashScreenCanvas(onSplashFinished: () -> Unit = {}, modifier: Modifie
         // A readable fallback also covers resource loading and accessible text.
         if (artwork.isNullOrEmpty()) {
             Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("VolunteerOps", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge)
+                Text(buildAnnotatedString { append("ResQ"); withStyle(SpanStyle(color = Color(0xFFE4D076))) { append("Ops.") } }, style = androidx.compose.material3.MaterialTheme.typography.headlineLarge)
                 Text("Track, Coordinate, Save Lives")
             }
         }
@@ -83,7 +86,7 @@ fun AdminSplashScreenCanvas(onSplashFinished: () -> Unit = {}, modifier: Modifie
 @Composable
 private fun ReliefArtwork(layers: List<ReliefLayer>, progress: () -> Float, modifier: Modifier) {
     Spacer(modifier.semantics {
-        contentDescription = "VolunteerOps. Track, Coordinate, Save Lives. Responders supporting a community at a medical relief camp."
+        contentDescription = "ResQOps. Track, Coordinate, Save Lives. Responders supporting a community at a medical relief camp."
     }.drawWithCache {
         // Preserve reference proportions on tablets and landscape. Tall phone
         // space is distributed above and below; no stretching of human figures.

@@ -1,5 +1,7 @@
 # VolunteerOps redesign and migration recovery
 
+> Historical client redesign/migration record. The [seven-stage ResQ production roadmap](../../backend/docs/resq-production-implementation-roadmap.md) supersedes this document's project sequencing, hosting and old backend/authentication assumptions. Keep the UI requirements and dated evidence; checked boxes below describe the local-demo milestone, not full production completion. Current hosting guidance is the [Railway production runbook](../../backend/docs/railway-production-deployment-runbook.md).
+
 ## Audit and direction
 
 The supplied screenshots match structural defects in the code: unbounded desktop rows squeeze text on phones; Android edge-to-edge content lacks insets; metric cards have no minimum useful width; permanent communications sidebars overwhelm compact screens; modal content does not handle the keyboard. Both apps contain sample repositories with incomplete mutations and misleading authentication, GPS, delivery and telemetry claims. The web's deleted portals remain recoverable from Git HEAD; its working tree already contains a partial landing migration.

@@ -1,0 +1,15 @@
+"use client";
+import {useState} from 'react';
+import dynamic from 'next/dynamic';
+const RegionMap=dynamic(()=>import('./Map'),{ssr:false});
+import {api,errorMessage} from '@/lib/api';
+import type {Scope} from '@/lib/hooks';
+import {Button,Notice} from './ui';
+import {Form,reason} from './Forms';
+export default function RegionSetup({scope,editing,done}:{scope:Scope;editing:any;done:()=>void}){
+ const [q,setQ]=useState(''),[matches,setMatches]=useState<any[]>([]),[chosen,setChosen]=useState<any>(editing.id?{name:editing.name,label:editing.name,bounds:editing.forecastBounds,policy:editing.forecastPolicy}:null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[attribution,setAttribution]=useState('');
+ async function search(e:React.FormEvent){e.preventDefault();setBusy(true);setError('');try{const r=await api('/api/organizations/'+scope.org+'/sentinel/places?q='+encodeURIComponent(q));setMatches(r.items);setAttribution(r.attribution);if(!r.items.length)setError('No matching areas were found. Try the city or district followed by the country.');}catch(e){setError(errorMessage(e));}finally{setBusy(false);}}
+ return <><p>Find the city or district your team covers. We will fill in its map coverage and initial screening settings.</p><form onSubmit={search}><label>Region and country<input value={q} onChange={e=>setQ(e.target.value)} placeholder="Mombasa, Kenya" minLength={2} maxLength={200} required/></label><div className="form-actions"><Button type="submit" disabled={busy}>{busy?'Searching...' :'Find region'}</Button></div></form>{error&&<Notice error>{error}</Notice>}<div className="place-results">{matches.map(m=><button className={'place-result '+(chosen?.id===m.id?'selected':'')} key={m.id} onClick={()=>setChosen(m)}><strong>{m.label}</strong><small>{m.country} / Select this area</small></button>)}</div>{attribution&&<small>{attribution}</small>}
+ {chosen&&<div className="selected-region"><h3>{chosen.label}</h3><div className="region-preview"><RegionMap scope={String(chosen.id||editing.id)} coverage={chosen.bounds} points={[]}/></div><p>Coverage is filled from the selected place. Initial weather thresholds are ResQ screening defaults, not official local warning levels.</p><Form key={chosen.id||editing.id} fields={[{...reason,max:500}]} submit={editing.id?'Update region':'Create region'} onSubmit={async(v)=>{await api('/api/organizations/'+scope.org+'/sentinel/regions/'+(editing.id||crypto.randomUUID()),{name:chosen.name,bounds:chosen.bounds,policy:{...chosen.policy,version:(editing.forecastPolicy?.version||0)+1},reason:v.reason},'PUT');done();}}><details><summary>Review coverage and screening settings</summary><dl className="facts">{Object.entries(chosen.bounds).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{String(v)}</dd></div>)}</dl><p>Heat: {chosen.policy.heat_c} degrees C / Wind: {chosen.policy.wind_mps} m/s / Hourly rain: {chosen.policy.hourly_rain_mm} mm. A specialist can adjust these later in advanced region settings.</p></details></Form></div>}
+ </>;
+}

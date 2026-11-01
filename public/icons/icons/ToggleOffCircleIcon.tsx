@@ -1,0 +1,26 @@
+import React from 'react';
+import { IconWrapper } from './IconWrapper';
+import { IconProps } from './types';
+
+/**
+ * ToggleOffCircleIcon
+ *
+ * Auto-generated from: toggle-off-circle.svg
+ */
+export const ToggleOffCircleIcon: React.FC<IconProps> = (props) => {
+  return (
+    <IconWrapper {...props} viewBox="0 0 56 296">
+      <path d="M26 20H30C34.42 20 38 23.58 38 28C38 32.42 34.42 36 30 36H26C21.58 36 18 32.42 18 28C18 23.58 21.58 20 26 20Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M26 32C28.2091 32 30 30.2091 30 28C30 25.7909 28.2091 24 26 24C23.7909 24 22 25.7909 22 28C22 30.2091 23.7909 32 26 32Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M29.86 67.8604H26.14C21.65 67.8604 18 71.5104 18 76.0004C18 80.4904 21.65 84.1404 26.14 84.1404H29.86C34.35 84.1404 38 80.4904 38 76.0004C38 71.5104 34.35 67.8604 29.86 67.8604ZM26.14 80.4204C23.7 80.4204 21.72 78.4404 21.72 76.0004C21.72 73.5604 23.7 71.5804 26.14 71.5804C28.58 71.5804 30.56 73.5604 30.56 76.0004C30.56 78.4404 28.58 80.4204 26.14 80.4204Z" fill="currentColor"/>
+      <path d="M30 132.75H26C21.17 132.75 17.25 128.82 17.25 124C17.25 119.18 21.17 115.25 26 115.25H30C34.83 115.25 38.75 119.18 38.75 124C38.75 128.82 34.83 132.75 30 132.75ZM26 116.75C22 116.75 18.75 120 18.75 124C18.75 128 22 131.25 26 131.25H30C34 131.25 37.25 128 37.25 124C37.25 120 34 116.75 30 116.75H26Z" fill="currentColor"/>
+      <path d="M26 128.75C23.38 128.75 21.25 126.62 21.25 124C21.25 121.38 23.38 119.25 26 119.25C28.62 119.25 30.75 121.38 30.75 124C30.75 126.62 28.62 128.75 26 128.75ZM26 120.75C24.21 120.75 22.75 122.21 22.75 124C22.75 125.79 24.21 127.25 26 127.25C27.79 127.25 29.25 125.79 29.25 124C29.25 122.21 27.79 120.75 26 120.75Z" fill="currentColor"/>
+      <path d="M26 164H30C34.42 164 38 167.58 38 172C38 176.42 34.42 180 30 180H26C21.58 180 18 176.42 18 172C18 167.58 21.58 164 26 164Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M26 176C28.2091 176 30 174.209 30 172C30 169.791 28.2091 168 26 168C23.7909 168 22 169.791 22 172C22 174.209 23.7909 176 26 176Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M29.86 211.86H26.14C21.65 211.86 18 215.51 18 220C18 224.49 21.65 228.14 26.14 228.14H29.86C34.35 228.14 38 224.49 38 220C38 215.51 34.35 211.86 29.86 211.86Z" fill="currentColor"/>
+      <path d="M26.1397 224.42C28.5808 224.42 30.5597 222.441 30.5597 220C30.5597 217.559 28.5808 215.58 26.1397 215.58C23.6986 215.58 21.7197 217.559 21.7197 220C21.7197 222.441 23.6986 224.42 26.1397 224.42Z" fill="currentColor"/>
+      <path d="M26 276C21.58 276 18 272.42 18 268C18 263.58 21.58 260 26 260H30C34.42 260 38 263.58 38 268C38 272.08 34.95 275.44 31.01 275.94" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M26 264C28.21 264 30 265.79 30 268C30 270.21 28.21 272 26 272C23.79 272 22 270.21 22 268C22 267.52 22.09 267.05 22.24 266.62" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </IconWrapper>
+  );
+};

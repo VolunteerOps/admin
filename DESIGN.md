@@ -54,3 +54,13 @@ Use supplied linear OpsSymbol icons consistently. The volunteer header/launcher 
 ## Review checklist
 
 Check narrow phones, expanded layouts, large text, keyboard-open forms, scrolled modal headers, status/gesture area continuity, meaningful icon accessibility labels, selected and inactive navigation, and reduced motion. Compile common metadata, Android, desktop/JVM, JS and Wasm. iOS rendering/build verification requires macOS. Verify the installed package version and APK hash against the original project build before calling a device update complete.
+
+
+## Onboarding and account entry
+
+Follow [the onboarding journey specification](docs/ONBOARDING.md). Use three original, detailed Canvas vector scenes per role, existing Oswald/Overlock typography, one clear action per introduction, persistent progress and optional setup. Never use sample workspace access as a successful real sign-in.
+
+
+## Live web workspace
+
+See [WEB_WORKSPACE.md](docs/WEB_WORKSPACE.md). The live shell switches to a 224dp navy sidebar at 1000dp. Record content splits into list and 410dp review panel when its own width reaches 1000dp; smaller windows use a dialog. Workspace and region selection stay visible across all destinations. Creation and review controls open on demand.

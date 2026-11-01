@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-01",
+  "environment": "staging",
+  "frontend_deployment": "52a84252-5c4a-45b8-b66d-5db9b45b7e4a",
+  "deployment_status": "SUCCESS",
+  "portal": "https://resq-admin-staging.up.railway.app",
+  "browser": {
+    "engine": "Microsoft Edge / Playwright",
+    "passed": 85,
+    "final_chart_spacing_regression_checks": 2,
+    "routes": 32,
+    "data": "Isolated synthetic fixtures; no live operational mutations",
+    "coverage": ["desktop and phone layouts", "authentication entry states", "backend command schemas", "resource proposal approval", "password reauthentication", "weather-to-resource-plan context", "cursor pagination", "forecast controls"]
+  },
+  "builds": {
+    "next_production": "passed",
+    "typescript": "passed",
+    "kotlin_production_javascript": "passed",
+    "android_compilation": "passed",
+    "kotlin_policy_tests": 4,
+    "backend_authentication_tests": 26,
+    "npm_audit_vulnerabilities": 0
+  },
+  "live_checks": {
+    "portal_http": 200,
+    "unauthenticated_private_read": 401,
+    "unauthenticated_private_write": 401,
+    "firebase_project": "resq-25be9",
+    "mapbox_render": "passed; no Mapbox HTTP failures",
+    "administrator_membership": "active, read back from staging",
+    "password_login_by_account_owner": "not performed by agent"
+  },
+  "remaining_configuration": [
+    "Owner creates an operating region with actual bounds and policy",
+    "DNS owner changes admin CNAME to 4b6ch15z.up.railway.app"
+  ],
+  "limits": "No paid weather query, live mission allocation, invitation delivery or owner password login was performed. Existing WeatherNext integration limitations remain documented separately."
+}

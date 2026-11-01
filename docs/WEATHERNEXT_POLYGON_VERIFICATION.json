@@ -1,0 +1,19 @@
+{
+  "job_id": "resq_owner_approved_verification_20261030_nairobi_polygon_02",
+  "source": "resq-25be9.weathernext_3.weathernext_3_0_0_0p1deg",
+  "runtime_identity": "resq-auth-staging@resq-25be9.iam.gserviceaccount.com",
+  "cycle": "2026-10-30T06:00:00.000Z",
+  "bounds": { "west": 36.79, "east": 36.81, "south": -1.31, "north": -1.29 },
+  "forecast_hours": [1, 2],
+  "spatial_predicate": "ST_INTERSECTS(t.geography_polygon, ST_GEOGFROMTEXT(@region))",
+  "state": "DONE",
+  "error_reason": "bytesBilledLimitExceeded",
+  "error_message": "Query exceeded limit for bytes billed: 700000000000. 1106204688384 or higher required.",
+  "approved_cap_bytes": "700000000000",
+  "minimum_required_bytes_reported": "1106204688384",
+  "processed_bytes": null,
+  "billed_bytes": null,
+  "rows": null,
+  "result": "Rejected at the configured billing limit; no populated forecast result verified.",
+  "runtime_limit_changed": false
+}

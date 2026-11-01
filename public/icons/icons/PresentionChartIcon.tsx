@@ -1,0 +1,41 @@
+import React from 'react';
+import { IconWrapper } from './IconWrapper';
+import { IconProps } from './types';
+
+/**
+ * PresentionChartIcon
+ *
+ * Auto-generated from: presention-chart.svg
+ */
+export const PresentionChartIcon: React.FC<IconProps> = (props) => {
+  return (
+    <IconWrapper {...props} viewBox="0 0 56 296">
+      <path d="M21.9002 33H34.0902C35.9902 33 36.9902 32 36.9902 30.1V18H18.9902V30.1C19.0002 32 20.0002 33 21.9002 33Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18 18H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24 38L28 36V33" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M32 38L28 36" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M23.5 27L26.65 24.37C26.9 24.16 27.23 24.22 27.4 24.5L28.6 26.5C28.77 26.78 29.1 26.83 29.35 26.63L32.5 24" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M38 66.75H18C17.59 66.75 17.25 66.41 17.25 66C17.25 65.59 17.59 65.25 18 65.25H38C38.41 65.25 38.75 65.59 38.75 66C38.75 66.41 38.41 66.75 38 66.75Z" fill="currentColor"/>
+      <path d="M32.6698 86.34C32.5398 86.6 32.2698 86.75 31.9998 86.75C31.8898 86.75 31.7698 86.72 31.6698 86.67L27.9998 84.84L24.3298 86.67C24.2298 86.72 24.1098 86.75 23.9998 86.75C23.7298 86.75 23.4598 86.6 23.3298 86.34C23.1398 85.96 23.2898 85.51 23.6698 85.33L27.2498 83.54V81H28.7498V83.54L32.3298 85.33C32.7098 85.51 32.8598 85.96 32.6698 86.34Z" fill="currentColor"/>
+      <path d="M19 66V78.1C19 80 20 81 21.9 81H34.1C36 81 37 80 37 78.1V66H19ZM32.98 72.58L29.83 75.21C29.54 75.45 29.17 75.55 28.82 75.49C28.46 75.43 28.15 75.21 27.96 74.89L26.91 73.14L23.98 75.58C23.84 75.7 23.67 75.75 23.5 75.75C23.29 75.75 23.07 75.66 22.92 75.48C22.65 75.16 22.7 74.69 23.02 74.42L26.17 71.79C26.46 71.55 26.83 71.45 27.18 71.51C27.54 71.57 27.85 71.79 28.04 72.11L29.09 73.86L32.02 71.42C32.34 71.15 32.81 71.2 33.08 71.52C33.34 71.84 33.3 72.31 32.98 72.58Z" fill="currentColor"/>
+      <path d="M34.1 129.75H21.9C19.58 129.75 18.25 128.42 18.25 126.1V114C18.25 113.59 18.59 113.25 19 113.25H37C37.41 113.25 37.75 113.59 37.75 114V126.1C37.75 128.42 36.42 129.75 34.1 129.75ZM19.75 114.75V126.1C19.75 127.59 20.41 128.25 21.9 128.25H34.09C35.58 128.25 36.24 127.59 36.24 126.1V114.75H19.75Z" fill="currentColor"/>
+      <path d="M38 114.75H18C17.59 114.75 17.25 114.41 17.25 114C17.25 113.59 17.59 113.25 18 113.25H38C38.41 113.25 38.75 113.59 38.75 114C38.75 114.41 38.41 114.75 38 114.75Z" fill="currentColor"/>
+      <path d="M24.0003 134.75C23.7203 134.75 23.4603 134.6 23.3303 134.34C23.1403 133.97 23.2903 133.52 23.6703 133.33L27.2503 131.54V129C27.2503 128.59 27.5903 128.25 28.0003 128.25C28.4103 128.25 28.7503 128.59 28.7503 129V132C28.7503 132.28 28.5903 132.54 28.3303 132.67L24.3303 134.67C24.2303 134.72 24.1103 134.75 24.0003 134.75Z" fill="currentColor"/>
+      <path d="M31.9999 134.75C31.8899 134.75 31.77 134.72 31.67 134.67L27.67 132.67C27.3 132.48 27.1499 132.03 27.3299 131.66C27.5199 131.29 27.9699 131.14 28.3399 131.32L32.3399 133.32C32.7099 133.51 32.8599 133.96 32.6799 134.33C32.5399 134.6 32.2699 134.75 31.9999 134.75Z" fill="currentColor"/>
+      <path d="M23.4999 123.75C23.2899 123.75 23.0699 123.66 22.9199 123.48C22.6499 123.16 22.6999 122.69 23.0199 122.42L26.1699 119.79C26.4599 119.55 26.8299 119.45 27.1799 119.51C27.5399 119.57 27.8499 119.79 28.0399 120.11L29.0899 121.86L32.0199 119.42C32.3399 119.16 32.8099 119.2 33.0799 119.52C33.3499 119.84 33.2999 120.31 32.9799 120.58L29.8299 123.21C29.5399 123.45 29.1699 123.55 28.8199 123.49C28.4599 123.43 28.1499 123.21 27.9599 122.89L26.9099 121.14L23.9799 123.58C23.8399 123.69 23.6699 123.75 23.4999 123.75Z" fill="currentColor"/>
+      <path d="M21.9002 177H34.0902C35.9902 177 36.9902 176 36.9902 174.1V162H18.9902V174.1C19.0002 176 20.0002 177 21.9002 177Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18 162H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24 182L28 180M28 180V177M28 180L32 182" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M23.5 171L26.65 168.37C26.9 168.16 27.23 168.22 27.4 168.5L28.6 170.5C28.77 170.78 29.1 170.83 29.35 170.63L32.5 168" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path opacity="0.4" d="M37 210V222.1C37 224 36 225 34.1 225H21.9C20 225 19 224 19 222.1V210H37Z" fill="currentColor"/>
+      <path d="M38 210.75H18C17.59 210.75 17.25 210.41 17.25 210C17.25 209.59 17.59 209.25 18 209.25H38C38.41 209.25 38.75 209.59 38.75 210C38.75 210.41 38.41 210.75 38 210.75Z" fill="currentColor"/>
+      <path d="M32.6698 230.34C32.5398 230.6 32.2698 230.75 31.9998 230.75C31.8898 230.75 31.7698 230.72 31.6698 230.67L27.9998 228.84L24.3298 230.67C24.2298 230.72 24.1098 230.75 23.9998 230.75C23.7298 230.75 23.4598 230.6 23.3298 230.34C23.1398 229.96 23.2898 229.51 23.6698 229.33L27.2498 227.54V225H28.7498V227.54L32.3298 229.33C32.7098 229.51 32.8598 229.96 32.6698 230.34Z" fill="currentColor"/>
+      <path d="M23.4999 219.75C23.2899 219.75 23.0699 219.66 22.9199 219.48C22.6499 219.16 22.6999 218.69 23.0199 218.42L26.1699 215.79C26.4599 215.55 26.8299 215.45 27.1799 215.51C27.5399 215.57 27.8499 215.79 28.0399 216.11L29.0899 217.86L32.0199 215.42C32.3399 215.15 32.8099 215.2 33.0799 215.52C33.3499 215.84 33.2999 216.31 32.9799 216.58L29.8299 219.21C29.5399 219.45 29.1699 219.55 28.8199 219.49C28.4599 219.43 28.1499 219.21 27.9599 218.89L26.9099 217.14L23.9799 219.58C23.8399 219.69 23.6699 219.75 23.4999 219.75Z" fill="currentColor"/>
+      <path d="M37 266V258H19V270.1C19 270.81 19.14 271.4 19.42 271.86C19.88 272.62 20.72 273.01 21.91 273.01H34.1C36 273.01 37 272.01 37 270.11" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18 258H38" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24 278L28 276V273" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M32 278L28 276" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M23.5 267L26.65 264.37C26.9 264.16 27.23 264.22 27.4 264.5L28.6 266.5C28.77 266.78 29.1 266.83 29.35 266.63L32.5 264" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+    </IconWrapper>
+  );
+};
