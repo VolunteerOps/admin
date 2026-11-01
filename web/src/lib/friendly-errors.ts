@@ -1,5 +1,7 @@
 /** User-facing recovery text. Raw provider errors and internal codes stay out of the UI. */
 export const errorGroups: [string[], string][] = [
+[["MODEL_UNAVAILABLE"],"Muse is unavailable right now. Your message is still here. Please try again in a few minutes."],
+[["META_ACCESS_DENIED"],"The assistant could not connect with the current service credentials. Ask your administrator to check the Meta connection."],
 [["TOKEN_EXPIRED","UNAUTHORIZED","SESSION_REVOKED","INVALID_FIREBASE_IDENTITY","FIREBASE_AUTH_REQUIRED"],"Your sign-in has expired. Sign in again to continue."],
 [["RECENT_AUTH_REQUIRED"],"Confirm your password to make this change. Your work will stay here."],
 [["EMAIL_VERIFICATION_REQUIRED"],"Check your inbox and verify your email address before continuing."],

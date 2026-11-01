@@ -1582,31 +1582,49 @@
       "code": "ANALYSIS_FAILED",
       "message": "The assistant cited a source that was not retrieved. Please try again.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 62
+      "line": 63
     },
     {
       "code": "ANALYSIS_INTERRUPTED",
       "message": "This reply stopped before it finished. Try again.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 71
+      "line": 72
     },
     {
       "code": "AGENT_IN_PROGRESS",
       "message": "This reply is still being prepared. Try again shortly to retrieve it.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 71
+      "line": 72
     },
     {
       "code": "AGENT_UNAVAILABLE",
       "message": "The mission planner could not finish this reply. Your mission has not been created. Try again.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 84
+      "line": 87
     },
     {
       "code": "META_NOT_CONFIGURED",
       "message": "Configure META_MODEL_API_KEY on the backend service",
       "file": "../backend/src/modules/sentinel/meta-agent.ts",
-      "line": 21
+      "line": 23
+    },
+    {
+      "code": "MODEL_UNAVAILABLE",
+      "message": "The selected assistant model is temporarily unavailable from the provider. Try again shortly.",
+      "file": "../backend/src/modules/sentinel/meta-agent.ts",
+      "line": 68
+    },
+    {
+      "code": "META_ACCESS_DENIED",
+      "message": "The assistant provider could not verify this service access. Contact your administrator.",
+      "file": "../backend/src/modules/sentinel/meta-agent.ts",
+      "line": 69
+    },
+    {
+      "code": "AGENT_UNAVAILABLE",
+      "message": "The assistant provider could not complete this request. Try again shortly.",
+      "file": "../backend/src/modules/sentinel/meta-agent.ts",
+      "line": 70
     },
     {
       "code": "PLACE_SEARCH_UNAVAILABLE",
@@ -2062,12 +2080,12 @@
     {
       "message": "This data tool supports the previous 31 days and next 15 days, in spans of up to 14 days. A seasonal outlook needs a separate seasonal source. Explain the gap and offer a supported comparison; do not extrapolate.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 35
+      "line": 36
     },
     {
       "message": "One broad search per turn. Ask a follow-up to explore another period.",
       "file": "../backend/src/modules/sentinel/conversation.service.ts",
-      "line": 37
+      "line": 38
     },
     {
       "message": "This analysis did not finish within its processing window. Review provider status before creating a new request.",

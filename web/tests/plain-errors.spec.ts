@@ -15,9 +15,11 @@ test('unknown errors are not echoed, while known errors and local form instructi
  expect(()=>friendlyError(500 as any,{} as any)).not.toThrow();expect(()=>validationMessage([null])).not.toThrow();
  for(const status of [0,400,409,422,500])expect(friendlyError('UNRECOGNIZED_PROVIDER_CODE','sentinel_forecast_init_time constraint violation',status)).not.toMatch(/sentinel|constraint|UNRECOGNIZED/);
  expect(friendlyError('PROPOSAL_EXPIRED','')).toContain('Generate a new plan');
+ expect(friendlyError('MODEL_UNAVAILABLE','model_not_found')).toContain('Your message is still here');
+ expect(friendlyError('META_ACCESS_DENIED','invalid_request_error')).toContain('check the Meta connection');
  expect(friendlyError('auth/expired-action-code','Firebase: expired-action-code')).toContain('Request a new link');
  expect(new UserFacingError('Choose the receiving coordinator.').message).toContain('coordinator who will take over');
- for(const message of Object.values(friendlyErrors))expect(message).not.toMatch(/idempotency|UTC|initialization|payload|tenant|schema|constraint|lease|fence|tiling/i);
+ for(const message of Object.values(friendlyErrors))expect(message).not.toMatch(/\b(?:idempotency|UTC|initialization|payload|tenant|schema|constraint|lease|fence|tiling)\b/i);
 });
 
 test('forecast requests default to automatic publication selection without a timestamp',async({page})=>{

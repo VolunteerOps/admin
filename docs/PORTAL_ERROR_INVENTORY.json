@@ -439,9 +439,16 @@
   ],
   "AGENT_UNAVAILABLE": [
     "../backend/src/modules/sentinel/conversation.service.ts",
+    "../backend/src/modules/sentinel/meta-agent.ts",
     "../backend/src/modules/sentinel/sentinel.agent.ts"
   ],
   "META_NOT_CONFIGURED": [
+    "../backend/src/modules/sentinel/meta-agent.ts"
+  ],
+  "MODEL_UNAVAILABLE": [
+    "../backend/src/modules/sentinel/meta-agent.ts"
+  ],
+  "META_ACCESS_DENIED": [
     "../backend/src/modules/sentinel/meta-agent.ts"
   ],
   "PLACE_SEARCH_UNAVAILABLE": [

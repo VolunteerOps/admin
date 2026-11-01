@@ -104,6 +104,8 @@ export default function MissionChat({
           "ANALYSIS_FAILED",
           "ANALYSIS_INTERRUPTED",
           "META_NOT_CONFIGURED",
+          "MODEL_UNAVAILABLE",
+          "META_ACCESS_DENIED",
         ].includes(e.code)
       )
         setPending({ ...outgoing, key: crypto.randomUUID() });

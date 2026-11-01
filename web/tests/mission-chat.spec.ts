@@ -81,7 +81,8 @@ test("chat shows outgoing message immediately, retries without duplicating and k
   ).not.toBe("hidden");
 });
 
-test("failed replies can be edited and provider retries use a fresh attempt", async ({
+for (const code of ["AGENT_UNAVAILABLE", "MODEL_UNAVAILABLE", "META_ACCESS_DENIED"])
+test(`failed ${code} replies can be edited and retries use a fresh attempt`, async ({
   page,
 }) => {
   await fixtures(page);
@@ -93,7 +94,7 @@ test("failed replies can be edited and provider retries use a fresh attempt", as
     });
     await route.fulfill(
       sent.length < 3
-        ? { status: 503, json: { error: "AGENT_UNAVAILABLE" } }
+        ? { status: 503, json: { error: code } }
         : { json: reply },
     );
   });
