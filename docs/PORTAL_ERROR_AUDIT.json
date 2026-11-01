@@ -1,0 +1,2098 @@
+{
+  "errors": [
+    {
+      "code": "TENANT_MIGRATION_REQUIRED",
+      "message": "Operational access is unavailable until organization ownership is migrated",
+      "file": "../backend/src/app.ts",
+      "line": 165
+    },
+    {
+      "code": "INVALID_FIREBASE_IDENTITY",
+      "message": "Firebase identity could not be verified",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 62
+    },
+    {
+      "code": "INVALID_FIREBASE_IDENTITY",
+      "message": "Firebase session could not be verified",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 73
+    },
+    {
+      "code": "RECENT_AUTH_REQUIRED",
+      "message": "Recent Firebase sign-in required",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 81
+    },
+    {
+      "code": "INVALID_FIREBASE_IDENTITY",
+      "message": "Firebase session could not be created",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 86
+    },
+    {
+      "code": "validation_failed",
+      "message": "Invalid Firebase UID",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 91
+    },
+    {
+      "code": "FIREBASE_REVOCATION_FAILED",
+      "message": "Firebase revocation requires retry",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 95
+    },
+    {
+      "code": "INVALID_FIREBASE_IDENTITY",
+      "message": "Invalid Firebase credential",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 101
+    },
+    {
+      "code": "INVALID_FIREBASE_IDENTITY",
+      "message": "Firebase identity claims are invalid",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 115
+    },
+    {
+      "code": "EMAIL_VERIFICATION_REQUIRED",
+      "message": "Verify your email before onboarding",
+      "file": "../backend/src/core/firebase.ts",
+      "line": 119
+    },
+    {
+      "code": "AUTHORIZATION_UNAVAILABLE",
+      "message": "Current account authorization is unavailable",
+      "file": "../backend/src/middleware/auth.middleware.ts",
+      "line": 84
+    },
+    {
+      "code": "TOKEN_EXPIRED",
+      "message": "Access token has expired. Please refresh your session.",
+      "file": "../backend/src/middleware/auth.middleware.ts",
+      "line": 103
+    },
+    {
+      "code": "UNAUTHORIZED",
+      "message": "You must be logged in to access this resource",
+      "file": "../backend/src/middleware/auth.middleware.ts",
+      "line": 106
+    },
+    {
+      "code": "unauthorized",
+      "message": "Authentication required",
+      "file": "../backend/src/middleware/auth.middleware.ts",
+      "line": 114
+    },
+    {
+      "code": "forbidden",
+      "message": null,
+      "file": "../backend/src/middleware/auth.middleware.ts",
+      "line": 121
+    },
+    {
+      "code": "unauthorized",
+      "message": "Invalid authorization header",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 44
+    },
+    {
+      "code": "unauthorized",
+      "message": "Invalid session cookie",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 48
+    },
+    {
+      "code": "AUTHORIZATION_UNAVAILABLE",
+      "message": "Current account authorization is unavailable",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 54
+    },
+    {
+      "code": "SESSION_REVOKED",
+      "message": "Account or session is no longer active",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 57
+    },
+    {
+      "code": "IDENTITY_UNAVAILABLE",
+      "message": "Identity verification is unavailable",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 67
+    },
+    {
+      "code": "CSRF_REJECTED",
+      "message": "Trusted origin and X-Requested-With: VolunteerOps required",
+      "file": "../backend/src/middleware/firebase-auth.middleware.ts",
+      "line": 77
+    },
+    {
+      "code": "unauthorized",
+      "message": "Verified Firebase ID token required",
+      "file": "../backend/src/modules/auth/auth.controller.ts",
+      "line": 42
+    },
+    {
+      "code": "unauthorized",
+      "message": "Firebase bearer token required",
+      "file": "../backend/src/modules/auth/auth.controller.ts",
+      "line": 51
+    },
+    {
+      "code": "FIREBASE_AUTH_REQUIRED",
+      "message": "Use Firebase Authentication for sign-in, registration, token refresh and password recovery",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 12
+    },
+    {
+      "code": "RECENT_AUTH_REQUIRED",
+      "message": "Recent sign-in required",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 18
+    },
+    {
+      "code": "SESSION_REVOKED",
+      "message": "Account or session is no longer active",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 27
+    },
+    {
+      "code": "SESSION_REVOKED",
+      "message": "Account or session is no longer active",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 52
+    },
+    {
+      "code": "RECENT_AUTH_REQUIRED",
+      "message": "Recent sign-in required for verified email change",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 55
+    },
+    {
+      "code": "IDENTITY_CONFLICT",
+      "message": "Verified address belongs to another account; use reviewed recovery",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 57
+    },
+    {
+      "code": "IDENTITY_MIGRATION_REQUIRED",
+      "message": "Account migration requires reviewed identity binding",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 67
+    },
+    {
+      "code": "IDENTITY_CONFLICT",
+      "message": "Identity enrollment conflict; retry or request reviewed migration",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 76
+    },
+    {
+      "code": "unauthorized",
+      "message": "Account is unavailable",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 84
+    },
+    {
+      "code": "unauthorized",
+      "message": "Account is unavailable",
+      "file": "../backend/src/modules/auth/auth.service.ts",
+      "line": 93
+    },
+    {
+      "code": "BILLING_UNAVAILABLE",
+      "message": "Subscription verification is temporarily unavailable",
+      "file": "../backend/src/modules/billing/billing.service.ts",
+      "line": 42
+    },
+    {
+      "code": "BILLING_NOT_CONFIGURED",
+      "message": "Pro activation is awaiting billing configuration",
+      "file": "../backend/src/modules/billing/billing.service.ts",
+      "line": 53
+    },
+    {
+      "code": "PRO_REQUIRED",
+      "message": null,
+      "file": "../backend/src/modules/billing/billing.service.ts",
+      "line": 54
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "This capability requires an authorized coordinator",
+      "file": "../backend/src/modules/billing/capabilities.ts",
+      "line": 9
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "Workspace permissions changed; refresh your session",
+      "file": "../backend/src/modules/billing/capabilities.ts",
+      "line": 12
+    },
+    {
+      "code": "PRO_REQUIRED",
+      "message": "Active ResQOps Pro is required to sponsor a volunteer",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 9
+    },
+    {
+      "code": "VOLUNTEER_MEMBERSHIP_REQUIRED",
+      "message": "Choose an active volunteer in this workspace",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 14
+    },
+    {
+      "code": "SPONSOR_EXISTS",
+      "message": "This volunteer already has another sponsor",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 16
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Sponsorship changed; refresh first",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 17
+    },
+    {
+      "code": "SEAT_LIMIT",
+      "message": "All three sponsorship seats are assigned. Release a seat first.",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 18
+    },
+    {
+      "code": "not_found",
+      "message": "Sponsorship",
+      "file": "../backend/src/modules/billing/sponsorship.service.ts",
+      "line": 19
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Usage key belongs to another request",
+      "file": "../backend/src/modules/billing/usage.service.ts",
+      "line": 13
+    },
+    {
+      "code": "AGENT_DAILY_LIMIT",
+      "message": "Daily personal assistant allowance reached. It resets at midnight UTC.",
+      "file": "../backend/src/modules/billing/usage.service.ts",
+      "line": 15
+    },
+    {
+      "code": "not_found",
+      "message": "Usage reservation",
+      "file": "../backend/src/modules/billing/usage.service.ts",
+      "line": 25
+    },
+    {
+      "code": "not_found",
+      "message": "Contact Submission",
+      "file": "../backend/src/modules/contact/contact.service.ts",
+      "line": 40
+    },
+    {
+      "code": "not_found",
+      "message": "Deployment",
+      "file": "../backend/src/modules/deployments/deployments.service.ts",
+      "line": 27
+    },
+    {
+      "code": "RESPONDER_UNAVAILABLE",
+      "message": "Responder unavailable or conflicting reservation",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 12
+    },
+    {
+      "code": "APPLICATION_LIMIT",
+      "message": "Pending application limit reached",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 17
+    },
+    {
+      "code": "validation_failed",
+      "message": "Provision and select the reviewed workspace before approval",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 26
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Application already reviewed",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 28
+    },
+    {
+      "code": "DOMAIN_DISPUTED",
+      "message": "Domain dispute requires owner review",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 42
+    },
+    {
+      "code": "DOMAIN_CLAIM_CONFLICT",
+      "message": "Domain claim requires review",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 45
+    },
+    {
+      "code": "DOMAIN_CLAIM_CONFLICT",
+      "message": "Domain claim requires review",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 46
+    },
+    {
+      "code": "DOMAIN_PROOF_UNAVAILABLE",
+      "message": "DNS proof expired or unavailable",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 52
+    },
+    {
+      "code": "DNS_PROOF_UNAVAILABLE",
+      "message": "DNS proof was not found; retry after propagation",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 54
+    },
+    {
+      "code": "DOMAIN_PROOF_MISMATCH",
+      "message": "Exact DNS proof not found",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 56
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Domain proof changed",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 60
+    },
+    {
+      "code": "SSO_PROVIDER_NOT_CONFIGURED",
+      "message": "Configure and verify the institution provider first",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 71
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Workspace changed",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 73
+    },
+    {
+      "code": "not_found",
+      "message": "Verified active user",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 86
+    },
+    {
+      "code": "LAST_OWNER_REQUIRED",
+      "message": "Retain the last platform owner",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 88
+    },
+    {
+      "code": "forbidden",
+      "message": "Support recipient must be an active platform operator",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 94
+    },
+    {
+      "code": "SUPPORT_GRANT_REQUIRED",
+      "message": "Active time-bound support grant required",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 100
+    },
+    {
+      "code": "ORG_NOT_ACTIVE",
+      "message": "Workspace is not active",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 102
+    },
+    {
+      "code": "validation_failed",
+      "message": "Two distinct organizations and one participating lead are required",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 108
+    },
+    {
+      "code": "not_found",
+      "message": "Coordination grant",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 115
+    },
+    {
+      "code": "forbidden",
+      "message": "The partner organization must explicitly accept",
+      "file": "../backend/src/modules/enterprise/enterprise.service.ts",
+      "line": 116
+    },
+    {
+      "code": "not_found",
+      "message": "Event / Crisis Mission",
+      "file": "../backend/src/modules/events/events.service.ts",
+      "line": 61
+    },
+    {
+      "code": "not_found",
+      "message": "Feedback",
+      "file": "../backend/src/modules/feedback/feedback.service.ts",
+      "line": 21
+    },
+    {
+      "code": "not_found",
+      "message": "Field Report",
+      "file": "../backend/src/modules/fieldReports/fieldReports.service.ts",
+      "line": 33
+    },
+    {
+      "code": "not_found",
+      "message": "Location",
+      "file": "../backend/src/modules/locations/locations.service.ts",
+      "line": 27
+    },
+    {
+      "code": "not_found",
+      "message": "Notification",
+      "file": "../backend/src/modules/notifications/notifications.service.ts",
+      "line": 33
+    },
+    {
+      "code": "DISPATCH_PAUSED",
+      "message": "Regional dispatch is paused. A coordinator must resume it before dispatching.",
+      "file": "../backend/src/modules/operations/dispatch-policy.ts",
+      "line": 5
+    },
+    {
+      "code": "METRICS_RANGE_TOO_LARGE",
+      "message": "Choose a shorter date interval; results are never silently truncated",
+      "file": "../backend/src/modules/operations/metrics.service.ts",
+      "line": 14
+    },
+    {
+      "code": "STREAM_RESNAPSHOT_REQUIRED",
+      "message": "Fetch a snapshot cursor before subscribing",
+      "file": "../backend/src/modules/operations/operations.controller.ts",
+      "line": 41
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "Coordinator membership required",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 13
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "This record changed. Refresh before trying again.",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 14
+    },
+    {
+      "code": "STREAM_RESNAPSHOT_REQUIRED",
+      "message": "Replay position is no longer available; refresh your snapshot",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 25
+    },
+    {
+      "code": "not_found",
+      "message": "Record",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 44
+    },
+    {
+      "code": "not_found",
+      "message": "Record",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 48
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Idempotency key was already used for another request",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 78
+    },
+    {
+      "code": "not_found",
+      "message": "Record",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 81
+    },
+    {
+      "code": "not_found",
+      "message": "Bulletin",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 106
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Bulletin is no longer published",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 107
+    },
+    {
+      "code": "not_found",
+      "message": "Report",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 110
+    },
+    {
+      "code": "validation_failed",
+      "message": "A report cannot link to itself",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 112
+    },
+    {
+      "code": "not_found",
+      "message": "Message",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 117
+    },
+    {
+      "code": "MESSAGE_REMOVED",
+      "message": "Message was already removed",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 118
+    },
+    {
+      "code": "not_found",
+      "message": "Support case",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 122
+    },
+    {
+      "code": "CASE_RESOLVED",
+      "message": "Ask your coordinator to reopen this case before replying",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 128
+    },
+    {
+      "code": "CASE_REPLY_LIMIT",
+      "message": "This case has reached its reply limit. Open a linked follow-up case.",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 130
+    },
+    {
+      "code": "not_found",
+      "message": "Resource",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 134
+    },
+    {
+      "code": "STOCK_UNAVAILABLE",
+      "message": "Available stock is insufficient or exceeds the resource limit",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 136
+    },
+    {
+      "code": "validation_failed",
+      "message": "Choose a different destination",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 138
+    },
+    {
+      "code": "RESOURCE_MISMATCH",
+      "message": "Transfers require matching resource name and unit",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 140
+    },
+    {
+      "code": "STOCK_LIMIT",
+      "message": "Destination stock limit reached",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 141
+    },
+    {
+      "code": "not_found",
+      "message": "Mission",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 148
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Invalid mission transition",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 149
+    },
+    {
+      "code": "ASSIGNMENTS_OPEN",
+      "message": "Complete all assignments first",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 150
+    },
+    {
+      "code": "MISSION_CLOSED",
+      "message": "Mission is not accepting applications",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 165
+    },
+    {
+      "code": "APPLICATION_EXISTS",
+      "message": "You already applied",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 167
+    },
+    {
+      "code": "MISSION_CLOSED",
+      "message": "This mission is no longer available",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 171
+    },
+    {
+      "code": "not_found",
+      "message": "Your application",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 175
+    },
+    {
+      "code": "APPLICATION_NOT_WITHDRAWABLE",
+      "message": "Contact your coordinator to change an accepted assignment",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 176
+    },
+    {
+      "code": "MISSION_CLOSED",
+      "message": "Mission cannot accept assignments",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 180
+    },
+    {
+      "code": "RESPONDER_SCOPE_REQUIRED",
+      "message": "Responder is outside this region or no longer active",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 184
+    },
+    {
+      "code": "APPLICATION_REQUIRED",
+      "message": "An active volunteer application is required",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 186
+    },
+    {
+      "code": "ASSIGNMENT_EXISTS",
+      "message": "Responder already assigned",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 187
+    },
+    {
+      "code": "CAPACITY_REACHED",
+      "message": "Mission capacity reached",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 189
+    },
+    {
+      "code": "QUALIFICATION_REQUIRED",
+      "message": "A required qualification is missing, revoked or expired",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 192
+    },
+    {
+      "code": "ASSIGNMENT_WINDOW",
+      "message": "Assignments can be confirmed within 24 hours of mission end",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 195
+    },
+    {
+      "code": "RESPONDER_UNAVAILABLE",
+      "message": "Responder has a conflicting assignment",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 197
+    },
+    {
+      "code": "STOCK_UNAVAILABLE",
+      "message": "Available stock cannot cover this assignment",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 200
+    },
+    {
+      "code": "forbidden",
+      "message": "Your assignment is required",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 209
+    },
+    {
+      "code": "MISSION_NOT_ACTIVE",
+      "message": "Mission must be active",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 211
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Assignment is not awaiting check-in",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 213
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Check in before completion",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 216
+    },
+    {
+      "code": "not_found",
+      "message": "Hours",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 223
+    },
+    {
+      "code": "forbidden",
+      "message": "Another coordinator must approve your hours",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 224
+    },
+    {
+      "code": "not_found",
+      "message": "Published mission",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 227
+    },
+    {
+      "code": "THREAD_UNAVAILABLE",
+      "message": "Choose an available message in this mission",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 230
+    },
+    {
+      "code": "validation_failed",
+      "message": "Unsupported command",
+      "file": "../backend/src/modules/operations/operations.service.ts",
+      "line": 235
+    },
+    {
+      "code": "STREAM_NOT_CONFIGURED",
+      "message": "Event replay is awaiting cursor-key configuration",
+      "file": "../backend/src/modules/operations/stream-cursor.ts",
+      "line": 7
+    },
+    {
+      "code": "STREAM_RESNAPSHOT_REQUIRED",
+      "message": "Refresh the snapshot and start a new event stream",
+      "file": "../backend/src/modules/operations/stream-cursor.ts",
+      "line": 29
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "Coordinator review required",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 9
+    },
+    {
+      "code": "COURSE_PREREQUISITE",
+      "message": "Prerequisites must be published",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 11
+    },
+    {
+      "code": "validation_failed",
+      "message": "Unsupported training action",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 15
+    },
+    {
+      "code": "COURSE_STATE",
+      "message": "Only a draft course can be published",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 18
+    },
+    {
+      "code": "not_found",
+      "message": "Published course",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 21
+    },
+    {
+      "code": "ENROLLMENT_EXISTS",
+      "message": "You are already enrolled",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 22
+    },
+    {
+      "code": "PREREQUISITE_REQUIRED",
+      "message": "A current reviewed prerequisite is required",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 23
+    },
+    {
+      "code": "COURSE_FULL",
+      "message": "Course capacity reached",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 27
+    },
+    {
+      "code": "not_found",
+      "message": "Your enrollment",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 31
+    },
+    {
+      "code": "LESSON_ORDER",
+      "message": "Complete lessons in order",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 32
+    },
+    {
+      "code": "ASSESSMENT_COOLDOWN",
+      "message": "Review the lesson before retrying",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 33
+    },
+    {
+      "code": "ASSESSMENT_UNAVAILABLE",
+      "message": "The assessment is unavailable",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 38
+    },
+    {
+      "code": "REVIEW_NOT_READY",
+      "message": "Assessment completion is required first",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 44
+    },
+    {
+      "code": "forbidden",
+      "message": "Another coordinator must review your training",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 45
+    },
+    {
+      "code": "validation_failed",
+      "message": "Choose a future expiry within five years",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 46
+    },
+    {
+      "code": "not_found",
+      "message": "Credential",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 52
+    },
+    {
+      "code": "validation_failed",
+      "message": "Unsupported training action",
+      "file": "../backend/src/modules/operations/training.service.ts",
+      "line": 55
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "Coordinator membership required",
+      "file": "../backend/src/modules/operations/workspace-policy.ts",
+      "line": 15
+    },
+    {
+      "code": "MFA_REQUIRED",
+      "message": "TOTP step-up is required",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 21
+    },
+    {
+      "code": "RECENT_AUTH_REQUIRED",
+      "message": "Sign in again before this action",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 23
+    },
+    {
+      "code": "SSO_REQUIRED",
+      "message": "Use this organization’s approved sign-in method",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 29
+    },
+    {
+      "code": "MFA_REQUIRED",
+      "message": "TOTP step-up is required",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 33
+    },
+    {
+      "code": "MEMBERSHIP_REQUIRED",
+      "message": "Active organization membership required",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 40
+    },
+    {
+      "code": "ORG_NOT_ACTIVE",
+      "message": "Organization is not active",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 42
+    },
+    {
+      "code": "ENROLLMENT_PENDING",
+      "message": "Organization verification is pending",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 43
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "This membership does not permit the action",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 46
+    },
+    {
+      "code": "SCOPE_REQUIRED",
+      "message": "Organization-wide administration requires an unrestricted membership",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 55
+    },
+    {
+      "code": "GRANT_EXCEEDS_AUTHORITY",
+      "message": "Cannot grant the requested role",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 65
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Invalid workspace transition",
+      "file": "../backend/src/modules/organizations/authorization.ts",
+      "line": 73
+    },
+    {
+      "code": "unauthorized",
+      "message": null,
+      "file": "../backend/src/modules/organizations/context.ts",
+      "line": 13
+    },
+    {
+      "code": "UNSAFE_RUNTIME_ROLE",
+      "message": "Tenant operations require a non-owner runtime database role",
+      "file": "../backend/src/modules/organizations/context.ts",
+      "line": 34
+    },
+    {
+      "code": "SESSION_REVOKED",
+      "message": "Account or session is no longer active",
+      "file": "../backend/src/modules/organizations/context.ts",
+      "line": 44
+    },
+    {
+      "code": "PLATFORM_GRANT_REQUIRED",
+      "message": "Explicit platform grant required",
+      "file": "../backend/src/modules/organizations/context.ts",
+      "line": 62
+    },
+    {
+      "code": "MEMBERSHIP_REQUIRED",
+      "message": "Active organization membership required",
+      "file": "../backend/src/modules/organizations/context.ts",
+      "line": 70
+    },
+    {
+      "code": "DEVICE_REVOKED",
+      "message": "Use a new installation identifier after revocation",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 37
+    },
+    {
+      "code": "DEVICE_CONFLICT",
+      "message": "Installation platform cannot change",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 38
+    },
+    {
+      "code": "DEVICE_LIMIT",
+      "message": "Revoke an unused device before registering another",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 42
+    },
+    {
+      "code": "not_found",
+      "message": "Device",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 54
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Consent changed; reload before retrying",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 55
+    },
+    {
+      "code": "not_found",
+      "message": "Device",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 68
+    },
+    {
+      "code": "not_found",
+      "message": "Device",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 82
+    },
+    {
+      "code": "CONSENT_REQUIRED",
+      "message": "Current sensing consent is required",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 84
+    },
+    {
+      "code": "REPLAY_CONFLICT",
+      "message": "Message identifier already used for different content",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 89
+    },
+    {
+      "code": "validation_failed",
+      "message": "Heartbeat timestamp is outside the acceptance window",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 93
+    },
+    {
+      "code": "INGRESS_LIMIT",
+      "message": "Device heartbeat budget exhausted",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 96
+    },
+    {
+      "code": "RECRUITMENT_UNAVAILABLE",
+      "message": "Recruitment is unavailable",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 22
+    },
+    {
+      "code": "INVITATION_LIMIT",
+      "message": "Invitation limit reached",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 25
+    },
+    {
+      "code": "validation_failed",
+      "message": "Invitation scopes must belong to this organization",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 27
+    },
+    {
+      "code": "EMAIL_NOT_CONFIGURED",
+      "message": "Invitation delivery configuration is incomplete",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 39
+    },
+    {
+      "code": "not_found",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 74
+    },
+    {
+      "code": "INVITATION_ALREADY_ACCEPTED",
+      "message": "Leave the membership separately",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 76
+    },
+    {
+      "code": "not_found",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 90
+    },
+    {
+      "code": "INVITATION_CLOSED",
+      "message": "Invitation is closed",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 91
+    },
+    {
+      "code": "HANDOVER_REQUIRED",
+      "message": "Complete administrator handover first",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 101
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 175
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 182
+    },
+    {
+      "code": "ORG_NOT_ACTIVE",
+      "message": "Organization is not active",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 183
+    },
+    {
+      "code": "ENROLLMENT_PENDING",
+      "message": "Organization verification is pending",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 184
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 188
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 194
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 198
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 200
+    },
+    {
+      "code": "INVITATION_UNAVAILABLE",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 202
+    },
+    {
+      "code": "MEMBERSHIP_REQUIRED",
+      "message": "Membership is no longer active",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 208
+    },
+    {
+      "code": "INVITATION_EXPIRED",
+      "message": "Invitation expired",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 211
+    },
+    {
+      "code": "MEMBERSHIP_EXISTS",
+      "message": "Existing membership requires an access review",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 212
+    },
+    {
+      "code": "not_found",
+      "message": "Membership",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 231
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Membership has changed",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 232
+    },
+    {
+      "code": "MEMBERSHIP_REMOVED",
+      "message": "Removed membership requires review",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 233
+    },
+    {
+      "code": "LAST_ADMIN_REQUIRED",
+      "message": "The last organization administrator must be retained",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 236
+    },
+    {
+      "code": "not_found",
+      "message": "Invitation",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 264
+    },
+    {
+      "code": "INVITATION_ALREADY_ACCEPTED",
+      "message": "Accepted membership requires a separate access review",
+      "file": "../backend/src/modules/organizations/organizations.service.ts",
+      "line": 265
+    },
+    {
+      "code": "RECENT_AUTH_REQUIRED",
+      "message": "Sign in again before this action",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 17
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Profile changed",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 35
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Profile preferences changed or profile missing",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 49
+    },
+    {
+      "code": "DEVICE_CONSENT_REQUIRED",
+      "message": "Update the registered device consent so its version and pending work are invalidated",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 57
+    },
+    {
+      "code": "validation_failed",
+      "message": "Use directory preferences to opt in",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 58
+    },
+    {
+      "code": "CONSENT_REQUIRED",
+      "message": "Enable public profile preview first",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 82
+    },
+    {
+      "code": "SHARE_LIMIT",
+      "message": "Revoke an existing share first",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 83
+    },
+    {
+      "code": "not_found",
+      "message": "Share",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 91
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 96
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 98
+    },
+    {
+      "code": "not_found",
+      "message": "Invitation",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 113
+    },
+    {
+      "code": "HANDOVER_REQUIRED",
+      "message": "Complete administrator handover before requesting deletion",
+      "file": "../backend/src/modules/personal/personal.service.ts",
+      "line": 125
+    },
+    {
+      "code": "not_found",
+      "message": "Share",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 10
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 12
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 14
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Workspace changed",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 27
+    },
+    {
+      "code": "not_found",
+      "message": "Workspace",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 34
+    },
+    {
+      "code": "MEMBERSHIP_EXISTS",
+      "message": "Existing membership requires review",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 35
+    },
+    {
+      "code": "RECRUITMENT_UNAVAILABLE",
+      "message": "Recruitment blocked",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 36
+    },
+    {
+      "code": "JOIN_REQUEST_LIMIT",
+      "message": "Daily request limit reached",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 39
+    },
+    {
+      "code": "REQUEST_CLOSED",
+      "message": "Join request is closed",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 48
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Join request changed",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 53
+    },
+    {
+      "code": "not_found",
+      "message": "Volunteer",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 57
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 67
+    },
+    {
+      "code": "not_found",
+      "message": "Profile",
+      "file": "../backend/src/modules/personal/recruitment.service.ts",
+      "line": 69
+    },
+    {
+      "code": "BOOTSTRAP_ALREADY_USED",
+      "message": "Owner bootstrap has already been used; use reviewed recovery",
+      "file": "../backend/src/modules/platform/bootstrap.ts",
+      "line": 13
+    },
+    {
+      "code": "IDENTITY_BINDING_REQUIRED",
+      "message": "Reviewed numeric user and Firebase identity binding required",
+      "file": "../backend/src/modules/platform/bootstrap.ts",
+      "line": 18
+    },
+    {
+      "code": "not_found",
+      "message": "Active legacy user",
+      "file": "../backend/src/modules/platform/bootstrap.ts",
+      "line": 33
+    },
+    {
+      "code": "IDENTITY_CONFLICT",
+      "message": "An immutable identity binding already exists",
+      "file": "../backend/src/modules/platform/bootstrap.ts",
+      "line": 38
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Workspace must be offboarding",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 14
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Workspace changed",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 15
+    },
+    {
+      "code": "WORKSPACE_EXISTS",
+      "message": "Workspace slug is already provisioned",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 38
+    },
+    {
+      "code": "not_found",
+      "message": "Organization",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 53
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Workspace has changed",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 54
+    },
+    {
+      "code": "not_found",
+      "message": "Organization",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 78
+    },
+    {
+      "code": "ORG_NOT_ACTIVE",
+      "message": "Activate the workspace before verification",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 79
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Workspace has changed",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 80
+    },
+    {
+      "code": "not_found",
+      "message": "Organization",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 95
+    },
+    {
+      "code": "ORG_NOT_ACTIVE",
+      "message": "Organization must be active",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 96
+    },
+    {
+      "code": "ENROLLMENT_PENDING",
+      "message": "Record institutional verification first",
+      "file": "../backend/src/modules/platform/platform.service.ts",
+      "line": 97
+    },
+    {
+      "code": "validation_failed",
+      "message": "Choose an active member with access to this region",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 16
+    },
+    {
+      "code": "not_found",
+      "message": "Assistance case",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 27
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Request key was used with different input",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 39
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Request key was used with different input",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 64
+    },
+    {
+      "code": "not_found",
+      "message": "Assistance case",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 65
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Case changed. Review its latest timeline",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 66
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "This case does not allow that action",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 68
+    },
+    {
+      "code": "CASE_OWNER_REQUIRED",
+      "message": "The case owner must record this decision or hand over responsibility",
+      "file": "../backend/src/modules/safety/safety.service.ts",
+      "line": 70
+    },
+    {
+      "code": "OBJECT_MISMATCH",
+      "message": "Uploaded object exceeds its declared size",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 24
+    },
+    {
+      "code": "OBJECT_MISMATCH",
+      "message": "Uploaded object is incomplete",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 27
+    },
+    {
+      "code": "OBJECT_MISMATCH",
+      "message": "Uploaded size or content type does not match the upload intent",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 50
+    },
+    {
+      "code": "OBJECT_MISMATCH",
+      "message": "Uploaded checksum does not match the upload intent",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 60
+    },
+    {
+      "code": "UPLOAD_NOT_FOUND",
+      "message": "Upload has not reached object storage",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 66
+    },
+    {
+      "code": "STORAGE_UNAVAILABLE",
+      "message": "Object storage verification is temporarily unavailable",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 67
+    },
+    {
+      "code": "STORAGE_NOT_CONFIGURED",
+      "message": "Private object storage is not configured",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 101
+    },
+    {
+      "code": "STORAGE_NOT_CONFIGURED",
+      "message": "Object storage requires a clean HTTPS endpoint",
+      "file": "../backend/src/modules/scoped-storage/object-store.ts",
+      "line": 105
+    },
+    {
+      "code": "STORAGE_QUOTA_EXCEEDED",
+      "message": "Your scoped upload quota is full",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 23
+    },
+    {
+      "code": "UPLOAD_EXPIRED",
+      "message": "Upload completion deadline has expired",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 41
+    },
+    {
+      "code": "OBJECT_MISMATCH",
+      "message": "Uploaded object does not match the upload intent",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 44
+    },
+    {
+      "code": "not_found",
+      "message": "Object",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 50
+    },
+    {
+      "code": "UPLOAD_EXPIRED",
+      "message": "Upload completion deadline has expired",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 52
+    },
+    {
+      "code": "not_found",
+      "message": "Object",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 65
+    },
+    {
+      "code": "OBJECT_NOT_READY",
+      "message": "Object verification has not completed",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 66
+    },
+    {
+      "code": "not_found",
+      "message": "Object",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+      "line": 77
+    },
+    {
+      "code": "ANALYSIS_FAILED",
+      "message": "The assistant cited a source that was not retrieved. Please try again.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 62
+    },
+    {
+      "code": "ANALYSIS_INTERRUPTED",
+      "message": "This reply stopped before it finished. Try again.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 71
+    },
+    {
+      "code": "AGENT_IN_PROGRESS",
+      "message": "This reply is still being prepared. Try again shortly to retrieve it.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 71
+    },
+    {
+      "code": "AGENT_UNAVAILABLE",
+      "message": "The mission planner could not finish this reply. Your mission has not been created. Try again.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 84
+    },
+    {
+      "code": "META_NOT_CONFIGURED",
+      "message": "Configure META_MODEL_API_KEY on the backend service",
+      "file": "../backend/src/modules/sentinel/meta-agent.ts",
+      "line": 21
+    },
+    {
+      "code": "PLACE_SEARCH_UNAVAILABLE",
+      "message": "Place search is not connected. Contact your administrator.",
+      "file": "../backend/src/modules/sentinel/place-search.ts",
+      "line": 9
+    },
+    {
+      "code": "not_found",
+      "message": "Mission",
+      "file": "../backend/src/modules/sentinel/planning-context.ts",
+      "line": 12
+    },
+    {
+      "code": "MISSION_CLOSED",
+      "message": "Stage the mission before planning allocations",
+      "file": "../backend/src/modules/sentinel/planning-context.ts",
+      "line": 14
+    },
+    {
+      "code": "PLANNING_SCOPE_TOO_LARGE",
+      "message": "Narrow the candidate pool before planning",
+      "file": "../backend/src/modules/sentinel/planning-context.ts",
+      "line": 21
+    },
+    {
+      "code": "PLANNING_SCOPE_TOO_LARGE",
+      "message": "Narrow the candidate pool before planning",
+      "file": "../backend/src/modules/sentinel/planning-context.ts",
+      "line": 23
+    },
+    {
+      "code": "ASSESSMENT_UNAVAILABLE",
+      "message": "Choose a completed assessment with forecast evidence",
+      "file": "../backend/src/modules/sentinel/planning-evidence.ts",
+      "line": 11
+    },
+    {
+      "code": "ASSESSMENT_STALE",
+      "message": "The linked forecast is stale. Run a new assessment",
+      "file": "../backend/src/modules/sentinel/planning-evidence.ts",
+      "line": 13
+    },
+    {
+      "code": "ASSESSMENT_POLICY_CHANGED",
+      "message": "Regional policy or boundaries changed. Run a new assessment",
+      "file": "../backend/src/modules/sentinel/planning-evidence.ts",
+      "line": 14
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Request key was used with different input",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 43
+    },
+    {
+      "code": "AGENT_IN_PROGRESS",
+      "message": "This analysis is still running. Refresh its history.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 45
+    },
+    {
+      "code": "ANALYSIS_INTERRUPTED",
+      "message": "The processing window has closed. Review history before starting again",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 60
+    },
+    {
+      "code": "ANALYSIS_FAILED",
+      "message": "The model could not complete an evidence-grounded assessment",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 71
+    },
+    {
+      "code": "not_found",
+      "message": "Weather assessment",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 90
+    },
+    {
+      "code": "validation_failed",
+      "message": "This forecast has not been issued yet. Choose an earlier time.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 114
+    },
+    {
+      "code": "validation_failed",
+      "message": "Choose a recent forecast, or use Ask Sentinel to explore earlier days.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 115
+    },
+    {
+      "code": "validation_failed",
+      "message": "The analysis starts before this forecast was issued. Choose a later start date.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 116
+    },
+    {
+      "code": "validation_failed",
+      "message": "Choose times on the hour, such as 09:00.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 117
+    },
+    {
+      "code": "validation_failed",
+      "message": "Select a newer forecast cycle",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 121
+    },
+    {
+      "code": "not_found",
+      "message": "Resource proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 150
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Request key reused with different input",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 153
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Proposal changed. Review it again",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 154
+    },
+    {
+      "code": "PROPOSAL_EXPIRED",
+      "message": "Recompute this expired proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 155
+    },
+    {
+      "code": "validation_failed",
+      "message": "The edited allocation exceeds the eligible candidates, capacity or stock in this proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 156
+    },
+    {
+      "code": "not_found",
+      "message": "Resource proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 169
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Request key was used with different input",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 172
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Proposal changed. Review it again",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 173
+    },
+    {
+      "code": "INVALID_TRANSITION",
+      "message": "Only a draft proposal can be rejected",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 174
+    },
+    {
+      "code": "not_found",
+      "message": "Resource proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 185
+    },
+    {
+      "code": "IDEMPOTENCY_CONFLICT",
+      "message": "Approval key reused with a different request",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 188
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Proposal changed. Review it again",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 189
+    },
+    {
+      "code": "PROPOSAL_EXPIRED",
+      "message": "Create a fresh proposal before approving",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 190
+    },
+    {
+      "code": "ASSESSMENT_CHANGED",
+      "message": "The linked assessment changed. Recompute the proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 193
+    },
+    {
+      "code": "EMPTY_PROPOSAL",
+      "message": "This proposal contains no allocations",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 198
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Mission changed. Recompute the proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 200
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "Stock changed. Recompute the proposal",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 203
+    },
+    {
+      "code": "GCS_NOT_CONFIGURED",
+      "message": "Cloud Storage weather access has not been enabled for this service.",
+      "file": "../backend/src/modules/sentinel/providers/weather-explorer.ts",
+      "line": 28
+    },
+    {
+      "code": "WEATHER_BUSY",
+      "message": "Weather analysis is busy. Try again shortly.",
+      "file": "../backend/src/modules/sentinel/providers/weather-explorer.ts",
+      "line": 29
+    },
+    {
+      "code": "FORECAST_QUERY_BUDGET_EXCEEDED",
+      "message": "This forecast query exceeds the configured billing limit. An operator must review query cost before trying again.",
+      "file": "../backend/src/modules/sentinel/providers/weather-query-job.ts",
+      "line": 7
+    },
+    {
+      "code": "WEATHER_BILLING_REQUIRED",
+      "message": "Weather billing or usage needs administrator review.",
+      "file": "../backend/src/modules/sentinel/providers/weather-query-job.ts",
+      "line": 8
+    },
+    {
+      "code": "WEATHER_ACCESS_DENIED",
+      "message": "Weather data access needs administrator review.",
+      "file": "../backend/src/modules/sentinel/providers/weather-query-job.ts",
+      "line": 9
+    },
+    {
+      "code": "INVALID_FORECAST_WINDOW",
+      "message": "Choose a period of up to 48 hours.",
+      "file": "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts",
+      "line": 49
+    },
+    {
+      "code": "FORECAST_REGION_REQUIRES_TILING",
+      "message": "Choose a smaller operating area.",
+      "file": "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts",
+      "line": 51
+    },
+    {
+      "code": "FORECAST_LOOKUP_FAILED",
+      "message": "No recent published forecast covers this area and period.",
+      "file": "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts",
+      "line": 79
+    },
+    {
+      "code": "FORECAST_LOOKUP_FAILED",
+      "message": "No recent published forecast covers this area and period.",
+      "file": "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts",
+      "line": 82
+    },
+    {
+      "code": "AGENT_UNAVAILABLE",
+      "message": "The assistant could not complete a grounded response; try again",
+      "file": "../backend/src/modules/sentinel/sentinel.agent.ts",
+      "line": 76
+    },
+    {
+      "code": "SCOPE_REQUIRED",
+      "message": "Region is outside your membership scope",
+      "file": "../backend/src/modules/sentinel/sentinel.context.ts",
+      "line": 8
+    },
+    {
+      "code": "CAPABILITY_REQUIRED",
+      "message": "Forecast refresh requires coordinator access",
+      "file": "../backend/src/modules/sentinel/sentinel.context.ts",
+      "line": 9
+    },
+    {
+      "code": "not_found",
+      "message": "Region",
+      "file": "../backend/src/modules/sentinel/sentinel.context.ts",
+      "line": 11
+    },
+    {
+      "code": "WEATHERNEXT_NOT_CONFIGURED",
+      "message": "WeatherNext project, dataset, access and query budget must be configured",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 29
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Policy version must increment by one",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 73
+    },
+    {
+      "code": "VERSION_CONFLICT",
+      "message": "The region changed while finding a forecast.",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 103
+    },
+    {
+      "code": "STALE_FORECAST_RUN",
+      "message": "The selected run is older than this region permits",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 105
+    },
+    {
+      "code": "not_found",
+      "message": "Job",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 153
+    },
+    {
+      "code": "JOB_NOT_RETRYABLE",
+      "message": "Only failed or expired forecast jobs may be retried",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 154
+    },
+    {
+      "code": "STALE_FORECAST_RUN",
+      "message": "Request a newer initialization instead of retrying expired evidence",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 158
+    },
+    {
+      "code": "STALE_VERSION",
+      "message": "Job state changed; reload before retrying",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 164
+    },
+    {
+      "code": "not_found",
+      "message": "Job",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 174
+    },
+    {
+      "code": "not_found",
+      "message": "Skill",
+      "file": "../backend/src/modules/skills/skills.service.ts",
+      "line": 55
+    },
+    {
+      "code": "storage_not_configured",
+      "message": "Object storage is not configured for this deployment",
+      "file": "../backend/src/modules/storage/storage.service.ts",
+      "line": 23
+    },
+    {
+      "code": "forbidden",
+      "message": "You do not have access to this object",
+      "file": "../backend/src/modules/storage/storage.service.ts",
+      "line": 95
+    },
+    {
+      "code": "not_found",
+      "message": "User",
+      "file": "../backend/src/modules/users/users.service.ts",
+      "line": 112
+    },
+    {
+      "code": "not_found",
+      "message": "User",
+      "file": "../backend/src/modules/users/users.service.ts",
+      "line": 120
+    },
+    {
+      "code": "not_found",
+      "message": "User",
+      "file": "../backend/src/modules/users/users.service.ts",
+      "line": 154
+    },
+    {
+      "code": "not_found",
+      "message": "Volunteer",
+      "file": "../backend/src/modules/volunteers/volunteers.service.ts",
+      "line": 105
+    }
+  ],
+  "validationMessages": [
+    {
+      "message": "VolunteerOps Backend API",
+      "file": "../backend/src/app.ts",
+      "line": 88
+    },
+    {
+      "message": "The requested route does not exist",
+      "file": "../backend/src/middleware/error.middleware.ts",
+      "line": 10
+    },
+    {
+      "message": "Request payload validation failed",
+      "file": "../backend/src/middleware/error.middleware.ts",
+      "line": 28
+    },
+    {
+      "message": "Request body contains invalid JSON",
+      "file": "../backend/src/middleware/error.middleware.ts",
+      "line": 49
+    },
+    {
+      "message": "The requested database record does not exist",
+      "file": "../backend/src/middleware/error.middleware.ts",
+      "line": 67
+    },
+    {
+      "message": "An unexpected internal server error occurred",
+      "file": "../backend/src/middleware/error.middleware.ts",
+      "line": 77
+    },
+    {
+      "message": "Too many authentication attempts. Please try again in 15 minutes.",
+      "file": "../backend/src/middleware/rateLimiter.ts",
+      "line": 10
+    },
+    {
+      "message": "Too many contact submissions from this IP. Please try again later.",
+      "file": "../backend/src/middleware/rateLimiter.ts",
+      "line": 21
+    },
+    {
+      "message": "Thank you for reaching out. The VolunteerOps crisis operations team has received your message.",
+      "file": "../backend/src/modules/contact/contact.controller.ts",
+      "line": 22
+    },
+    {
+      "message": "Sensing requires location consent",
+      "file": "../backend/src/modules/organizations/devices.service.ts",
+      "line": 11
+    },
+    {
+      "message": "Choose the receiving coordinator",
+      "file": "../backend/src/modules/safety/safety.schema.ts",
+      "line": 7
+    },
+    {
+      "message": "Coordinator is only accepted for handover",
+      "file": "../backend/src/modules/safety/safety.schema.ts",
+      "line": 7
+    },
+    {
+      "message": "Too many storage requests. Try again shortly.",
+      "file": "../backend/src/modules/scoped-storage/scoped-storage.controller.ts",
+      "line": 15
+    },
+    {
+      "message": "This data tool supports the previous 31 days and next 15 days, in spans of up to 14 days. A seasonal outlook needs a separate seasonal source. Explain the gap and offer a supported comparison; do not extrapolate.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 35
+    },
+    {
+      "message": "One broad search per turn. Ask a follow-up to explore another period.",
+      "file": "../backend/src/modules/sentinel/conversation.service.ts",
+      "line": 37
+    },
+    {
+      "message": "This analysis did not finish within its processing window. Review provider status before creating a new request.",
+      "file": "../backend/src/modules/sentinel/planning.service.ts",
+      "line": 29
+    },
+    {
+      "message": "Build the Sentinel portal before serving it",
+      "file": "../backend/src/modules/sentinel/portal.controller.ts",
+      "line": 49
+    },
+    {
+      "message": "Choose an end hour after the start hour, covering no more than 48 hours and staying within the published forecast period.",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 22
+    },
+    {
+      "message": "The minutes must be 00, for example 18:00 rather than 18:35. Use the latest forecast option to select a published forecast automatically.",
+      "file": "../backend/src/modules/sentinel/sentinel.service.ts",
+      "line": 24
+    },
+    {
+      "message": "Distress beacon broadcasted to command center",
+      "file": "../backend/src/modules/telemetry/telemetry.service.ts",
+      "line": 82
+    }
+  ]
+}

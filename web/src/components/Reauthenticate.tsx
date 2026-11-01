@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import { useEffect, useState } from "react";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { identity, setReauthenticationHandler } from "@/lib/api";
@@ -26,7 +27,7 @@ export default function Reauthenticate() {
       title="Confirm it's you"
       onClose={() => {
         pending.reject(
-          Error("Confirmation cancelled. Your changes were not submitted."),
+          new UserFacingError("Confirmation cancelled. Your changes were not submitted."),
         );
         setPending(null);
       }}
@@ -42,7 +43,7 @@ export default function Reauthenticate() {
         submit="Confirm password"
         onSubmit={async (v) => {
           const user = (await identity()).currentUser;
-          if (!user?.email) throw Error("Sign in to continue.");
+          if (!user?.email) throw new UserFacingError("Sign in to continue.");
           await reauthenticateWithCredential(
             user,
             EmailAuthProvider.credential(user.email, v.password),

@@ -1,3 +1,5 @@
+> **Latest correction - 1 November 2026:** Raw validation details no longer bypass the plain-language error map. Forecast requests automatically find a published forecast for the next 24 or 48 hours. See [PLAIN_LANGUAGE_ERRORS_AND_FORECASTS.md](PLAIN_LANGUAGE_ERRORS_AND_FORECASTS.md).
+
 > **Current portal release - 1 November 2026:** Guided weather and mission conversations, automatic briefing, region search, plain-language errors, navigation caching and crash/theme/scroll fixes are documented in [PORTAL_ASSISTED_WORKFLOWS.md](PORTAL_ASSISTED_WORKFLOWS.md). Google billing and GCS authorization remain external prerequisites; integration paths are enabled.
 
 > **Superseded web implementation — 1 November 2026:** The browser UI has been replaced with React/Next.js, shared Kotlin policies and Android-derived Oswald/Overlock styling. Required MFA has been removed while role checks and recent password authentication remain. See [NEXT_PORTAL_MIGRATION.md](NEXT_PORTAL_MIGRATION.md) for the current screen inventory, deployment and verification. The record below describes the earlier Compose web iteration.

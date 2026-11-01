@@ -217,26 +217,12 @@ select:focus-visible {
   font-weight: 600;
   letter-spacing: -0.03em;
 }
-.brand-symbol {
-  background: var(--blue);
-  color: #fff;
-  border-radius: 9px;
-  width: 33px;
-  height: 35px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  font-family: Overlock;
-  font-size: 28px;
-}
-.brand-symbol span {
-  color: var(--gold);
-  font-size: 17px;
-  line-height: 1;
-  position: absolute;
-  right: 3px;
-  top: 3px;
+.brand-logo {
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 .brand-gold {
   color: #b69a32;
@@ -266,9 +252,6 @@ select:focus-visible {
 }
 .auth-story .brand-gold {
   color: var(--gold);
-}
-.auth-story .brand-symbol {
-  background: #28518a;
 }
 .auth-story .eyebrow {
   color: #becddf;
@@ -1612,6 +1595,62 @@ html { scrollbar-gutter: stable; }
 .chat-turn { padding:16px 20px; border-radius:14px; background:var(--soft); max-width:92%; white-space:pre-wrap; }
 .chat-turn.user { margin-left:auto; background:var(--surface); border:1px solid var(--line); }
 .chat-turn p { margin:8px 0 0; color:var(--ink); }
+
+/* Mission planning: one conversation viewport and a composer that stays in reach. */
+.mission-chat-drawer { overflow: hidden; width: min(760px, 100%); }
+.mission-chat-drawer .drawer-body { height: 100%; display: flex; flex-direction: column; min-height: 0; padding-bottom: 18px; }
+.mission-chat-drawer .drawer-body > header { flex: none; margin-bottom: 16px; padding-bottom: 18px; }
+.mission-chat-drawer .mode-tabs { flex: none; margin: 0 0 16px; gap: 6px; }
+.mission-chat-drawer .mode-tabs .button { padding: 8px 14px; font-size: 14px; }
+.mission-chat { display: flex; flex: 1; min-height: 0; flex-direction: column; }
+.mission-chat-context { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 0 14px; color: var(--muted); font-size: 12px; }
+.mission-chat-context > span:first-child { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink); }
+.mission-chat-transcript { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 12px 8px 24px 0; }
+.mission-message { max-width: 90%; margin-bottom: 22px; padding: 17px 20px; border-radius: 4px 18px 18px 18px; background: var(--soft); overflow-wrap: anywhere; }
+.mission-message.user { margin-left: auto; background: #07336a; color: #fff; border-radius: 18px 4px 18px 18px; }
+.mission-speaker { display: block; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.mission-message p { color: inherit; margin: 8px 0 0; white-space: pre-wrap; line-height: 1.55; }
+.mission-message .mission-message-hint { color: var(--muted); font-size: 14px; }
+.mission-starters { display: grid; gap: 8px; max-width: 90%; margin: 0 0 24px; }
+.mission-starters button { display: flex; justify-content: space-between; align-items: center; text-align: left; gap: 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 14px; }
+.mission-starters button:hover { background: var(--soft); border-color: var(--muted); }
+.mission-thinking { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; padding: 4px 0 20px; }
+.mission-thinking-dots { display: flex; gap: 4px; }
+.mission-thinking-dots i { width: 5px; height: 5px; background: var(--muted); border-radius: 50%; animation: mission-pulse 1.2s ease-in-out infinite; }
+.mission-thinking-dots i:nth-child(2) { animation-delay: .15s; }
+.mission-thinking-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes mission-pulse { 50% { opacity: .25; transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .mission-thinking-dots i { animation: none; } }
+.mission-draft { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.mission-draft-toggle { display: flex; align-items: center; width: 100%; text-align: left; padding: 16px; gap: 12px; background: var(--surface); border: 0; }
+.mission-draft-toggle > span:first-of-type { flex: 1; }
+.mission-draft-toggle strong, .mission-draft-toggle small { display: block; }
+.mission-draft-toggle small { color: var(--muted); margin-top: 5px; }
+.mission-draft-toggle > span:last-child { color: var(--blue); font-size: 13px; font-weight: 700; }
+.mission-draft-content { padding: 0 18px 18px; border-top: 1px solid var(--line); }
+.mission-draft-content dl { display: grid; gap: 14px; }
+.mission-draft-content dt { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+.mission-draft-content dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mission-draft-content .mission-review-note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.mission-compose-area { flex: none; border-top: 1px solid var(--line); padding-top: 16px; }
+.mission-composer { display: flex; align-items: flex-end; gap: 10px; background: var(--surface); border: 1px solid var(--muted); border-radius: 14px; padding: 12px; }
+.mission-composer:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+.mission-composer textarea { flex: 1; min-width: 0; min-height: 48px; max-height: 144px; resize: none; border: 0; padding: 3px; margin: 0; border-radius: 0; background: transparent; box-shadow: none; outline: none; }
+.mission-composer textarea:focus { outline: none; box-shadow: none; }
+.mission-composer .button { flex: none; width: 42px; height: 42px; padding: 0; border-radius: 10px; }
+.mission-composer-help { display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; color: var(--muted); font-size: 11px; }
+.mission-chat-error { max-height: 26dvh; overflow-y: auto; margin-bottom: 12px; }
+.mission-chat-error .notice { margin: 0; padding: 12px; font-size: 14px; }
+.mission-retry { display: flex; gap: 8px; margin-top: 8px; }
+.mission-retry .button { padding: 6px 12px; font-size: 13px; }
+@media (max-width: 600px) {
+ .mission-chat-drawer .drawer-body { padding: 16px; }
+ .mission-chat-drawer .drawer-body > header { padding-bottom: 12px; margin-bottom: 12px; }
+ .mission-chat-drawer header h2 { font-size: 26px; }
+ .mission-message { max-width: 96%; padding: 14px; }
+ .mission-chat-context > span:last-child { font-size: 11px; }
+ .mission-composer-help > span:first-child { visibility: hidden; }
+}
 .briefing { border-top:1px solid var(--line); padding:22px 0; }
 .briefing li { line-height:1.6; margin-bottom:9px; }
 .source-entry { border-bottom:1px solid var(--line); padding:16px 0; }

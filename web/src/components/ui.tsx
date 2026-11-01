@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
+import Image from "next/image";
 import {
   House,
   Compass,
@@ -71,9 +72,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
 export function Brand() {
   return (
     <span className="brand">
-      <span className="brand-symbol">
-        r<span>+</span>
-      </span>
+      <Image className="brand-logo" src="/logo-monochrome.png" alt="" width={48} height={48} priority />
       <span>
         ResQ<span className="brand-gold">Ops.</span>
       </span>
@@ -168,10 +167,12 @@ export function Drawer({
   title,
   onClose,
   children,
+  className = "",
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -181,7 +182,7 @@ export function Drawer({
   }, []);
   return (
     <dialog
-      className="drawer"
+      className={"drawer " + className}
       ref={ref}
       onCancel={onClose}
       onClick={(e) => {

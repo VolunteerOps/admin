@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -317,7 +318,7 @@ export default function Account({
                         }
                         after = r.next_cursor;
                       }
-                      throw Error(
+                      throw new UserFacingError(
                         "Export exceeds the current page limit. Contact support for a complete export.",
                       );
                     })
@@ -619,7 +620,7 @@ export default function Account({
               submit="Request deletion"
               onSubmit={async (v) => {
                 if (v.confirmation !== "DELETE")
-                  throw Error("Type DELETE to confirm.");
+                  throw new UserFacingError("Type DELETE to confirm.");
                 await api("/api/me/deletion-request", {});
                 setDeleting(false);
                 scope.refresh();

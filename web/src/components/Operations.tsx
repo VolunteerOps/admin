@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import MissionChat from "./MissionChat";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -301,7 +302,7 @@ export default function Operations({
         </section>
       )}
       {create && (
-        <Drawer title={createNames[kind]} onClose={() => setCreate(false)}>
+        <Drawer title={createNames[kind]} className={kind === "MISSION" && guided ? "mission-chat-drawer" : ""} onClose={() => setCreate(false)}>
           {kind === "MISSION" && <div className="mode-tabs"><Button onClick={()=>setGuided(true)} aria-pressed={guided}>Plan with assistant</Button><Button onClick={()=>setGuided(false)} aria-pressed={!guided}>Use form</Button></div>}
           {kind === "MISSION" && guided ? <MissionChat scope={scope} done={done}/> : <CreateRecord kind={kind} scope={scope} done={done} />}
         </Drawer>
@@ -479,7 +480,7 @@ export function CreateRecord({
               v.latitude,
               v.longitude,
             );
-            if (message) throw Error(message);
+            if (message) throw new UserFacingError(message);
             body = {
               action: "CREATE_MISSION",
               mission: {

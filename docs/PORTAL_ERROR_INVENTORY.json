@@ -3,18 +3,24 @@
     "../backend/src/app.ts"
   ],
   "INVALID_FIREBASE_IDENTITY": [
-    "../backend/src/core/firebase.ts",
-    "../backend/src/core/firebase.ts",
-    "../backend/src/core/firebase.ts",
-    "../backend/src/core/firebase.ts",
     "../backend/src/core/firebase.ts"
   ],
   "RECENT_AUTH_REQUIRED": [
     "../backend/src/core/firebase.ts",
     "../backend/src/modules/auth/auth.service.ts",
-    "../backend/src/modules/auth/auth.service.ts",
     "../backend/src/modules/organizations/authorization.ts",
     "../backend/src/modules/personal/personal.service.ts"
+  ],
+  "validation_failed": [
+    "../backend/src/core/firebase.ts",
+    "../backend/src/modules/enterprise/enterprise.service.ts",
+    "../backend/src/modules/operations/operations.service.ts",
+    "../backend/src/modules/operations/training.service.ts",
+    "../backend/src/modules/organizations/devices.service.ts",
+    "../backend/src/modules/organizations/organizations.service.ts",
+    "../backend/src/modules/personal/personal.service.ts",
+    "../backend/src/modules/safety/safety.service.ts",
+    "../backend/src/modules/sentinel/planning.service.ts"
   ],
   "FIREBASE_REVOCATION_FAILED": [
     "../backend/src/core/firebase.ts"
@@ -32,9 +38,22 @@
   "UNAUTHORIZED": [
     "../backend/src/middleware/auth.middleware.ts"
   ],
+  "unauthorized": [
+    "../backend/src/middleware/auth.middleware.ts",
+    "../backend/src/middleware/firebase-auth.middleware.ts",
+    "../backend/src/modules/auth/auth.controller.ts",
+    "../backend/src/modules/auth/auth.service.ts",
+    "../backend/src/modules/organizations/context.ts"
+  ],
+  "forbidden": [
+    "../backend/src/middleware/auth.middleware.ts",
+    "../backend/src/modules/enterprise/enterprise.service.ts",
+    "../backend/src/modules/operations/operations.service.ts",
+    "../backend/src/modules/operations/training.service.ts",
+    "../backend/src/modules/storage/storage.service.ts"
+  ],
   "SESSION_REVOKED": [
     "../backend/src/middleware/firebase-auth.middleware.ts",
-    "../backend/src/modules/auth/auth.service.ts",
     "../backend/src/modules/auth/auth.service.ts",
     "../backend/src/modules/organizations/context.ts"
   ],
@@ -48,7 +67,6 @@
     "../backend/src/modules/auth/auth.service.ts"
   ],
   "IDENTITY_CONFLICT": [
-    "../backend/src/modules/auth/auth.service.ts",
     "../backend/src/modules/auth/auth.service.ts",
     "../backend/src/modules/platform/bootstrap.ts"
   ],
@@ -65,11 +83,7 @@
     "../backend/src/modules/billing/billing.service.ts",
     "../backend/src/modules/billing/sponsorship.service.ts"
   ],
-  "VOLUNTEER": [
-    "../backend/src/modules/billing/billing.service.ts"
-  ],
   "CAPABILITY_REQUIRED": [
-    "../backend/src/modules/billing/capabilities.ts",
     "../backend/src/modules/billing/capabilities.ts",
     "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/operations/training.service.ts",
@@ -88,22 +102,44 @@
     "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/safety/safety.service.ts",
     "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts"
+    "../backend/src/modules/sentinel/sentinel.service.ts"
   ],
   "SEAT_LIMIT": [
     "../backend/src/modules/billing/sponsorship.service.ts"
+  ],
+  "not_found": [
+    "../backend/src/modules/billing/sponsorship.service.ts",
+    "../backend/src/modules/billing/usage.service.ts",
+    "../backend/src/modules/contact/contact.service.ts",
+    "../backend/src/modules/deployments/deployments.service.ts",
+    "../backend/src/modules/enterprise/enterprise.service.ts",
+    "../backend/src/modules/events/events.service.ts",
+    "../backend/src/modules/feedback/feedback.service.ts",
+    "../backend/src/modules/fieldReports/fieldReports.service.ts",
+    "../backend/src/modules/locations/locations.service.ts",
+    "../backend/src/modules/notifications/notifications.service.ts",
+    "../backend/src/modules/operations/operations.service.ts",
+    "../backend/src/modules/operations/training.service.ts",
+    "../backend/src/modules/organizations/devices.service.ts",
+    "../backend/src/modules/organizations/organizations.service.ts",
+    "../backend/src/modules/personal/personal.service.ts",
+    "../backend/src/modules/personal/recruitment.service.ts",
+    "../backend/src/modules/platform/bootstrap.ts",
+    "../backend/src/modules/platform/platform.service.ts",
+    "../backend/src/modules/safety/safety.service.ts",
+    "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
+    "../backend/src/modules/sentinel/planning-context.ts",
+    "../backend/src/modules/sentinel/planning.service.ts",
+    "../backend/src/modules/sentinel/sentinel.context.ts",
+    "../backend/src/modules/sentinel/sentinel.service.ts",
+    "../backend/src/modules/skills/skills.service.ts",
+    "../backend/src/modules/users/users.service.ts",
+    "../backend/src/modules/volunteers/volunteers.service.ts"
   ],
   "IDEMPOTENCY_CONFLICT": [
     "../backend/src/modules/billing/usage.service.ts",
     "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/safety/safety.service.ts",
-    "../backend/src/modules/safety/safety.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
-    "../backend/src/modules/sentinel/planning.service.ts",
     "../backend/src/modules/sentinel/planning.service.ts"
   ],
   "AGENT_DAILY_LIMIT": [
@@ -118,25 +154,17 @@
   ],
   "STALE_VERSION": [
     "../backend/src/modules/enterprise/enterprise.service.ts",
-    "../backend/src/modules/enterprise/enterprise.service.ts",
-    "../backend/src/modules/enterprise/enterprise.service.ts",
     "../backend/src/modules/organizations/devices.service.ts",
     "../backend/src/modules/organizations/organizations.service.ts",
     "../backend/src/modules/personal/personal.service.ts",
-    "../backend/src/modules/personal/personal.service.ts",
-    "../backend/src/modules/personal/recruitment.service.ts",
     "../backend/src/modules/personal/recruitment.service.ts",
     "../backend/src/modules/platform/platform.service.ts",
-    "../backend/src/modules/platform/platform.service.ts",
-    "../backend/src/modules/platform/platform.service.ts",
-    "../backend/src/modules/sentinel/sentinel.service.ts",
     "../backend/src/modules/sentinel/sentinel.service.ts"
   ],
   "DOMAIN_DISPUTED": [
     "../backend/src/modules/enterprise/enterprise.service.ts"
   ],
   "DOMAIN_CLAIM_CONFLICT": [
-    "../backend/src/modules/enterprise/enterprise.service.ts",
     "../backend/src/modules/enterprise/enterprise.service.ts"
   ],
   "DOMAIN_PROOF_UNAVAILABLE": [
@@ -161,7 +189,6 @@
     "../backend/src/modules/enterprise/enterprise.service.ts",
     "../backend/src/modules/organizations/authorization.ts",
     "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/platform/platform.service.ts",
     "../backend/src/modules/platform/platform.service.ts"
   ],
   "DISPATCH_PAUSED": [
@@ -176,9 +203,6 @@
     "../backend/src/modules/operations/stream-cursor.ts"
   ],
   "INVALID_TRANSITION": [
-    "../backend/src/modules/operations/operations.service.ts",
-    "../backend/src/modules/operations/operations.service.ts",
-    "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/organizations/authorization.ts",
     "../backend/src/modules/platform/platform.service.ts",
@@ -195,7 +219,6 @@
     "../backend/src/modules/operations/operations.service.ts"
   ],
   "STOCK_UNAVAILABLE": [
-    "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/operations/operations.service.ts"
   ],
   "RESOURCE_MISMATCH": [
@@ -208,8 +231,6 @@
     "../backend/src/modules/operations/operations.service.ts"
   ],
   "MISSION_CLOSED": [
-    "../backend/src/modules/operations/operations.service.ts",
-    "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/operations/operations.service.ts",
     "../backend/src/modules/sentinel/planning-context.ts"
   ],
@@ -252,9 +273,6 @@
   "COURSE_STATE": [
     "../backend/src/modules/operations/training.service.ts"
   ],
-  "PUBLISHED": [
-    "../backend/src/modules/operations/training.service.ts"
-  ],
   "ENROLLMENT_EXISTS": [
     "../backend/src/modules/operations/training.service.ts"
   ],
@@ -278,7 +296,6 @@
     "../backend/src/modules/operations/training.service.ts"
   ],
   "MFA_REQUIRED": [
-    "../backend/src/modules/organizations/authorization.ts",
     "../backend/src/modules/organizations/authorization.ts"
   ],
   "SSO_REQUIRED": [
@@ -337,7 +354,6 @@
     "../backend/src/modules/organizations/organizations.service.ts"
   ],
   "INVITATION_ALREADY_ACCEPTED": [
-    "../backend/src/modules/organizations/organizations.service.ts",
     "../backend/src/modules/organizations/organizations.service.ts"
   ],
   "INVITATION_CLOSED": [
@@ -348,12 +364,6 @@
     "../backend/src/modules/personal/personal.service.ts"
   ],
   "INVITATION_UNAVAILABLE": [
-    "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/organizations/organizations.service.ts",
-    "../backend/src/modules/organizations/organizations.service.ts",
     "../backend/src/modules/organizations/organizations.service.ts"
   ],
   "INVITATION_EXPIRED": [
@@ -375,19 +385,10 @@
   "SHARE_LIMIT": [
     "../backend/src/modules/personal/personal.service.ts"
   ],
-  "PROFILE_SHARE_REVOKED": [
-    "../backend/src/modules/personal/personal.service.ts"
-  ],
-  "REVOKED": [
-    "../backend/src/modules/personal/personal.service.ts"
-  ],
   "JOIN_REQUEST_LIMIT": [
     "../backend/src/modules/personal/recruitment.service.ts"
   ],
   "REQUEST_CLOSED": [
-    "../backend/src/modules/personal/recruitment.service.ts"
-  ],
-  "WITHDRAWN": [
     "../backend/src/modules/personal/recruitment.service.ts"
   ],
   "BOOTSTRAP_ALREADY_USED": [
@@ -404,9 +405,6 @@
   ],
   "OBJECT_MISMATCH": [
     "../backend/src/modules/scoped-storage/object-store.ts",
-    "../backend/src/modules/scoped-storage/object-store.ts",
-    "../backend/src/modules/scoped-storage/object-store.ts",
-    "../backend/src/modules/scoped-storage/object-store.ts",
     "../backend/src/modules/scoped-storage/scoped-storage.service.ts"
   ],
   "UPLOAD_NOT_FOUND": [
@@ -416,24 +414,40 @@
     "../backend/src/modules/scoped-storage/object-store.ts"
   ],
   "STORAGE_NOT_CONFIGURED": [
-    "../backend/src/modules/scoped-storage/object-store.ts",
     "../backend/src/modules/scoped-storage/object-store.ts"
   ],
   "STORAGE_QUOTA_EXCEEDED": [
     "../backend/src/modules/scoped-storage/scoped-storage.service.ts"
   ],
   "UPLOAD_EXPIRED": [
-    "../backend/src/modules/scoped-storage/scoped-storage.service.ts",
     "../backend/src/modules/scoped-storage/scoped-storage.service.ts"
   ],
   "OBJECT_NOT_READY": [
     "../backend/src/modules/scoped-storage/scoped-storage.service.ts"
   ],
+  "ANALYSIS_FAILED": [
+    "../backend/src/modules/sentinel/conversation.service.ts",
+    "../backend/src/modules/sentinel/planning.service.ts"
+  ],
+  "ANALYSIS_INTERRUPTED": [
+    "../backend/src/modules/sentinel/conversation.service.ts",
+    "../backend/src/modules/sentinel/planning.service.ts"
+  ],
+  "AGENT_IN_PROGRESS": [
+    "../backend/src/modules/sentinel/conversation.service.ts",
+    "../backend/src/modules/sentinel/planning.service.ts"
+  ],
+  "AGENT_UNAVAILABLE": [
+    "../backend/src/modules/sentinel/conversation.service.ts",
+    "../backend/src/modules/sentinel/sentinel.agent.ts"
+  ],
   "META_NOT_CONFIGURED": [
     "../backend/src/modules/sentinel/meta-agent.ts"
   ],
+  "PLACE_SEARCH_UNAVAILABLE": [
+    "../backend/src/modules/sentinel/place-search.ts"
+  ],
   "PLANNING_SCOPE_TOO_LARGE": [
-    "../backend/src/modules/sentinel/planning-context.ts",
     "../backend/src/modules/sentinel/planning-context.ts"
   ],
   "ASSESSMENT_STALE": [
@@ -442,17 +456,7 @@
   "ASSESSMENT_POLICY_CHANGED": [
     "../backend/src/modules/sentinel/planning-evidence.ts"
   ],
-  "AGENT_IN_PROGRESS": [
-    "../backend/src/modules/sentinel/planning.service.ts"
-  ],
-  "ANALYSIS_INTERRUPTED": [
-    "../backend/src/modules/sentinel/planning.service.ts"
-  ],
-  "ANALYSIS_FAILED": [
-    "../backend/src/modules/sentinel/planning.service.ts"
-  ],
   "PROPOSAL_EXPIRED": [
-    "../backend/src/modules/sentinel/planning.service.ts",
     "../backend/src/modules/sentinel/planning.service.ts"
   ],
   "ASSESSMENT_CHANGED": [
@@ -461,20 +465,40 @@
   "EMPTY_PROPOSAL": [
     "../backend/src/modules/sentinel/planning.service.ts"
   ],
-  "AGENT_UNAVAILABLE": [
-    "../backend/src/modules/sentinel/sentinel.agent.ts"
+  "GCS_NOT_CONFIGURED": [
+    "../backend/src/modules/sentinel/providers/weather-explorer.ts"
+  ],
+  "WEATHER_BUSY": [
+    "../backend/src/modules/sentinel/providers/weather-explorer.ts"
+  ],
+  "FORECAST_QUERY_BUDGET_EXCEEDED": [
+    "../backend/src/modules/sentinel/providers/weather-query-job.ts"
+  ],
+  "WEATHER_BILLING_REQUIRED": [
+    "../backend/src/modules/sentinel/providers/weather-query-job.ts"
+  ],
+  "WEATHER_ACCESS_DENIED": [
+    "../backend/src/modules/sentinel/providers/weather-query-job.ts"
+  ],
+  "INVALID_FORECAST_WINDOW": [
+    "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts"
+  ],
+  "FORECAST_REGION_REQUIRES_TILING": [
+    "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts"
+  ],
+  "FORECAST_LOOKUP_FAILED": [
+    "../backend/src/modules/sentinel/providers/weathernext3.bigquery.ts"
   ],
   "WEATHERNEXT_NOT_CONFIGURED": [
     "../backend/src/modules/sentinel/sentinel.service.ts"
   ],
   "STALE_FORECAST_RUN": [
-    "../backend/src/modules/sentinel/sentinel.service.ts",
     "../backend/src/modules/sentinel/sentinel.service.ts"
   ],
   "JOB_NOT_RETRYABLE": [
     "../backend/src/modules/sentinel/sentinel.service.ts"
   ],
-  "FORECAST_QUERY_BUDGET_EXCEEDED": [
-    "../backend/src/modules/sentinel/providers/weather-query-job.ts"
+  "storage_not_configured": [
+    "../backend/src/modules/storage/storage.service.ts"
   ]
 }

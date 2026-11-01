@@ -132,7 +132,7 @@ test("empty, denied, dark and responsive views remain usable", async ({
   await fixtures(page, { denied: true });
   await page.goto("/missions");
   await expect(page.locator(".notice[role=alert]")).toContainText(
-    "workspace role does not allow",
+    "account does not have permission",
   );
   await page.close();
 });

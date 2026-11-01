@@ -1,4 +1,4 @@
-import { friendlyError } from "./friendly-errors";
+import { friendlyError, UserFacingError } from "./friendly-errors";
 import { getApps, initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -21,10 +21,10 @@ export function identity() {
       cache: "no-store",
     });
     if (!response.ok)
-      throw Error("The sign-in service is unavailable. Please try again.");
+      throw new UserFacingError("The sign-in service is unavailable. Please try again.");
     const { firebase } = await response.json();
     if (!firebase?.apiKey || !firebase?.appId)
-      throw Error("Sign-in has not been fully connected. Contact your workspace administrator.");
+      throw new UserFacingError("Sign-in has not been fully connected. Contact your workspace administrator.");
     const auth = getAuth(
       getApps().find((a) => a.name === "resqops-react") ||
         initializeApp(firebase, "resqops-react"),
@@ -37,13 +37,14 @@ export function identity() {
     throw e;
   }));
 }
-export class ApiError extends Error {
+export class ApiError extends UserFacingError {
   constructor(
     public status: number,
     public code: string,
     message: string,
+    details?: unknown,
   ) {
-    super(message);
+    super(friendlyError(code,message,status,details));
   }
 }
 export async function api(
@@ -90,18 +91,15 @@ export async function api(
     throw new ApiError(
       response.status,
       content?.error || "REQUEST_FAILED",
-      response.status === 401
-        ? "Your session needs a fresh sign-in."
-        : response.status === 403
-          ? "Your account does not have access to this action."
-          : (content?.error === "validation_failed" ? validationMessage(content.details) : content?.message) ||
-            "The request could not be completed. Please retry.",
+      content?.message || "",
+      content?.details,
     );
   return normalizeResponse(content);
 }
 export function errorMessage(e: unknown): string {
- const error = e as {code?:string;status?:number;message?:string};
- return friendlyError(error?.code || "",error?.message || "",error?.status || 0);
+ if(e instanceof UserFacingError) return e.message;
+ const error = e as {code?:string;status?:number;message?:string;name?:string};
+ return friendlyError(error?.code || error?.name || "",error?.message || "",error?.status || 0);
 }
 
 /** Keep wire keys for command payloads and expose model aliases consistently across all API reads. */
@@ -118,17 +116,4 @@ export function normalizeResponse(value:any):any {
   return result;
  }
  return value;
-}
-
-function validationMessage(details:any) {
- const names:Record<string,string>={init_time:'forecast time',from:'start time',to:'end time',starts_at:'mission start',ends_at:'mission end',capacity:'number of volunteers',reason:'reason',longitude:'map location',latitude:'map location'};
- if(!Array.isArray(details))return 'Check the information in this form and try again.';
- return details.slice(0,3).map((item:any)=>{
-  const key=String(item.path||'').split('.').at(-1)||'details';const field=names[key]||key.replace(/_/g,' ');
-  if(item.code==='too_small')return 'Add more detail to '+field+'.';
-  if(item.code==='too_big')return 'Reduce the amount or length entered for '+field+'.';
-  if(item.code==='invalid_type')return 'Enter a valid '+field+'.';
-  if(item.code==='invalid_string')return 'Check the format of '+field+'.';
-  return friendlyError('',String(item.message||'Check '+field+'.'));
- }).join(' ');
 }

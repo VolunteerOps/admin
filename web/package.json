@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
     "business:sync": "node scripts/sync-business.mjs",
-    "format": "prettier --write src tests"
+    "format": "prettier --write src tests",
+    "audit:errors": "node --experimental-strip-types ../scripts/audit-portal-errors.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",

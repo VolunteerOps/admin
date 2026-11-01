@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { useData, type Scope } from "@/lib/hooks";
@@ -103,7 +104,7 @@ export default function PlatformControls({
     let response;
     if (action === "review") {
       if (v.status === "APPROVED" && !v.organization_id)
-        throw Error("Select the reviewed workspace first.");
+        throw new UserFacingError("Select the reviewed workspace first.");
       response = await api(
         "/api/platform/partnerships/" + selected.id + "/review",
         v,

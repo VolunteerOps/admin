@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import RegionSetup from "./RegionSetup";
 import { useState } from "react";
 import { api, identity } from "@/lib/api";
@@ -430,7 +431,7 @@ function Settings({ scope, revision }: { scope: Scope; revision: number }) {
             ]}
             submit="Save region"
             onSubmit={async (v) => {
-              if (v.south >= v.north) throw Error("The northern edge must be farther north than the southern edge. Use place search to fill the coverage automatically.");
+              if (v.south >= v.north) throw new UserFacingError("The northern edge must be farther north than the southern edge. Use place search to fill the coverage automatically.");
               await api(
                 "/api/organizations/" +
                   scope.org +
@@ -538,7 +539,7 @@ function Insights({ scope, revision }: { scope: Scope; revision: number }) {
               Date.parse(v.to) - Date.parse(v.from) > 31 * 86400000 ||
               Date.parse(v.to) <= Date.parse(v.from)
             )
-              throw Error("Choose an end date after the start, with no more than 31 days between them.");
+              throw new UserFacingError("Choose an end date after the start, with no more than 31 days between them.");
             setRange({ from: v.from, to: v.to });
           }}
         />
@@ -580,7 +581,7 @@ function Insights({ scope, revision }: { scope: Scope; revision: number }) {
                         { headers: { Authorization: "Bearer " + token } },
                       );
                       if (!r.ok)
-                        throw Error("Export is unavailable for this account.");
+                        throw new UserFacingError("Export is unavailable for this account.");
                       const href = URL.createObjectURL(await r.blob());
                       const a = document.createElement("a");
                       a.href = href;

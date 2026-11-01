@@ -1,4 +1,5 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
 import { useState } from "react";
 import { api, errorMessage } from "@/lib/api";
 import { useData, type Scope } from "@/lib/hooks";
@@ -197,7 +198,7 @@ export default function AccountAccess({
                 await api("/api/me/recruitment-blocks", v);
               if (action === "leave") {
                 if (v.confirmation !== "LEAVE")
-                  throw Error("Type LEAVE to continue.");
+                  throw new UserFacingError("Type LEAVE to continue.");
                 await api("/api/organizations/" + scope.org + "/leave", {});
               }
               setAction("");

@@ -1,4 +1,6 @@
 "use client";
+import { UserFacingError } from "@/lib/friendly-errors";
+import RequestForecast from "./RequestForecast";
 import WeatherChat, {weatherSuggestions} from "./WeatherChat";
 import { useEffect, useState } from "react";
 import PlanEditor from "./PlanEditor";
@@ -176,7 +178,7 @@ function Radar({
           )}
         </div>
         {!deployments && (
-          <div className="action-list"><Link className="button primary" href="/weather-analysis">Ask about preparedness</Link><Button icon="refresh" onClick={() => setRefresh(true)}>Detailed forecast</Button></div>
+          <div className="action-list"><Link className="button primary" href="/weather-analysis">Ask about preparedness</Link><Button icon="refresh" onClick={() => setRefresh(true)}>Request forecast</Button></div>
         )}
       </div>
       {!deployments && times.length > 0 && (
@@ -239,7 +241,8 @@ function Radar({
         ))}
       {job && (
         <Notice>
-          Forecast job: {label(job.state)}
+          {["DONE","SUCCEEDED","COMPLETED"].includes(job.state)?"Your forecast is ready.":["DEAD","EXPIRED"].includes(job.state)?"The forecast could not be loaded. Request it again after resolving the problem.":"Your forecast is being prepared."}
+          {job.init_time && <span> Published {date(job.init_time)}.</span>}
           {job.last_error && " · " + job.last_error}
         </Notice>
       )}
@@ -343,46 +346,7 @@ function Radar({
       </div>
       {refreshOpen && (
         <Drawer title="Request a forecast" onClose={() => setRefresh(false)}>
-          <p>
-            Uses the configured regional bounds and query budget. Forecast
-            refresh can incur provider costs.
-          </p>
-          <Form
-            fields={[
-              {
-                key: "init_time",
-                label: "Forecast cycle",
-          hint: "Use a published forecast time. Dates use your local timezone.",
-                type: "datetime-local",
-                full: true,
-              },
-              {
-                key: "from_hour",
-                label: "First lead hour",
-                type: "number",
-                min: 1,
-                max: 360,
-                step: "1",
-                value: 1,
-              },
-              {
-                key: "to_hour",
-                label: "Last lead hour",
-                type: "number",
-                min: 1,
-                max: 360,
-                step: "1",
-                value: 24,
-              },
-            ]}
-            submit="Request forecast"
-            onSubmit={async (v) => {
-              if (v.to_hour < v.from_hour || v.to_hour - v.from_hour > 47)
-                throw Error("Choose a window of at most 48 hours.");
-              setJob(await api(scope.sentinel + "/forecasts/refresh", v));
-              setRefresh(false);
-            }}
-          />
+          <RequestForecast scope={scope} onRequested={result=>{setJob(result);setJobError('');setRefresh(false);}} />
           {job && ["DEAD", "EXPIRED"].includes(job.state) && (
             <Form
               fields={[reason]}
@@ -455,9 +419,9 @@ export function Evidence({ value, depth = 0 }: { value: any; depth?: number }) {
               </details>
             ) : (
               <>
-                <span>{k === "error_code" ? "What happened" : label(k)}</span>
+                <span>{["error_code","last_error","error_message","failure_reason"].includes(k) ? "What happened" : label(k)}</span>
                 <strong>
-                  <Evidence value={k === "error_code" ? errorMessage({code:String(v)}) : v} depth={depth + 1} />
+                  <Evidence value={["error_code","last_error","error_message","failure_reason"].includes(k) ? errorMessage({code:String(v)}) : v} depth={depth + 1} />
                 </strong>
               </>
             )}
@@ -523,8 +487,8 @@ function Planning({
         },
         {
           key: "init_time",
-          label: "Forecast cycle",
-          hint: "Use a published forecast time. Dates use your local timezone.",
+          label: "Forecast publication date and time",
+          hint: "Use the time shown on a published forecast. For automatic selection, use Ask Sentinel or request the latest forecast in Radar.",
           type: "datetime-local",
           full: true,
         },
@@ -682,10 +646,10 @@ function Planning({
                 (Date.parse(v.to) <= Date.parse(v.from) ||
                   Date.parse(v.to) - Date.parse(v.from) > 48 * 3600000)
               )
-                throw Error("Choose an end time after the start, with no more than two days between them. Use Ask Sentinel for a broader question.");
-              if(weather && Date.parse(v.from)<Date.parse(v.init_time)) throw Error("The analysis starts before this forecast was issued. Choose a later start date, or use Ask Sentinel to explore earlier days.");
-              if(weather && Date.parse(v.init_time)>Date.now()) throw Error("This forecast has not been issued yet. Choose an earlier forecast time.");
-              if(weather && [v.init_time,v.from,v.to].some(t=>Date.parse(t)%3600000)) throw Error("Choose times on the hour, such as 09:00 rather than 09:30.");
+                throw new UserFacingError("Choose an end time after the start, with no more than two days between them. Use Ask Sentinel for a broader question.");
+              if(weather && Date.parse(v.from)<Date.parse(v.init_time)) throw new UserFacingError("The analysis starts before this forecast was issued. Choose a later start date, or use Ask Sentinel to explore earlier days.");
+              if(weather && Date.parse(v.init_time)>Date.now()) throw new UserFacingError("This forecast has not been issued yet. Choose an earlier forecast time.");
+              if(weather && [v.init_time,v.from,v.to].some(t=>Date.parse(t)%3600000)) throw new UserFacingError("The minutes must be 00, for example 18:00 rather than 18:35. Choose a published forecast, or use Ask Sentinel to select one automatically.");
               const r = await api(
                 scope.sentinel + "/planning/" + kind,
                 v,
@@ -779,7 +743,7 @@ function Planning({
                       action === "approve" &&
                       (!v.route_reviewed || !v.conditions_reviewed)
                     )
-                      throw Error(
+                      throw new UserFacingError(
                         "Review routes and current conditions before approving.",
                       );
                     await api(
@@ -1001,7 +965,7 @@ function Assistance({ scope, revision }: { scope: Scope; revision: number }) {
               submit="Save decision"
               onSubmit={async (v, key) => {
                 if (v.action === "HANDOVER" && !v.coordinator_id)
-                  throw Error("Choose the receiving coordinator.");
+                  throw new UserFacingError("Choose the receiving coordinator.");
                 const { coordinator_id, ...values } = v;
                 await api(
                   scope.safety + "/cases/" + selected.id + "/decisions",
