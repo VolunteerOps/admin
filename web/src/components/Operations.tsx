@@ -152,6 +152,7 @@ export default function Operations({
       ) : (
         <section className="panel">
           {rows.length ? (
+            kind === "COURSE" ? <div className="training-grid">{rows.map((r:Row)=><button key={r.id} className="training-card" onClick={()=>setSelected(r)} aria-label={"Review "+recordTitle(r)}><div className="training-card-top"><Icon name="shield" size={26}/><Badge status={r.payload.status}/></div><span className="eyebrow">{r.payload.skill}</span><h2>{recordTitle(r)}</h2><p>{r.payload.lessons?.length||0} lessons · {r.payload.prerequisites?.length||0} prerequisites</p><div className="progress"><span style={{width:coverage(r.payload.enrolled_count||0,r.payload.capacity||0)+'%'}}/></div><div className="training-card-foot"><small>{r.payload.enrolled_count||0} of {r.payload.capacity} spaces filled</small><Icon name="external"/></div></button>)}</div> :
             <div
               className="table-wrap"
               tabIndex={0}
@@ -303,7 +304,7 @@ export default function Operations({
       )}
       {create && (
         <Drawer title={createNames[kind]} className={kind === "MISSION" && guided ? "mission-chat-drawer" : ""} onClose={() => setCreate(false)}>
-          {kind === "MISSION" && <div className="mode-tabs"><Button onClick={()=>setGuided(true)} aria-pressed={guided}>Plan with assistant</Button><Button onClick={()=>setGuided(false)} aria-pressed={!guided}>Use form</Button></div>}
+          {kind === "MISSION" && <div className="mode-tabs" role="group" aria-label="Mission planning method"><Button onClick={()=>setGuided(true)} aria-pressed={guided}>Plan with assistant</Button><Button onClick={()=>setGuided(false)} aria-pressed={!guided}>Use form</Button></div>}
           {kind === "MISSION" && guided ? <MissionChat scope={scope} done={done}/> : <CreateRecord kind={kind} scope={scope} done={done} />}
         </Drawer>
       )}

@@ -1,5 +1,8 @@
 import Portal from "@/components/Portal";
 import "./globals.css";
+import "./entry.css";
+import "./pro.css";
+import "./reference-experience.css";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {

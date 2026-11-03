@@ -8,7 +8,6 @@ export const areas = [
       ["resource-planning", "Resource planning"],
       ["applications", "Applications"],
       ["assignments", "Assignments"],
-      ["reports", "Field reports"],
       ["hours", "Contributions"],
       ["deployment-map", "Deployment map"],
     ],
@@ -18,17 +17,14 @@ export const areas = [
     icon: "people",
     pages: [
       ["people", "People"],
-      ["training", "Training"],
-      ["learning", "Training reviews"],
-      ["qualifications", "Qualifications"],
     ],
   },
   {
     name: "Sentinel",
     icon: "sentinel",
     pages: [
-      ["sentinel", "Radar"],
-      ["weather-analysis", "Weather analysis"],
+      ["sentinel", "Disaster radar"],
+      ["weather-analysis", "Sources & coverage"],
       ["specialised", "Specialised planning"],
       ["agent-runs", "Agent runs"],
       ["assistance", "Assistance"],
@@ -50,6 +46,10 @@ export const areas = [
       ["stock-history", "Stock history"],
     ],
   },
+  {name:"Field reports",icon:"file",pages:[["reports","Field reports"]]},
+  {name:"Preparedness",icon:"shield",pages:[["campaigns","Preparedness campaigns"]]},
+  {name:"Training",icon:"people",pages:[["training","Courses"],["learning","Training reviews"],["qualifications","Qualifications"]]},
+  {name:"Reports & impact",icon:"overview",pages:[["insights","Reports & impact"]]},
   {
     name: "Administration",
     icon: "settings",
@@ -58,9 +58,9 @@ export const areas = [
       ["governance", "Governance"],
       ["security", "Dispatch controls"],
       ["activity", "Audit trail"],
-      ["insights", "Insights"],
       ["team-pro", "Sponsorship"],
       ["platform", "Platform"],
+      ["promotions", "Promotions"],
     ],
   },
 ];
@@ -87,7 +87,9 @@ export const titles: Record<string, string> = {
   privacy: "Privacy",
   securityAccount: "Account security",
   invitations: "Workspace access",
-  pro: "ResQ Pro",
+  pro: "ResQOps Pro",
+  "pro-guide": "Your Pro tools",
+  notifications: "Notifications",
   support: "Help & support",
 };
 export type Row = {

@@ -63,6 +63,7 @@ export function record(kind: string) {
   if (kind === "INVENTORY") return stockRow;
   const names: Record<string, string> = {
     COURSE: "Community first aid",
+    CAMPAIGN: "Coastal rainy-season readiness",
     APPLICATION: "Application · Eastlands readiness",
     ASSIGNMENT: "Eastlands field team",
     REPORT: "Water access at the community centre",
@@ -77,6 +78,7 @@ export function record(kind: string) {
   };
   const statuses: Record<string, string> = {
     COURSE: "DRAFT",
+    CAMPAIGN: "ACTIVE",
     APPLICATION: "APPLIED",
     ASSIGNMENT: "ASSIGNED",
     REPORT: "SUBMITTED",
@@ -103,6 +105,8 @@ export function record(kind: string) {
       delta: 12,
       reason: "Regional supply replenishment",
       record_kind: "MISSION",
+      ...(kind==="COURSE"?{capacity:20,enrolled_count:8,lessons:[{title:"First response"}],prerequisites:[]}:{}),
+      ...(kind==="CAMPAIGN"?{description:"Review supplies and confirm safe community meeting points.",owner:"Coastal team",due_at:"2026-11-15T09:00:00Z",tasks:[{id:"88888888-8888-4888-8888-888888888888",title:"Review water stock",completed:false}]}:{}),
     },
   };
 }
@@ -284,6 +288,9 @@ export async function fixtures(
               ],
           activity: empty ? [] : [record("EVENT")],
         };
+      else if (p==="/api/me/portal-preferences") body={version:0,payload:null};
+      else if(p==="/api/platform/promotions") body=[];
+      else if(p.endsWith('/notifications')) body={items:[],next_cursor:null};
       else if (p.endsWith("/records")) {
         currentKind = u.searchParams.get("kind") || "MISSION";
         body = {
@@ -506,6 +513,8 @@ export async function fixtures(
           completed_missions: 5,
           report_count: 12,
           approved_hours: 96,
+          recorded_hours:120,
+          verified_qualifications:12,
           pending_hour_reviews: 2,
         };
       else if (p === "/api/platform/organizations")

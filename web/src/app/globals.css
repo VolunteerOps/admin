@@ -25,7 +25,7 @@
   --surface: #fff;
   --line: #dce4ee;
   --soft: #eaf0f9;
---tab-fill: #07336a;
+  --tab-fill: #0b3265;
   --gold: #e4d076;
   --danger: #a93232;
   --green: #197564;
@@ -559,53 +559,90 @@ select:focus-visible {
   gap: 8px;
   align-items: center;
 }
-.tabs {
+/* Raised tabs: the curved shoulders join the active tab to the navy rail. */
+.tabs,
+.mode-tabs {
+  --tab-shoulder: 32px;
   display: flex;
-  gap: 6px;
-  align-items: flex-start;
-  border-bottom: 1px solid var(--line);
+  align-items: stretch;
+  gap: 32px;
+  padding: 8px 36px 0;
+  margin: 0 0 27px;
+  min-width: 0;
+  max-width: 100%;
+  isolation: isolate;
   background: var(--surface);
-  padding: 0 20px;
-  margin-bottom: 27px;
+  border-bottom: 3px solid var(--tab-fill);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  scroll-padding-inline: 36px;
 }
-.tabs a {
-  padding: 11px 16px 13px;
-  white-space: nowrap;
+.tabs a,
+.mode-tabs > button {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 12px 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--muted);
   font-size: 14px;
   font-weight: 700;
-  border-bottom: 2px solid transparent;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: color 160ms ease;
 }
-.tabs a:hover { color: var(--ink); }
-.tabs a.active {
+.tabs a:hover,
+.mode-tabs > button:hover { color: var(--ink); background: transparent; }
+.tabs a.active,
+.mode-tabs > button[aria-pressed="true"] {
   color: #fff;
   background: var(--tab-fill);
-  border-color: transparent;
-  border-radius: 0 0 18px 18px;
-  padding: 12px 36px 16px;
-  position: relative;
   z-index: 1;
 }
-.notched-active, .mode-tabs [aria-pressed="true"] { position: relative; }
-.tabs a.active::before, .tabs a.active::after,
-.mode-tabs [aria-pressed="true"]::before, .mode-tabs [aria-pressed="true"]::after {
+.tabs a.active::before,
+.tabs a.active::after,
+.mode-tabs > button[aria-pressed="true"]::before,
+.mode-tabs > button[aria-pressed="true"]::after {
   content: "";
   position: absolute;
-  top: 0;
-  width: 18px;
-  height: 18px;
+  inset-block: 0;
+  width: var(--tab-shoulder);
+  background: var(--tab-fill);
   pointer-events: none;
+  /* Two tangent curves give the reference's soft, flared profile. */
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 54' preserveAspectRatio='none'%3E%3Cpath d='M0 54C20 54 14 0 32 0V54Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
-.tabs a.active::before, .mode-tabs [aria-pressed="true"]::before {
-  left: -18px;
-  background: radial-gradient(circle at 0 0, transparent 17px, var(--tab-fill) 18px);
+.tabs a.active::before,
+.mode-tabs > button[aria-pressed="true"]::before { right: 100%; }
+.tabs a.active::after,
+.mode-tabs > button[aria-pressed="true"]::after { left: 100%; transform: scaleX(-1); }
+.tab-label { display: inline-flex; align-items: center; gap: 10px; }
+.tab-label::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  visibility: hidden;
 }
-.tabs a.active::after, .mode-tabs [aria-pressed="true"]::after {
-  right: -18px;
-  background: radial-gradient(circle at 100% 0, transparent 17px, var(--tab-fill) 18px);
+.active > .tab-label::after { visibility: visible; }
+.tabs a:focus-visible,
+.mode-tabs > button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -5px;
+  border-radius: 6px;
 }
+.mode-tabs > button:active { transform: none; }
+.tabs a.active:focus-visible,
+.mode-tabs > button[aria-pressed="true"]:focus-visible { outline-color: var(--gold); }
 .page-intro {
   font-size: 15px;
   max-width: 650px;
@@ -1103,26 +1140,7 @@ tbody tr:hover {
 .dot.gold {
   background: #c59a30;
 }
-.account-layout {
-  display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: 30px;
-}
-.account-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.account-nav a {
-  padding: 12px;
-  border-radius: 9px;
-  color: var(--muted);
-}
-.account-nav a.active {
-  background: var(--soft);
-  color: var(--blue);
-  font-weight: 700;
-}
+.account-layout { min-width: 0; }
 .account-content {
   max-width: 850px;
 }
@@ -1280,9 +1298,6 @@ tbody tr:hover {
   .auth-panel {
     padding: 35px;
   }
-  .tabs {
-    gap: 18px;
-  }
   .page-heading h1 {
     font-size: 32px;
   }
@@ -1381,16 +1396,6 @@ tbody tr:hover {
     flex-direction: column;
     font-size: 11px;
   }
-  .account-layout {
-    grid-template-columns: 1fr;
-  }
-  .account-nav {
-    flex-direction: row;
-    overflow: auto;
-  }
-  .account-nav a {
-    white-space: nowrap;
-  }
   .map-panel {
     height: 440px;
   }
@@ -1487,9 +1492,6 @@ tbody tr:hover {
   .inline-form {
     flex-direction: column;
     align-items: stretch;
-  }
-  .tabs {
-    gap: 20px;
   }
   .tabs a {
     font-size: 13px;
@@ -1629,8 +1631,7 @@ html { scrollbar-gutter: stable; }
 .mission-chat-drawer { overflow: hidden; width: min(760px, 100%); }
 .mission-chat-drawer .drawer-body { height: 100%; display: flex; flex-direction: column; min-height: 0; padding-bottom: 18px; }
 .mission-chat-drawer .drawer-body > header { flex: none; margin-bottom: 16px; padding-bottom: 18px; }
-.mission-chat-drawer .mode-tabs { flex: none; margin: 0 0 16px; gap: 6px; }
-.mission-chat-drawer .mode-tabs .button { padding: 8px 14px; font-size: 14px; }
+.mission-chat-drawer .mode-tabs { flex: none; margin-bottom: 16px; }
 .mission-chat { display: flex; flex: 1; min-height: 0; flex-direction: column; }
 .mission-chat-context { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 0 14px; color: var(--muted); font-size: 12px; }
 .mission-chat-context > span:first-child { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink); }
@@ -1687,9 +1688,6 @@ html { scrollbar-gutter: stable; }
 .place-results { display:grid; gap:10px; margin:16px 0; }
 .place-result strong,.place-result small { display:block; }
 .selected-region { margin-top:24px; }
-.mode-tabs { display:flex; gap:6px; align-items:flex-start; margin-bottom:24px; padding:0 20px; border-bottom:1px solid var(--line); background:var(--surface); overflow-x:auto; }
-.mode-tabs .button, .mode-tabs button { background:transparent; border:0; box-shadow:none; color:var(--muted); font-weight:700; padding:11px 16px 13px; border-radius:0; white-space:nowrap; cursor:pointer; }
-.mode-tabs [aria-pressed="true"] { background:var(--tab-fill); border-color:transparent; color:#fff; border-radius:0 0 16px 16px; padding:12px 34px 15px; }
 .radar-chip.active { background:var(--tab-fill); color:#fff; border-color:transparent; border-radius:0 0 14px 14px; padding-top:10px; padding-bottom:12px; }
 @media(max-width:700px) { .suggestions {grid-template-columns:1fr;} .weather-chat .panel-head {align-items:stretch;flex-direction:column;} }
 

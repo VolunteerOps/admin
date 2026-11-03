@@ -203,22 +203,7 @@ export function Drawer({
   );
 }
 export function Contours() {
-  return (
-    <svg className="contours" viewBox="0 0 600 600" fill="none" aria-hidden>
-      {Array.from({ length: 23 }, (_, i) => (
-        <ellipse
-          key={i}
-          cx="300"
-          cy="300"
-          rx={70 + i * 9}
-          ry={80 + i * 7}
-          transform={`rotate(${i * 7} 300 300)`}
-          stroke="currentColor"
-          strokeWidth=".7"
-        />
-      ))}
-    </svg>
-  );
+  return <img className="contours" src="/assets/contours.png" alt="" aria-hidden="true" />;
 }
 
 let scrollLocks = 0;

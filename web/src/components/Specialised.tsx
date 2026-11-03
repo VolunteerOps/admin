@@ -112,9 +112,9 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
   return (
     <div>
       <p className="page-intro">Meta-powered flood, hazard, scenario and briefing tools. Every result is a draft until a coordinator acts on it.</p>
-      <div className="mode-tabs" role="tablist" aria-label="Specialised sections">
-        <button type="button" role="tab" aria-selected={tab === "run"} aria-pressed={tab === "run"} onClick={() => setTab("run")}>Analyses</button>
-        <button type="button" role="tab" aria-selected={tab === "evidence"} aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>Evidence & tasks</button>
+      <div className="mode-tabs" role="group" aria-label="Specialised sections">
+        <button type="button" aria-pressed={tab === "run"} onClick={() => setTab("run")}>Analyses</button>
+        <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>Evidence & tasks</button>
       </div>
       {error && <Notice error>{error}</Notice>}
       {notice && <Notice>{notice}</Notice>}

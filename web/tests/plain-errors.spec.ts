@@ -25,7 +25,7 @@ test('unknown errors are not echoed, while known errors and local form instructi
 test('forecast requests default to automatic publication selection without a timestamp',async({page})=>{
  const requests:any[]=[];await fixtures(page);
  await page.route('**/forecasts/refresh-latest',async r=>{requests.push(r.request().postDataJSON());await r.fulfill({status:202,json:{job_id:'forecast-automatic',state:'PENDING',init_time:'2026-11-01T06:00:00Z',from_hour:4,to_hour:27}});});
- await page.goto('/sentinel');await page.getByRole('button',{name:'Request forecast',exact:true}).click();
+ await page.goto('/weather-analysis');await page.getByRole('button',{name:'Request latest forecast',exact:true}).click();
  await expect(page.getByLabel('How far ahead?')).toHaveValue('24');await expect(page.locator('input[type="datetime-local"]')).toHaveCount(0);await page.screenshot({path:'../designs/next-portal/forecast-automatic.png',fullPage:true});
  await page.getByRole('button',{name:'Get latest forecast',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
  expect(requests).toEqual([{hours:24}]);await expect(page.getByText('Your forecast is being prepared.',{exact:false})).toBeVisible();
@@ -33,14 +33,14 @@ test('forecast requests default to automatic publication selection without a tim
 
 test('specific forecasts explain invalid minutes before sending a request',async({page})=>{
  await fixtures(page);let sent=0;page.on('request',r=>{if(r.url().endsWith('/forecasts/refresh'))sent++;});
- await page.goto('/sentinel');await page.getByRole('button',{name:'Request forecast',exact:true}).click();await page.getByRole('button',{name:'Choose a specific forecast'}).click();
+ await page.goto('/weather-analysis');await page.getByRole('button',{name:'Request latest forecast',exact:true}).click();await page.getByRole('button',{name:'Choose a specific forecast'}).click();
  await page.getByLabel('Forecast publication date and time',{exact:true}).fill('2026-10-31T18:35');await page.getByRole('button',{name:'Request this forecast'}).click();
  await expect(page.getByText(/The minutes must be 00/)).toBeVisible();expect(sent).toBe(0);await page.screenshot({path:'../designs/next-portal/forecast-plain-error.png',fullPage:true});
 });
 
 test('legacy API validation and unavailable automatic lookup show actionable text',async({page})=>{
  await fixtures(page);await page.route('**/forecasts/refresh-latest',r=>r.fulfill({status:503,json:{error:'WEATHER_ACCESS_DENIED',message:'403 accessDenied on project dataset'}}));
- await page.goto('/sentinel');await page.getByRole('button',{name:'Request forecast',exact:true}).click();await page.getByRole('button',{name:'Get latest forecast'}).click();
+ await page.goto('/weather-analysis');await page.getByRole('button',{name:'Request latest forecast',exact:true}).click();await page.getByRole('button',{name:'Get latest forecast'}).click();
  await expect(page.getByText('ResQ cannot read this weather data yet.',{exact:false})).toBeVisible();
  await page.getByRole('button',{name:'Choose a specific forecast'}).click();
  await page.route('**/forecasts/refresh',r=>r.fulfill({status:400,json:{error:'validation_failed',message:'Request payload validation failed',details:[{path:'init_time',message:'Forecast initialization must be on a UTC hour',code:'custom'}]}}));

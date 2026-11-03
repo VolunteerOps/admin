@@ -1,4 +1,5 @@
 "use client";
+import {ProGate} from "./ProExperience";
 import {useState} from 'react';
 import {api,errorMessage} from '@/lib/api';
 import {postStream,partialField} from '@/lib/stream';
@@ -15,6 +16,7 @@ export const weatherSuggestions=[
 type Turn={role:'user'|'assistant';content:string};
 const conversations=new Map<string,{history:Turn[];answer:any}>();
 export default function WeatherChat({scope}:{scope:Scope}){
+ const [showUpgrade,setShowUpgrade]=useState(false);
  const cacheKey=[scope.userId,scope.org,scope.region].join(':');
  const [question,setQuestion]=useState(''),[history,setHistory]=useState<Turn[]>(conversations.get(cacheKey)?.history||[]),[answer,setAnswer]=useState<any>(conversations.get(cacheKey)?.answer||null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID());
@@ -33,9 +35,9 @@ export default function WeatherChat({scope}:{scope:Scope}){
    if(record.payload?.status==='FAILED')throw {code:record.payload.error_code,message:record.payload.message};
    const result=record.payload;const next:Turn[]=[...history,{role:'user',content:prompt},{role:'assistant',content:result.narrative.summary}];
    setHistory(next);setAnswer(result);conversations.set(cacheKey,{history:next,answer:result});syncServerDraft(serverDraftKey,{history:next,answer:result});setQuestion('');setRequestKey(crypto.randomUUID());scope.refresh();
-  }catch(e){setError(errorMessage(e));}finally{setBusy(false);}
+  }catch(e){if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);setError(errorMessage(e));}finally{setBusy(false);}
  }
- return <section className="panel weather-chat" aria-label="Ask Sentinel">
+ return <section className="panel weather-chat" aria-label="Ask Sentinel">{showUpgrade&&<ProGate feature="briefing" onClose={()=>setShowUpgrade(false)}/>}
   <div className="panel-head"><div><span className="eyebrow">SENTINEL / PREPAREDNESS</span><h2>What does your team need to know?</h2></div><Button icon="sentinel" variant="primary" disabled={busy} onClick={()=>{void send('DAILY_BRIEF',weatherSuggestions[0]);}}>Prepare today's briefing</Button></div>
   <div className="panel-body">
    <p>Ask in your own words. Sentinel checks available forecasts, compares recent trends and explains what needs attention.</p>

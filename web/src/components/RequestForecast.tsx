@@ -10,8 +10,8 @@ export default function RequestForecast({scope,onRequested}:{scope:Scope;onReque
  const [manual,setManual]=useState(false);
  return <>
   <p>Get the latest published forecast for your operating region. ResQ finds the publication time for you.</p>
-  <div className="action-list">
-   <Button aria-pressed={!manual} variant={!manual?'primary':''} onClick={()=>setManual(false)}>Latest available forecast</Button>
+  <div className="mode-tabs" role="group" aria-label="Forecast selection">
+   <Button aria-pressed={!manual} onClick={()=>setManual(false)}>Latest available forecast</Button>
    <Button aria-pressed={manual} onClick={()=>setManual(true)}>Choose a specific forecast</Button>
   </div>
   {!manual?<Form key="latest" fields={[{key:'hours',label:'How far ahead?',type:'number',value:24,options:[{value:'24',label:'Next 24 hours'},{value:'48',label:'Next 48 hours'}]}]} submit="Get latest forecast" onSubmit={async(v,key)=>onRequested(await api(scope.sentinel+'/forecasts/refresh-latest',v,'POST',undefined,key))}>

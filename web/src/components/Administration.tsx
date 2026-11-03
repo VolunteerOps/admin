@@ -1,4 +1,6 @@
 "use client";
+import RecordExports from "./RecordExports";
+import ImpactByRegion from "./ImpactByRegion";
 import { UserFacingError } from "@/lib/friendly-errors";
 import RegionSetup from "./RegionSetup";
 import { useState } from "react";
@@ -530,8 +532,8 @@ function Insights({ scope, revision }: { scope: Scope; revision: number }) {
       <section className="panel panel-body">
         <Form
           fields={[
-            { key: "from", label: "From", type: "datetime-local" },
-            { key: "to", label: "To", type: "datetime-local" },
+            { key: "from", label: "From", type: "datetime-local", value: new Date(Date.parse(range.from)-new Date(range.from).getTimezoneOffset()*60000).toISOString().slice(0,16) },
+            { key: "to", label: "To", type: "datetime-local", value: new Date(Date.parse(range.to)-new Date(range.to).getTimezoneOffset()*60000).toISOString().slice(0,16) },
           ]}
           submit="Apply interval"
           onSubmit={async (v) => {
@@ -552,14 +554,15 @@ function Insights({ scope, revision }: { scope: Scope; revision: number }) {
           <>
             <div className="metrics">
               {[
-                ["Missions", data.mission_count],
                 ["Completed", data.completed_missions],
-                ["Approved hours", data.approved_hours],
-                ["Field reports", data.report_count],
+                ["Recorded hours", data.recorded_hours],
+                  ["Approved hours", data.approved_hours],
+                  ["Verified qualifications", data.verified_qualifications],
+
               ].map(([k, v]) => (
                 <div className="metric" key={k}>
                   <span className="metric-label">{k}</span>
-                  <strong>{v}</strong>
+                  <strong>{v ?? "?"}</strong>
                   <small>Selected reporting interval</small>
                 </div>
               ))}
@@ -634,7 +637,7 @@ function Insights({ scope, revision }: { scope: Scope; revision: number }) {
           </>
         )
       )}
-      {notice && <Notice error>{notice}</Notice>}
+      <ImpactByRegion scope={scope} range={range} revision={revision}/><RecordExports scope={scope} range={range}/>{notice && <Notice error>{notice}</Notice>}
     </>
   );
 }

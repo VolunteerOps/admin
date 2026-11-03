@@ -33,6 +33,7 @@ function groupOf(pin: RadarPin): string {
 }
 export default function RadarMap({ scope }: { scope: Scope }) {
   const [rev, setRev] = useState(0);
+  const [mapReady,setMapReady]=useState(false);
   const radar = useData(scope.sentinel + "/radar", rev);
   const pins: RadarPin[] = useMemo(() => (radar.data?.pins || []).filter((p: RadarPin) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude)), [radar.data]);
   const [enabled, setEnabled] = useState<Record<string, boolean>>(Object.fromEntries(Object.keys(GROUPS).map((k) => [k, true])));
@@ -59,8 +60,9 @@ export default function RadarMap({ scope }: { scope: Scope }) {
         });
         instance.addControl(new mapboxgl.NavigationControl(), "top-right");
         mapRef.current = instance;
+        setMapReady(true);
       })
-      .catch(() => setError("The live map could not start. Check the map configuration."));
+      .catch(() => { if(!disposed&&!controller.signal.aborted)setError("The map could not load. You can still review hazards in the list below."); });
     return () => { disposed = true; controller.abort(); mapRef.current?.remove(); mapRef.current = null; };
   }, []);
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function RadarMap({ scope }: { scope: Scope }) {
       visible.forEach((p) => bounds.extend([p.longitude, p.latitude]));
       instance.fitBounds(bounds, { padding: 70, maxZoom: 10, duration: 600 });
     }
-  }, [visible, selected]);
+  }, [visible, selected, mapReady]);
   const center = visible[0];
   async function ingest() {
     setBusy(true); setError(""); setNotice("");
@@ -107,20 +109,17 @@ export default function RadarMap({ scope }: { scope: Scope }) {
   return (
     <div>
       <div className="radar-hero">
-        <span className="radar-eyebrow">Early warning intelligence</span>
-        <h2>Real-Time Multi-Hazard Radar</h2>
-        <p>Predicted and ongoing floods, severe rain, drought and famine signals, El Niño, earthquakes, landslides and artificial disasters — from forecast models, official feeds, verified-source reports and ground sensors.</p>
         <div className="radar-hero-chips">
           <span>{pins.length} mapped hazards</span>
           <span>{pins.filter((p) => p.category === "ARTIFICIAL").length} artificial reports</span>
-          <span>Live · updated {radar.data?.generated_at ? date(radar.data.generated_at) : "…"}</span>
+          <span>Last checked {radar.data?.generated_at ? date(radar.data.generated_at) : "…"}</span>
         </div>
       </div>
       <div className="radar-layers" role="group" aria-label="Hazard layers">
         {Object.entries(GROUPS).map(([key, group]) => (
           <button key={key} type="button" className={enabled[key] ? "radar-chip active" : "radar-chip"}
             aria-pressed={!!enabled[key]} onClick={() => setEnabled((state) => ({ ...state, [key]: !state[key] }))}>
-            {group.label} · {pins.filter((p) => groupOf(p) === key).length}
+            <span className={"hazard-key hazard-key-"+key} aria-hidden/>{group.label} · {pins.filter((p) => groupOf(p) === key).length}
           </button>
         ))}
         <Button disabled={busy} onClick={ingest}>Ingest incident feeds</Button>
@@ -176,10 +175,10 @@ export default function RadarMap({ scope }: { scope: Scope }) {
           )}
         </section>
       )}
-      <section className="panel">
-        <div className="panel-head"><h3>Mapped hazards</h3><span>{visible.length} shown</span></div>
+      <section className="panel hazard-attention">
+        <div className="panel-head"><h3>What needs attention</h3><span>{visible.length} shown</span></div>
         {visible.length ? visible.map((pin) => (
-          <button key={pin.id} type="button" className={"queue-row radar-row" + (selected?.id === pin.id ? " selected" : "")} onClick={() => setSelected(pin)}>
+          <button key={pin.id} type="button" className={"queue-row radar-row hazard-card" + (selected?.id === pin.id ? " selected" : "")} onClick={() => setSelected(pin)}>
             <span><strong>{pin.title}</strong><small>{pin.type.replace(/_/g, " ")} · {Number(pin.latitude).toFixed(3)}, {Number(pin.longitude).toFixed(3)} · {pin.source}</small></span>
             <Badge status={pin.severity} />
           </button>

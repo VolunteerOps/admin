@@ -1,5 +1,9 @@
 /** User-facing recovery text. Raw provider errors and internal codes stay out of the UI. */
 export const errorGroups: [string[], string][] = [
+[["PROMO_UNAVAILABLE"],"This promotion code is expired, already used, or unavailable for your account. Check the code or contact the person who shared it."],
+[["CHECKOUT_REQUIRED"],"Apply this discount at checkout. Pro starts after payment is confirmed."],
+[["CHECKOUT_NOT_CONFIGURED"],"Online checkout is not available yet. You can keep using Standard or redeem an eligible no-charge promotion."],
+[["CAMPAIGN_ARCHIVED"],"This campaign is archived. Create a new campaign to plan more preparation tasks."],
 [["MODEL_UNAVAILABLE"],"Muse is unavailable right now. Your message is still here. Please try again in a few minutes."],
 [["META_ACCESS_DENIED"],"The assistant could not connect with the current service credentials. Ask your administrator to check the Meta connection."],
 [["TOKEN_EXPIRED","UNAUTHORIZED","SESSION_REVOKED","INVALID_FIREBASE_IDENTITY","FIREBASE_AUTH_REQUIRED"],"Your sign-in has expired. Sign in again to continue."],

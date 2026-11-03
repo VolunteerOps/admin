@@ -8,7 +8,7 @@ test("desktop sign-in, recovery and registration are native web forms", async ({
   await fixtures(page, { signedIn: false });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Let’s get to work." }),
+    page.getByRole("heading", { name: "Your team is counting on you." }),
   ).toBeVisible();
   await page.screenshot({
     path: "../designs/next-portal/sign-in-desktop.png",
@@ -16,7 +16,7 @@ test("desktop sign-in, recovery and registration are native web forms", async ({
   });
   await page.getByRole("button", { name: "Forgot password?" }).click();
   await expect(
-    page.getByRole("heading", { name: "Reset your password" }),
+    page.getByRole("heading", { name: "Forgot your password?" }),
   ).toBeVisible();
   await page.screenshot({
     path: "../designs/next-portal/recovery-desktop.png",

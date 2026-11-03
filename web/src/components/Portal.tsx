@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import {
   onAuthStateChanged,
   sendEmailVerification,
@@ -13,7 +13,15 @@ import { areas, titles } from "@/lib/catalog";
 import { useData, setCacheIdentity, invalidateData, type Scope } from "@/lib/hooks";
 import { Brand, Button, Icon, Loading, Notice, lockPageScroll } from "./ui";
 import ViewBoundary from "./ViewBoundary";
+import NavigationTabs from "./NavigationTabs";
 import Auth from "./Auth";
+import EntryLanding from "./EntryExperience";
+import AccountSetup from "./AccountSetup";
+import ProExperience from "./ProExperience";
+import Promotions from "./Promotions";
+import Preparedness from "./Preparedness";
+import Notifications from "./Notifications";
+import TopbarAccount from "./TopbarAccount";
 import Overview from "./Overview";
 import Operations from "./Operations";
 import Sentinel from "./Sentinel";
@@ -24,6 +32,7 @@ import Reauthenticate from "./Reauthenticate";
 import { canCoordinate } from "@/lib/business";
 import { Fragment } from "react";
 export default function Portal() {
+  const router=useRouter();
   const path = usePathname().split("/").filter(Boolean)[0] || "overview";
   const [user, setUser] = useState<User | null>(null),
     [ready, setReady] = useState(false),
@@ -62,6 +71,7 @@ export default function Portal() {
   useEffect(() => { document.documentElement.classList.toggle("dark", dark); }, [dark]);
   const refresh = () => { invalidateData(); setRevision((v) => v + 1); };
   const verified = !!user?.emailVerified;
+  useEffect(()=>{if(verified&&["login","signup","forgot-password"].includes(path))router.replace("/overview");},[verified,path,router]);
   const me = useData(verified ? "/api/auth/me" : null, revision);
   const [booting, setBooting] = useState(false);
   useEffect(() => {
@@ -112,6 +122,7 @@ export default function Portal() {
     safety: `/api/organizations/${org}/regions/${region}/safety`,
     refresh,
   };
+  if (["welcome","onboarding"].includes(path)) return <EntryLanding screen={path==="welcome"?"splash":"onboarding"}/>;
   if (!ready)
     return (
       <main id="main" className="welcome-card">
@@ -171,6 +182,8 @@ export default function Portal() {
         </div>
       </main>
     );
+  if(path==="setup" && (booting||!me.data)) return <main id="main" className="welcome-card"><Loading/></main>;
+  if(path==="setup" || (!booting&&me.data&&typeof window!=="undefined"&&sessionStorage.getItem('resq-setup-pending')===user.uid))return <AccountSetup user={user} scope={scope} onDone={refresh}/>;
   const area = areas.find((a) => a.pages.some((p) => p[0] === path));
   const account = [
     "profile",
@@ -196,58 +209,9 @@ export default function Portal() {
         </button>
         <span className="eyebrow">Coordination</span>
         <nav aria-label="Main navigation">
-          {areas.map((a) => (
-            <Link
-              className={"nav-link " + (area === a ? "active" : "")}
-              key={a.name}
-              href={"/" + a.pages[0][0]}
-              aria-current={area === a ? "page" : undefined}
-            >
-              <Icon name={a.icon} />
-              {a.name}
-            </Link>
-          ))}
+          {areas.filter(a=>a.name!=="Administration").map((a,i) => <Fragment key={a.name}>{a.name==="Field reports"&&<span className="eyebrow sidebar-section">Plan & improve</span>}<Link className={"nav-link "+(area===a?"active":"")} href={"/"+a.pages[0][0]} aria-current={area===a?"page":undefined}><Icon name={a.icon}/>{a.name}</Link></Fragment>)}
         </nav>
-        <div className="sidebar-bottom">
-          <Link
-            className={"nav-link " + (path === "support" ? "active" : "")}
-            href="/support"
-          >
-            <Icon name="heart" />
-            Help & support
-          </Link>
-          <Link className="nav-link" href="/pro">
-            <Icon name="shield" />
-            ResQ Pro
-          </Link>
-          <button
-            className="nav-link sidebar-signout"
-            onClick={async () => {
-              await signOut(await identity());
-              setOrg("");
-              setRegion("");
-            }}
-          >
-            <Icon name="logout" />
-            Sign out
-          </button>
-          <Link className="profile-button" href="/profile">
-            <span className="avatar">
-              {(user.displayName || user.email || "R")
-                .slice(0, 2)
-                .toUpperCase()}
-            </span>
-            <span>
-              <strong>{user.displayName || user.email?.split("@")[0]}</strong>
-              <small>
-                {scope.role
-                  ? scope.role.replace(/_/g, " ").toLowerCase()
-                  : "Personal account"}
-              </small>
-            </span>
-            <Icon name="chevron" size={15} />
-          </Link>
-        </div>
+        <div className="sidebar-bottom"><Link className="sidebar-pro" href="/pro"><span className="sidebar-pro-mark"><Icon name="shield"/></span><span><strong>ResQOps <em>PRO</em></strong><small>A little extra support.</small></span><Icon name="arrow" size={16}/></Link><span className="sidebar-footnote">PREPARED TOGETHER.</span></div>
       </aside>
       <div className="main-column">
         <header className="topbar">
@@ -283,7 +247,7 @@ export default function Portal() {
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
               >
-                {!regions.data?.length && <option value="">{regions.loading ? "Loading regions?" : "No region"}</option>}
+                {!regions.data?.length && <option value="">{regions.loading ? "Loading regions…" : "No region"}</option>}
                 {regions.data?.map((r: any) => (
                   <option value={r.id} key={r.id}>
                     {r.name}
@@ -300,17 +264,7 @@ export default function Portal() {
                 localStorage.setItem("resq-theme", !dark ? "dark" : "light");
               }}
             />
-            <Button
-              icon="logout"
-              variant="quiet"
-              aria-label="Sign out"
-              onClick={async () => {
-                await signOut(await identity());
-                setOrg("");
-                setRegion("");
-                setFailure("");
-              }}
-            />
+            <TopbarAccount user={user} onLogout={async()=>{await signOut(await identity());setOrg("");setRegion("");setFailure("");}}/>
           </div>
         </header>
         <main id="main" className="content">
@@ -343,24 +297,13 @@ export default function Portal() {
             </div>
           </header>
           {area && area.pages.length > 1 && (
-            <nav className="tabs" aria-label="Section navigation">
-              {area.pages.map(([id, name]) => (
-                <Link
-                  href={"/" + id}
-                  className={path === id ? "active" : ""}
-                  aria-current={path === id ? "page" : undefined}
-                  key={id}
-                >
-                  {name}
-                </Link>
-              ))}
-            </nav>
+            <NavigationTabs pages={area.pages} current={path} label="Section navigation" />
           )}
           {(failure || me.error || regions.error) && (
             <Notice error>{failure || me.error || regions.error}</Notice>
           )}
           <Fragment key={user.uid + ":" + org + ":" + region + ":" + path}><ViewBoundary>
-            {account ? (
+            {path==="pro"||path==="pro-guide"?<ProExperience guide={path==="pro-guide"} revision={revision}/>:path==="promotions"?<Promotions revision={revision} refresh={refresh}/>:account ? (
               <Account
                 page={path}
                 scope={scope}
@@ -412,7 +355,7 @@ export default function Portal() {
                   </Link>
                 </div>
               </section>
-            ) : path === "governance" ? (
+            ) : path === "campaigns" ? <Preparedness scope={scope} revision={revision}/> : path === "notifications" ? <Notifications scope={scope} revision={revision}/> : path === "governance" ? (
               <Governance scope={scope} revision={revision} />
             ) : path === "overview" ? (
               <Overview scope={scope} revision={revision} />

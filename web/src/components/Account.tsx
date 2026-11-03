@@ -2,6 +2,7 @@
 import { UserFacingError } from "@/lib/friendly-errors";
 import { useState } from "react";
 import Link from "next/link";
+import NavigationTabs from "./NavigationTabs";
 import {
   sendPasswordResetEmail,
   verifyBeforeUpdateEmail,
@@ -20,7 +21,8 @@ const tabs = [
   ["privacy", "Privacy & data"],
   ["securityAccount", "Account security"],
   ["invitations", "Workspace access"],
-  ["pro", "ResQ Pro"],
+  ["pro", "ResQOps Pro"],
+  ["setup", "Setup preferences"],
 ];
 export default function Account({
   page,
@@ -69,17 +71,7 @@ export default function Account({
   }
   return (
     <div className="account-layout">
-      <nav className="account-nav" aria-label="Account navigation">
-        {tabs.map(([id, name]) => (
-          <Link
-            className={page === id ? "active" : ""}
-            key={id}
-            href={"/" + id}
-          >
-            {name}
-          </Link>
-        ))}
-      </nav>
+      <NavigationTabs pages={tabs} current={page} label="Account navigation" />
       <div className="account-content">
         {(error || home.error) && <Notice error>{error || home.error}</Notice>}
         {notice && <Notice>{notice}</Notice>}

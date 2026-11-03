@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -7,10 +7,15 @@ import {
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { EntryVisual } from "./EntryExperience";
 import { identity, errorMessage } from "@/lib/api";
 import { Brand, Button, Contours, Icon, Notice } from "./ui";
 export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
-  const [mode, setMode] = useState("login");
+  const path=usePathname(),router=useRouter();
+  const [mode, setMode] = useState(path==="/signup"?"register":path==="/forgot-password"?"recover":"login");
+  useEffect(()=>setMode(path==="/signup"?"register":path==="/forgot-password"?"recover":"login"),[path]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -37,11 +42,14 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
           password,
         );
         await updateProfile(result.user, { displayName: name });
+        sessionStorage.setItem("resq-setup-pending",result.user.uid);
         await sendEmailVerification(result.user);
         onSignedIn();
+        router.replace("/overview");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         onSignedIn();
+        router.replace("/overview");
       }
     } catch (e) {
       setError(errorMessage(e));
@@ -50,46 +58,16 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
     }
   }
   return (
-    <main id="main" className="auth-layout">
-      <section className="auth-story">
-        <Brand />
-        <div className="story-copy">
-          <span className="eyebrow">THE COORDINATION WORKSPACE</span>
-          <h1>
-            People ready.
-            <br />
-            Response together.
-          </h1>
-          <p>
-            One place to prepare your team,
-            <br />
-            coordinate missions and act with clarity.
-          </p>
-          <div className="story-mark">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-        <Contours />
-        <footer>
-          <span>Built for the people who show up.</span>
-          <span>ResQOps / Kenya</span>
-        </footer>
-      </section>
-      <section className="auth-panel">
-        <div className="auth-top">
-          <span>For coordinators</span>
+    <main id="main" className="entry-shell reference-auth">
+      <EntryVisual />
+      <section className="entry-content">
+        <div className="entry-top">
+          <Link href="/welcome">ResQOps / For coordinators</Link>
           <span>
             <Icon name="shield" size={16} /> ResQOps workspace
           </span>
         </div>
-        <div className="auth-form">
+        <div className="entry-auth-form">
           <span className="eyebrow">
             {mode === "recover"
               ? "ACCOUNT RECOVERY"
@@ -99,10 +77,10 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
           </span>
           <h2>
             {mode === "recover"
-              ? "Reset your password"
+              ? "Forgot your password?"
               : mode === "register"
-                ? "Create your account"
-                : "Let’s get to work."}
+                ? "Better response starts with you."
+                : "Your team is counting on you."}
           </h2>
           <p>
             {mode === "recover"
@@ -160,7 +138,7 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
                 type="button"
                 className="text-button forgot"
                 onClick={() => {
-                  setMode("recover");
+                  router.push("/forgot-password");
                   setError("");
                 }}
               >
@@ -187,7 +165,7 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
                 <button
                   className="text-button"
                   onClick={() => {
-                    setMode("register");
+                    router.push("/signup");
                     setError("");
                   }}
                 >
@@ -198,7 +176,7 @@ export default function Auth({ onSignedIn }: { onSignedIn: () => void }) {
               <button
                 className="text-button"
                 onClick={() => {
-                  setMode("login");
+                  router.push("/login");
                   setError("");
                   setNotice("");
                 }}

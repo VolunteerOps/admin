@@ -27,7 +27,7 @@ test("inventory creation and stock adjustment use versioned backend commands", a
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(
     commandSchema.safeParse(
-      sent.find((r) => r.body.action === "CREATE_RESOURCE").body,
+      sent.find((r) => r.body?.action === "CREATE_RESOURCE").body,
     ).success,
   ).toBe(true);
   await page
@@ -40,7 +40,7 @@ test("inventory creation and stock adjustment use versioned backend commands", a
     .getByRole("button", { name: "Confirm change", exact: true })
     .click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  const payload = sent.find((r) => r.body.action === "ADJUST_STOCK").body;
+  const payload = sent.find((r) => r.body?.action === "ADJUST_STOCK").body;
   expect(commandSchema.safeParse(payload).success).toBe(true);
   expect(payload.expected_version).toBe(stockRow.version);
 });
@@ -119,7 +119,7 @@ test("conversation can start from an empty inbox", async ({ page }) => {
     .click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(
-    commandSchema.safeParse(sent.find((r) => r.body.action === "MESSAGE").body)
+    commandSchema.safeParse(sent.find((r) => r.body?.action === "MESSAGE").body)
       .success,
   ).toBe(true);
 });

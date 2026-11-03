@@ -4,7 +4,7 @@ import { fixtures } from "./fixtures";
 test("sentinel radar shows hazard layers, pin detail and planner routing", async ({ page }) => {
   await fixtures(page);
   await page.goto("/sentinel");
-  await expect(page.getByRole("heading", { name: "Real-Time Multi-Hazard Radar" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Disaster radar", exact:true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Artificial disasters/ })).toBeVisible();
   await page.getByRole("button", { name: /Apartment building collapses/ }).click();
   await expect(page.getByText("-1.2800, 36.8200")).toBeVisible();

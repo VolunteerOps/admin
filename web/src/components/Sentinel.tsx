@@ -1,6 +1,7 @@
 "use client";
 import { UserFacingError } from "@/lib/friendly-errors";
 import RequestForecast from "./RequestForecast";
+import ForecastEvidence from "./ForecastEvidence";
 import WeatherChat, {weatherSuggestions} from "./WeatherChat";
 import { useEffect, useState } from "react";
 import PlanEditor from "./PlanEditor";
@@ -32,7 +33,8 @@ export default function Sentinel({
     return <AgentRuns scope={scope} revision={revision} />;
   if (page === "deployment-map" || page === "operations-map")
     return <OperationsMap scope={scope} revision={revision} />;
-  if (["weather-analysis", "resource-planning"].includes(page))
+  if(page === "weather-analysis")return <><Sources scope={scope} revision={revision}/><Planning scope={scope} revision={revision} weather/></>;
+  if (["resource-planning"].includes(page))
     return (
       <Planning
         scope={scope}
@@ -48,321 +50,17 @@ export default function Sentinel({
     />
   );
 }
-function Radar({
-  scope,
-  revision,
-  deployments,
-}: {
-  scope: Scope;
-  revision: number;
-  deployments: boolean;
-}) {
-  const missions = useData(scope.ops + "/records?kind=MISSION", revision),
-    hazards = useData(
-      deployments ? null : scope.sentinel + "/hazards",
-      revision,
-    ),
-    forecast = useData(
-      deployments ? null : scope.sentinel + "/forecasts/latest",
-      revision,
-    );
-  const [refreshOpen, setRefresh] = useState(false),
-    [answer, setAnswer] = useState<any>(null),
-    [job, setJob] = useState<any>(null),
-    [jobError, setJobError] = useState(""),
-    [selected, setSelected] = useState(""),
-    [layers, setLayers] = useState({ missions: true, hazards: true });
-  const readiness = useData(
-    deployments ? null : scope.sentinel + "/readiness",
-    revision,
-  );
-  const [variable, setVariable] = useState("total_precipitation_1hr"),
-    [statistic, setStatistic] = useState("mean"),
-    [time, setTime] = useState("");
-  const variables: Record<string, { name: string; unit: string }> = {
-    total_precipitation_1hr: { name: "Hourly rainfall", unit: "mm" },
-    temperature_2m: { name: "Temperature", unit: "°C" },
-    wind_speed_10m: { name: "Wind speed", unit: "m/s" },
-  };
-  const times: string[] = Array.from(
-    new Set<string>((forecast.data?.cells || []).map((c: any) => c.validTime)),
-  ).sort();
-  const visibleCells = (forecast.data?.cells || []).filter(
-    (c: any) => c.validTime === (times.includes(time) ? time : times[0]),
-  );
-  useEffect(() => {
-    setJob(null);
-    setAnswer(null);
-    setSelected("");
-  }, [scope.sentinel]);
-  useEffect(() => {
-    if (
-      !job?.job_id ||
-      ["DONE", "SUCCEEDED", "COMPLETED", "DEAD", "EXPIRED"].includes(job.state)
-    )
-      return;
-    const controller = new AbortController();
-    const t = setInterval(
-      () =>
-        api(
-          scope.sentinel + "/jobs/" + job.job_id,
-          undefined,
-          "GET",
-          controller.signal,
-        )
-          .then((r) => {
-            setJob({ ...r, job_id: job.job_id });
-            if (["DONE", "SUCCEEDED", "COMPLETED"].includes(r.state))
-              scope.refresh();
-          })
-          .catch((e) => {
-            if (!controller.signal.aborted) setJobError(errorMessage(e));
-          }),
-      3000,
-    );
-    return () => {
-      clearInterval(t);
-      controller.abort();
-    };
-  }, [job?.job_id, job?.state, scope.sentinel]);
-  const points = [
-    ...visibleCells
-      .filter((c: any) => c.values?.[variable]?.[statistic] != null)
-      .map((c: any) => ({
-        id: `forecast:${c.longitude}:${c.latitude}`,
-        title: `${variables[variable].name}: ${Number(c.values[variable][statistic]).toFixed(1)} ${variables[variable].unit}`,
-        kind: "forecast",
-        latitude: c.latitude,
-        longitude: c.longitude,
-      })),
-    ...(layers.missions
-      ? (missions.data?.items || []).map((r: Row) => ({
-          id: r.id,
-          title: recordTitle(r),
-          kind: "mission",
-          latitude: r.payload.latitude,
-          longitude: r.payload.longitude,
-        }))
-      : []),
-    ...(layers.hazards
-      ? (hazards.data?.observations || hazards.data?.items || (Array.isArray(hazards.data) ? hazards.data : [])).map((h: any) => ({
-          ...h,
-          title: h.title || h.source,
-          kind: "hazard",
-        }))
-      : []),
-  ];
-  return (
-    <>
-      <div className="toolbar">
-        <div className="toolbar-left">
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={layers.missions}
-              onChange={(e) =>
-                setLayers({ ...layers, missions: e.target.checked })
-              }
-            />
-            Missions
-          </label>
-          {!deployments && (
-            <label className="check">
-              <input
-                type="checkbox"
-                checked={layers.hazards}
-                onChange={(e) =>
-                  setLayers({ ...layers, hazards: e.target.checked })
-                }
-              />
-              Reported hazards
-            </label>
-          )}
-        </div>
-        {!deployments && (
-          <div className="action-list"><Link className="button primary" href="/weather-analysis">Ask about preparedness</Link><Button icon="refresh" onClick={() => setRefresh(true)}>Request forecast</Button></div>
-        )}
-      </div>
-      {!deployments && times.length > 0 && (
-        <section className="panel panel-body forecast-controls">
-          <label>
-            Forecast layer
-            <select
-              value={variable}
-              onChange={(e) => setVariable(e.target.value)}
-            >
-              {Object.entries(variables).map(([id, v]) => (
-                <option key={id} value={id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Ensemble statistic
-            <select
-              value={statistic}
-              onChange={(e) => setStatistic(e.target.value)}
-            >
-              {["mean", "p10", "p25", "p50", "p75", "p90"].map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Valid time
-            <select
-              value={times.includes(time) ? time : times[0]}
-              onChange={(e) => setTime(e.target.value)}
-            >
-              {times.map((t) => (
-                <option value={t} key={t}>
-                  {date(t)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <small>
-            Grid-centre values · {variables[variable].unit}. Percentiles
-            describe the forecast ensemble, not local impact probability.
-          </small>
-        </section>
-      )}
-      {[
-        missions.error,
-        hazards.error,
-        forecast.error,
-        readiness.error,
-        jobError,
-      ]
-        .filter(Boolean)
-        .map((e, i) => (
-          <Notice error key={i}>
-            {e}
-          </Notice>
-        ))}
-      {job && (
-        <Notice>
-          {["DONE","SUCCEEDED","COMPLETED"].includes(job.state)?"Your forecast is ready.":["DEAD","EXPIRED"].includes(job.state)?"The forecast could not be loaded. Request it again after resolving the problem.":"Your forecast is being prepared."}
-          {job.init_time && <span> Published {date(job.init_time)}.</span>}
-          {job.last_error && " · " + job.last_error}
-        </Notice>
-      )}
-      <div className={deployments ? "split single" : "split"}>
-        <div className="stack">
-          <RadarMap scope={scope} />
-          <section className="panel">
-            <div className="panel-head">
-              <h2>Evidence & locations</h2>
-              <span>{points.length} records</span>
-            </div>
-            {points.length ? (
-              points.map((p: any) => (
-                <div
-                  className={
-                    "queue-row " + (selected === p.id ? "selected" : "")
-                  }
-                  key={p.id}
-                >
-                  <span>
-                    <strong>{p.title}</strong>
-                    <small>
-                      {label(p.kind)} · {Number(p.latitude).toFixed(3)},{" "}
-                      {Number(p.longitude).toFixed(3)}
-                    </small>
-                  </span>
-                  <Badge status={p.kind} />
-                </div>
-              ))
-            ) : (
-              <Empty
-                title="No mapped evidence"
-                body="Mission meeting points and reported hazards appear here when available. No live responder tracking is inferred."
-              />
-            )}
-            {missions.data?.next_cursor && (
-              <p className="panel-body">
-                More missions exist. Open the mission directory to review
-                additional records.
-              </p>
-            )}
-          </section>
-        </div>
-        {!deployments && (
-          <div className="stack">
-            <section className="panel">
-              <div className="panel-head">
-                <h2>Forecast evidence</h2>
-              </div>
-              <div className="panel-body">
-                {forecast.data ? (
-                  <Evidence value={forecast.data} />
-                ) : (
-                  <p>No forecast has been loaded for this region.</p>
-                )}
-                <Link className="text-button" href="/weather-analysis">
-                  Open weather analysis →
-                </Link>
-                <details>
-                  <summary>Provider readiness & coverage</summary>
-                  <Evidence value={readiness.data} />
-                </details>
-              </div>
-            </section>
-            <section className="panel">
-              <div className="panel-head">
-                <h2>Ask Sentinel</h2>
-              </div>
-              <div className="panel-body">
-                <Form
-                  fields={[
-                    {
-                      key: "question",
-                      label: "What do you need to understand?",
-                      type: "textarea",
-                      min: 3,
-                      max: 2000,
-                      full: true,
-                    },
-                  ]}
-                  submit="Review evidence"
-                  onSubmit={async (v) =>
-                    setAnswer(await api(scope.sentinel + "/agent/chat", v))
-                  }
-                />
-                {answer && (
-                  <div className="detail-prose">
-                    <h3 className="section-title">Assessment</h3>
-                    {answer.answer || answer.summary}
-                    <Evidence value={answer.citations || answer.sources} />
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
-        )}
-      </div>
-      {refreshOpen && (
-        <Drawer title="Request a forecast" onClose={() => setRefresh(false)}>
-          <RequestForecast scope={scope} onRequested={result=>{setJob(result);setJobError('');setRefresh(false);}} />
-          {job && ["DEAD", "EXPIRED"].includes(job.state) && (
-            <Form
-              fields={[reason]}
-              submit="Retry failed job"
-              onSubmit={async (v) =>
-                setJob(
-                  await api(
-                    scope.sentinel + "/jobs/" + job.job_id + "/retry",
-                    v,
-                  ),
-                )
-              }
-            />
-          )}
-        </Drawer>
-      )}
-    </>
-  );
+function Radar({scope,revision}:{scope:Scope;revision:number;deployments:boolean}) {
+ const [ask,setAsk]=useState(false);
+ useEffect(()=>{setAsk(new URLSearchParams(window.location.search).has("ask"));},[]);
+ return <div className="sentinel-reference"><div className="sentinel-intro"><div><span className="eyebrow">A SHARED PICTURE. A CLEARER NEXT STEP.</span><h2>See what needs your attention.</h2><p>Review the source. Understand the local context. Prepare your next move.</p></div><div className="action-list"><Link className="button" href="/campaigns">Preparedness campaigns</Link><Button variant="primary" icon="sentinel" onClick={()=>setAsk(!ask)} aria-expanded={ask} aria-controls="sentinel-conversation">Ask Sentinel</Button></div></div><RadarMap scope={scope}/>{ask&&<div id="sentinel-conversation"><WeatherChat scope={scope}/></div>}<div className="sentinel-source-link"><span>Forecasts indicate possible conditions. Field reports and local checks establish what is happening on the ground.</span><Link className="text-button" href="/weather-analysis">Sources & coverage →</Link></div></div>;
+}
+function Sources({scope,revision}:{scope:Scope;revision:number}) {
+ const forecast=useData(scope.sentinel+'/forecasts/latest',revision),readiness=useData(scope.sentinel+'/readiness',revision);
+ const [open,setOpen]=useState(false),[job,setJob]=useState<any>(null),[error,setError]=useState('');
+ useEffect(()=>{if(!job?.job_id||['DONE','SUCCEEDED','COMPLETED','DEAD','EXPIRED'].includes(job.state))return;
+ const controller=new AbortController();const timer=setInterval(()=>{api(scope.sentinel+'/jobs/'+job.job_id,undefined,'GET',controller.signal).then(r=>{setJob({...r,job_id:job.job_id});if(['DONE','SUCCEEDED','COMPLETED'].includes(r.state))scope.refresh();}).catch(e=>{if(!controller.signal.aborted)setError(errorMessage(e));});},3000);return()=>{clearInterval(timer);controller.abort();};},[job?.job_id,job?.state,scope.sentinel]);
+ return <><div className="toolbar"><p>Inspect the evidence behind Sentinel’s preparedness findings.</p><Button icon="refresh" onClick={()=>setOpen(true)}>Request latest forecast</Button></div>{(error||forecast.error||readiness.error)&&<Notice error>{error||forecast.error||readiness.error}</Notice>}{job&&<Notice>{['DONE','SUCCEEDED','COMPLETED'].includes(job.state)?'Your forecast is ready.':['DEAD','EXPIRED'].includes(job.state)?'The forecast could not be retrieved. Check source availability and try again.':'Your forecast is being prepared.'}</Notice>}<div className="source-panels"><section className="panel"><div className="panel-head"><h2>Forecast evidence</h2></div><div className="panel-body">{forecast.loading&&!forecast.data?<Loading/>:forecast.data?<><ForecastEvidence cells={forecast.data.cells||[]}/><Evidence value={forecast.data}/></>:<Empty title="No forecast loaded" body="Request the latest available forecast for this region."/>}</div></section><section className="panel"><div className="panel-head"><h2>Source availability & coverage</h2></div><div className="panel-body"><p>Missing inputs remain visible so your team can judge the limits of an assessment.</p><Evidence value={readiness.data}/><Link className="button" href="/sentinel">Ask Sentinel on the radar</Link></div></section></div>{open&&<Drawer title="Request a forecast" onClose={()=>setOpen(false)}><RequestForecast scope={scope} onRequested={r=>{setJob(r);setOpen(false);}}/></Drawer>}</>;
 }
 export function Evidence({ value, depth = 0 }: { value: any; depth?: number }) {
   if (value == null) return null;
@@ -550,7 +248,7 @@ function Planning({
         },      ];
   return (
     <>
-      {weather && <WeatherChat scope={scope} />} 
+      {weather && <div className="section-intro"><h2>Saved assessments</h2><p>Review previous findings or run a detailed assessment. For a guided conversation, open Ask Sentinel on the Disaster radar.</p></div>}
       <div className="toolbar">
         <p className="page-intro">
           {weather

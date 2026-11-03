@@ -82,7 +82,7 @@ test("forecast layer controls use real evidence values and valid-time selection"
       }),
     }),
   );
-  await page.goto("/sentinel");
+  await page.goto("/weather-analysis");
   await expect(
     page.getByText("Hourly rainfall: 2.0 mm", { exact: true }),
   ).toBeVisible();

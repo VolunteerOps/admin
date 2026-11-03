@@ -1,4 +1,5 @@
 "use client";
+import {ProGate} from "./ProExperience";
 import { useEffect, useRef, useState } from "react";
 import { api, errorMessage, ApiError } from "@/lib/api";
 import { postStream, partialField } from "@/lib/stream";
@@ -43,6 +44,7 @@ export default function MissionChat({
   scope: Scope;
   done: () => void;
 }) {
+ const [showUpgrade,setShowUpgrade]=useState(false);
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<Turn[]>([]);
   const [pending, setPending] = useState<Pending | null>(null);
@@ -157,6 +159,7 @@ export default function MissionChat({
       setPending(null);
       createKey.current = crypto.randomUUID();
     } catch (e) {
+      if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);
       setError(errorMessage(e));
       // Uncertain network failures retain their key so a completed answer can be replayed.
       if (
@@ -211,6 +214,7 @@ export default function MissionChat({
       );
       done();
     } catch (e) {
+      if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);
       setError(errorMessage(e));
     } finally {
       lock.current = false;
@@ -219,6 +223,7 @@ export default function MissionChat({
   }
   return (
     <section className="mission-chat" aria-label="Mission planning chat">
+      {showUpgrade&&<ProGate feature="planning" onClose={()=>setShowUpgrade(false)}/>}
       <div className="mission-chat-context">
         <span>
           <Icon name="missions" size={17} /> Mission planner
