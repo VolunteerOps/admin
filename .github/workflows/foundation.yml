@@ -18,6 +18,7 @@ jobs:
           node-version: '24.20.0'
       - run: bash gradlew :shared:jsNodeTest :business:jvmTest -PwebOnly=true --no-daemon --max-workers=1
       - run: npm ci --prefix web
+      - run: node --test web/scripts/sync-business.test.mjs
       - run: npm run business:sync --prefix web
       - run: npm run build --prefix web
       - run: docker build -t resq-admin:check .
