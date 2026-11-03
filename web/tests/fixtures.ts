@@ -204,6 +204,7 @@ export async function fixtures(
         project_id: "resq-test",
       };
     else if (p.startsWith("/api/")) {
+      if (/\/conversations\/(mission|weather)\/stream$/.test(p)) return route.fulfill({status:404,json:{error:"NOT_FOUND"}});
       if (req.method() !== "GET") {
         mutations.push({
           path: p,

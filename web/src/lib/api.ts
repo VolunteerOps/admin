@@ -58,7 +58,8 @@ export async function api(
   const requestKey =
     body === undefined ? undefined : key || crypto.randomUUID();
   const auth = await identity();
-  const token = await auth.currentUser?.getIdToken();
+  const user = auth.currentUser;
+  const token = await user?.getIdToken();
   const response = await fetch(path, {
     method,
     cache: "no-store",
@@ -73,6 +74,11 @@ export async function api(
   });
   const content =
     response.status === 204 ? null : await response.json().catch(() => null);
+  if (response.status === 401 && !retried && user && auth.currentUser === user &&
+      ["TOKEN_EXPIRED", "INVALID_FIREBASE_IDENTITY"].includes(content?.error)) {
+    await user.getIdToken(true);
+    return api(path, body, method, signal, requestKey, true);
+  }
   if (
     !response.ok &&
     content?.error === "RECENT_AUTH_REQUIRED" &&

@@ -135,9 +135,9 @@ export default function MissionChat({
           setStreamPreview(partialField(streamed, "reply"));
         } else if (event.type === "tool_start") setStreamPreview("Checking " + String(event.tool).replace(/_/g, " ") + "…");
         else if (event.type === "round") setStreamPreview("Thinking…");
-      }).catch(async (streamError) => {
+      }, undefined, outgoing.key).catch(async (streamError) => {
         // Streaming is an enhancement: fall back to the JSON endpoint once.
-        if (streamed) throw streamError;
+        if (streamError?.code !== "STREAM_UNAVAILABLE") throw streamError;
         return api(scope.sentinel + "/conversations/mission", body, "POST", undefined, outgoing.key);
       });
       setStreamPreview("");

@@ -32,12 +32,17 @@ export function Form({
   draftKey?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const autoDraftKey = typeof window !== "undefined" && !fields.some((f) => f.key === "expected_version") ? window.location.pathname + ":" + submit + ":" + (fields[0]?.key || "form") : "";
-  const storageKey = "resq-draft:" + (draftKey || autoDraftKey);
+  const sensitive = fields.some(f => f.type === "password" || /password|secret|token|otp|verification_code/i.test(f.key));
+  const legacyKey = typeof window !== "undefined" ? window.location.pathname + ":" + submit + ":" + (fields[0]?.key || "form") : "";
+  const autoDraftKey = !sensitive && !fields.some((f) => f.key === "expected_version") ? legacyKey : "";
+  const storageKey = !sensitive && (draftKey || autoDraftKey) ? "resq-draft:" + (draftKey || autoDraftKey) : "";
   const [draft, setDraft] = useState<{ values: Record<string, any>; saved_at: string } | null>(null);
   const [epoch, setEpoch] = useState(0);
   const [draftNotice, setDraftNotice] = useState("");
   useEffect(() => {
+    if (sensitive) {
+      try { window.localStorage.removeItem("resq-draft:" + (draftKey || legacyKey)); } catch { /* ignore */ }
+    }
     if (!storageKey) return;
     try {
       const raw = window.localStorage.getItem(storageKey);
@@ -45,7 +50,7 @@ export function Form({
     } catch { /* Drafts are a convenience; storage may be unavailable. */ }
   }, [storageKey]);
   useEffect(() => {
-    if (!draftKey && !autoDraftKey) return;
+    if (!storageKey) return;
     let live = true;
     void fetchServerDraft(storageKey.replace("resq-draft:", "")).then((server) => {
       if (!live || !server?.payload) return;
@@ -195,7 +200,7 @@ export function Form({
               Cancel
             </Button>
           )}
-          {(draftKey || autoDraftKey) && (<Button type="button" disabled={busy} onClick={() => saveDraft(formRef.current)}>Save draft</Button>)}
+          {storageKey && (<Button type="button" disabled={busy} onClick={() => saveDraft(formRef.current)}>Save draft</Button>)}
           <Button variant="primary" type="submit" disabled={busy}>
             {busy ? "Saving…" : submit}
           </Button>

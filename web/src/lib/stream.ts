@@ -31,9 +31,12 @@ export async function postStream(
   body: unknown,
   onEvent: (event: StreamEvent) => void,
   signal?: AbortSignal,
+  key = crypto.randomUUID(),
+  retried = false,
 ): Promise<any> {
   const auth = await identity();
-  const token = await auth.currentUser?.getIdToken();
+  const user = auth.currentUser;
+  const token = await user?.getIdToken();
   const response = await fetch(path, {
     method: "POST",
     cache: "no-store",
@@ -43,12 +46,27 @@ export async function postStream(
       "Content-Type": "application/json",
       Accept: "text/event-stream",
       ...(token ? { Authorization: "Bearer " + token } : {}),
-      "Idempotency-Key": crypto.randomUUID(),
+      "Idempotency-Key": key,
     },
     body: JSON.stringify(body),
   });
-  if (!response.ok || !response.body || !(response.headers.get("content-type") || "").includes("text/event-stream"))
-    throw new ApiError(response.status, "STREAM_UNAVAILABLE", "Streaming is unavailable for this request.");
+  // Only a missing streaming route permits a second request to the JSON route.
+  // Provider errors, permission failures and interrupted streams must not start
+  // a second paid run or hide the original error.
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    if (response.status === 401 && !retried && user && auth.currentUser === user &&
+        ["TOKEN_EXPIRED", "INVALID_FIREBASE_IDENTITY"].includes(error?.error)) {
+      await user.getIdToken(true);
+      return postStream(path, body, onEvent, signal, key, true);
+    }
+    throw new ApiError(response.status, [404,405].includes(response.status) ? "STREAM_UNAVAILABLE" : error?.error || "REQUEST_FAILED", error?.message || "");
+  }
+  if (!(response.headers.get("content-type") || "").includes("text/event-stream")) {
+    if ((response.headers.get("content-type") || "").includes("application/json")) return response.json();
+    throw new ApiError(502, "STREAM_INTERRUPTED", "");
+  }
+  if (!response.body) throw new ApiError(502, "STREAM_INTERRUPTED", "");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -78,5 +96,6 @@ export async function postStream(
   }
   if (buffer.trim()) dispatch(buffer);
   if (failure) throw new ApiError(503, failure.code || "AGENT_UNAVAILABLE", failure.message || "The assistant could not finish this request.");
+  if (result === undefined) throw new ApiError(502, "STREAM_INTERRUPTED", "");
   return result;
 }
