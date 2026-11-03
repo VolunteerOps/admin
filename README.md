@@ -12,7 +12,7 @@ The default web application is now [web/](web/README.md). Desktop browsers use p
 
 Web: `npm ci --prefix web`, then `npm run dev --prefix web`. Open http://127.0.0.1:4173. Use `npm run business:sync --prefix web` after changing shared Kotlin rules.
 
-Use JDK 17, Android SDK 36 and the checked-in Gradle wrapper:
+Use JDK 21, Android SDK 36 and the checked-in Gradle wrapper:
 
 ```powershell
 ./gradlew :androidApp:assembleDebug
@@ -20,6 +20,14 @@ Use JDK 17, Android SDK 36 and the checked-in Gradle wrapper:
 ./gradlew :shared:compileCommonMainKotlinMetadata :shared:jvmTest
 ./gradlew :shared:compileKotlinJs :shared:compileKotlinWasmJs
 ```
+
+The CI Kotlin checks run without the Android SDK:
+
+```sh
+./gradlew :shared:jsNodeTest :business:jvmTest -PwebOnly=true --no-daemon --max-workers=1
+```
+
+After changing Kotlin/JS dependencies or removing a Gradle module, regenerate the Kotlin lockfile with `./gradlew kotlinUpgradeYarnLock -PwebOnly=true`, rerun those checks, and commit `kotlin-js-store/yarn.lock` with the dependency changes. Keep CI's lockfile mismatch check enabled. This lockfile is separate from the Next.js portal's `web/package-lock.json`.
 
 Open `iosApp` in Xcode on macOS for Apple builds. Android debug artifacts are under `androidApp/build/outputs/apk/debug`. See [verification](docs/VERIFICATION.md) for completed checks and limits.
 
