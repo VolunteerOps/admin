@@ -361,6 +361,77 @@ export async function fixtures(
           assessment: null,
         };
       else if (p.endsWith("/hazards")) body = {source:"USGS",observations:[],truncated:false};
+      else if (p.endsWith("/radar"))
+        body = {
+          generated_at: "2026-11-01T08:15:00Z",
+          pins: [
+            {
+              id: "66666666-6666-4666-8666-666666666666", type: "BUILDING_COLLAPSE", category: "ARTIFICIAL", status: "REPORTED",
+              title: "Apartment building collapses in Eastlands", latitude: -1.28, longitude: 36.82, severity: "HIGH",
+              source: "GDACS", source_url: "https://example.org/report", observed_at: "2026-11-01T08:00:00Z",
+              detail: "Rescue operations underway.", route: { label: "Resource planning", href: "/resource-planning" },
+            },
+            {
+              id: "forecast-rain", type: "SEVERE_RAIN", category: "PREDICTION", status: "PREDICTED",
+              title: "Severe rain indicator", latitude: -1.3, longitude: 36.9, severity: "MODERATE",
+              source: "WeatherNext 3 forecast", observed_at: "2026-11-02T08:00:00Z", detail: "Upper-range rainfall above threshold.",
+              route: { label: "Weather analysis", href: "/weather-analysis" },
+            },
+          ],
+          disclaimer: "Fixture pins are not impact estimates.",
+        };
+      else if (p.includes("/incidents"))
+        body = req.method() === "POST" && p.endsWith("/ingest") ? { created: 2, feeds: [{ name: "GDACS", status: "OK", count: 5 }] } : { items: [], next_cursor: null };
+      else if (p.includes("/agent/runs")) {
+        const runDetail = {
+          id: "66666666-6666-4666-8666-666666666666",
+          kind: "RESOURCE_PLAN",
+          version: 1,
+          updatedAt: "2026-11-01T08:15:00Z",
+          payload: {
+            title: "Eastlands staffing proposal",
+            status: "DRAFT",
+            model: "muse-spark-1.3",
+            recommendation: { summary: "Allocate qualified responders.", allocations: [], shortages: [], decisions: [] },
+            request: { question: "Plan staffing", mode: "EXECUTE", history: [{ role: "user", content: "Plan staffing for Saturday" }] },
+            harness: {
+              rounds: 2,
+              plan: [{ title: "Read mission and candidates", status: "done" }],
+              notes: ["Depot stock checked"],
+              steps: [{ tool: "read_mission", ok: true, duration_ms: 12 }],
+            },
+          },
+        };
+        body =
+          req.method() === "POST"
+            ? { ...runDetail, id: "77777777-7777-4777-8777-777777777777", payload: { ...runDetail.payload, parent_run_id: runDetail.id } }
+            : p.endsWith("/agent/runs")
+              ? { items: [{ id: runDetail.id, kind: "RESOURCE_PLAN", version: 1, updatedAt: runDetail.updatedAt, title: "Eastlands staffing proposal", status: "DRAFT", model: "muse-spark-1.3", analysis_type: null, parent_run_id: null, steps: 1, plan_steps: 1, summary: "Allocate qualified responders." }] }
+              : runDetail;
+      } else if (p.includes("/specialised"))
+        body =
+          req.method() === "POST" && !p.includes("/evidence") && !p.includes("/gap")
+            ? {
+                id: "55555555-5555-4555-8555-555555555555",
+                kind: "SPECIALISED",
+                version: 1,
+                updatedAt: "2026-11-01T08:15:00Z",
+                payload: {
+                  title: "Flood preparedness synthesis",
+                  status: "DRAFT",
+                  analysis_type: "FLOOD_SYNTHESIS",
+                  model: "muse-wonder-1.0",
+                  result: {
+                    summary: "Gauge and rainfall evidence reviewed.",
+                    findings: ["Gauge near watch level"],
+                    recommendations: ["Check pumps"],
+                    missing_inputs: ["River levels"],
+                    source_ids: [],
+                  },
+                  flood_impact_estimate: null,
+                },
+              }
+            : { items: [], next_cursor: null };
       else if (p.includes("/planning/"))
         body = {
           items: empty

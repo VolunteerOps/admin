@@ -1,6 +1,9 @@
 "use client";
 import {useState} from 'react';
 import {api,errorMessage} from '@/lib/api';
+import {postStream,partialField} from '@/lib/stream';
+import {fetchServerDraft,syncServerDraft,deleteServerDraft} from '@/lib/drafts';
+import {useEffect} from 'react';
 import type {Scope} from '@/lib/hooks';
 import {Button,Notice,Badge} from './ui';
 import {Evidence} from './Sentinel';
@@ -15,12 +18,21 @@ export default function WeatherChat({scope}:{scope:Scope}){
  const cacheKey=[scope.userId,scope.org,scope.region].join(':');
  const [question,setQuestion]=useState(''),[history,setHistory]=useState<Turn[]>(conversations.get(cacheKey)?.history||[]),[answer,setAnswer]=useState<any>(conversations.get(cacheKey)?.answer||null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID());
+ const [streamPreview,setStreamPreview]=useState('');
+ const serverDraftKey='weather-chat:'+cacheKey;
+ useEffect(()=>{let live=true;void fetchServerDraft(serverDraftKey).then(server=>{if(!live||!server?.payload)return;const saved=server.payload as any;if(Array.isArray(saved.history)&&!conversations.get(cacheKey)) {conversations.set(cacheKey,{history:saved.history,answer:saved.answer});setHistory(saved.history);if(saved.answer)setAnswer(saved.answer);}});return()=>{live=false;};},[]);
  async function send(mode:'CHAT'|'DAILY_BRIEF',prompt=question){
   if(busy||prompt.trim().length<3)return;setBusy(true);setError('');
-  try{const record=await api(scope.sentinel+'/conversations/weather',{question:prompt,history:history.slice(-16),mode},'POST',undefined,requestKey);
+  try{let streamed='';setStreamPreview('Thinking...');
+   const record=await postStream(scope.sentinel+'/conversations/weather/stream',{question:prompt,history:history.slice(-16),mode},event=>{
+     if(event.type==='token'){streamed+=event.text;const preview=partialField(streamed,'summary');if(preview)setStreamPreview(preview);}
+     else if(event.type==='tool_start')setStreamPreview('Checking '+String(event.tool).replace(/_/g,' ')+'...');
+     else if(event.type==='round')setStreamPreview('Thinking...');
+   }).catch(async streamError=>{if(streamed)throw streamError;const fallback=await api(scope.sentinel+'/conversations/weather',{question:prompt,history:history.slice(-16),mode},'POST',undefined,requestKey);return fallback;});
+   setStreamPreview('');
    if(record.payload?.status==='FAILED')throw {code:record.payload.error_code,message:record.payload.message};
    const result=record.payload;const next:Turn[]=[...history,{role:'user',content:prompt},{role:'assistant',content:result.narrative.summary}];
-   setHistory(next);setAnswer(result);conversations.set(cacheKey,{history:next,answer:result});setQuestion('');setRequestKey(crypto.randomUUID());scope.refresh();
+   setHistory(next);setAnswer(result);conversations.set(cacheKey,{history:next,answer:result});syncServerDraft(serverDraftKey,{history:next,answer:result});setQuestion('');setRequestKey(crypto.randomUUID());scope.refresh();
   }catch(e){setError(errorMessage(e));}finally{setBusy(false);}
  }
  return <section className="panel weather-chat" aria-label="Ask Sentinel">
@@ -34,6 +46,7 @@ export default function WeatherChat({scope}:{scope:Scope}){
     <details><summary>Sources, coverage and limitations</summary><p>Past forecasts describe what was predicted, not what was measured. BigQuery and Cloud Storage hold the same model's output.</p>{answer.sources?.map((s:any,i:number)=><div className="source-entry" key={i}><strong>{s.surface} / {new Date(s.from).toLocaleDateString()} to {new Date(s.to).toLocaleDateString()}</strong><Badge status={s.status==='UNAVAILABLE'?'UNAVAILABLE':'RETRIEVED'}/>{s.status==='UNAVAILABLE'?<p>{errorMessage({code:s.code})}</p>:<Evidence value={s}/>}</div>)}<Evidence value={{assumptions:answer.narrative.assumptions,missing_inputs:answer.narrative.missing_inputs}}/></details>
     {answer.narrative.follow_up&&<p>{answer.narrative.follow_up}</p>}
    </div>}
+   {busy&&streamPreview&&<p role="status" className="mission-stream-preview">{streamPreview}</p>}
    {error&&<Notice error>{error}</Notice>}
    <form onSubmit={e=>{e.preventDefault();void send('CHAT');}}><label htmlFor="weather-question">Ask about your region<textarea id="weather-question" value={question} minLength={3} maxLength={4000} required onChange={e=>{setQuestion(e.target.value);setRequestKey(crypto.randomUUID());}} placeholder="For example: what do recent rainfall forecasts mean for our preparations this week?"/></label><div className="form-actions"><small>{busy?'Checking sources and preparing your answer. This may take a few minutes.':'Uses your selected operating region. No deployments are made from chat.'}</small><Button variant="primary" disabled={busy} type="submit">{busy?'Preparing...' :'Ask Sentinel'}</Button></div></form>
   </div>

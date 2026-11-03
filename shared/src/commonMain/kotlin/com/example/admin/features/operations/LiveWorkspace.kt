@@ -87,6 +87,7 @@ import kotlin.uuid.Uuid
                         "Sentinel" -> SentinelWorkspace(api,org,region)
                         "Assistance" -> SafetyWorkspace(api,org,region,{locked=it},focusRecord)
                         "Weather analysis","Resource planning" -> PlanningWorkspace(api,org,region,tab=="Weather analysis",{destination,assessment->planningAssessment=assessment;tab=destination},{locked=it},Modifier.fillMaxSize(),planningAssessment)
+                        "Specialised" -> SpecialisedWorkspace(api,org,region,{locked=it},Modifier.fillMaxSize())
                         "Overview" -> if(admin)CoordinationOverview(api,org,region,{destination,id->focusRecord=id;tab=destination},Modifier.fillMaxSize()) else WorkspaceInsights(api,org,region,false,{tab=it},Modifier.fillMaxSize())
                         "Insights" -> WorkspaceInsights(api,org,region,false,{tab=it},Modifier.fillMaxSize())
                         "People" -> WorkspacePeople(api,org,region,Modifier.fillMaxSize())

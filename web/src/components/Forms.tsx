@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button, Notice } from "./ui";
 import { errorMessage } from "@/lib/api";
+import { fetchServerDraft, syncServerDraft, deleteServerDraft } from "@/lib/drafts";
 export type Field = {
   key: string;
   label: string;
@@ -21,14 +22,68 @@ export function Form({
   submit = "Save changes",
   children,
   onCancel,
+  draftKey,
 }: {
   fields: Field[];
   onSubmit: (values: Record<string, any>, key: string) => Promise<void>;
   submit?: string;
   children?: React.ReactNode;
   onCancel?: () => void;
+  draftKey?: string;
 }) {
-  const [busy, setBusy] = useState(false),
+  const formRef = useRef<HTMLFormElement>(null);
+  const autoDraftKey = typeof window !== "undefined" && !fields.some((f) => f.key === "expected_version") ? window.location.pathname + ":" + submit + ":" + (fields[0]?.key || "form") : "";
+  const storageKey = "resq-draft:" + (draftKey || autoDraftKey);
+  const [draft, setDraft] = useState<{ values: Record<string, any>; saved_at: string } | null>(null);
+  const [epoch, setEpoch] = useState(0);
+  const [draftNotice, setDraftNotice] = useState("");
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) setDraft(JSON.parse(raw));
+    } catch { /* Drafts are a convenience; storage may be unavailable. */ }
+  }, [storageKey]);
+  useEffect(() => {
+    if (!draftKey && !autoDraftKey) return;
+    let live = true;
+    void fetchServerDraft(storageKey.replace("resq-draft:", "")).then((server) => {
+      if (!live || !server?.payload) return;
+      const serverEntry = { values: (server.payload.values ?? {}) as Record<string, any>, saved_at: server.updated_at || new Date().toISOString() };
+      setDraft((local) => (!local || serverEntry.saved_at > local.saved_at ? serverEntry : local));
+    });
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);  function readValues(form: HTMLFormElement) {
+    const fd = new FormData(form);
+    const values: Record<string, any> = {};
+    for (const f of fields) {
+      const v = fd.get(f.key);
+      if (v !== null && String(v) !== "") values[f.key] = String(v);
+    }
+    return values;
+  }
+  function saveDraft(form: HTMLFormElement | null, silent = false) {
+    if (!storageKey || !form) return;
+    const entry = { values: readValues(form), saved_at: new Date().toISOString() };
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(entry));
+      syncServerDraft(storageKey.replace("resq-draft:", ""), entry as unknown as Record<string, any>);
+      setDraft(entry);
+      if (!silent) setDraftNotice("Draft saved on this device. You can leave and resume later.");
+    } catch { if (!silent) setDraftNotice("Drafts are not available in this browser."); }
+  }
+  function resumeDraft() {
+    setEpoch((v) => v + 1);
+    setDraftNotice("Draft resumed. Review it before submitting.");
+  }
+  function discardDraft() {
+    try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
+    void deleteServerDraft(storageKey.replace("resq-draft:", ""));
+    setDraft(null);
+    setEpoch((v) => v + 1);
+    setDraftNotice("Draft discarded.");
+  }  const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const [key, setKey] = useState(() => crypto.randomUUID());
   const [changed, setChanged] = useState(false);
@@ -57,6 +112,7 @@ export function Form({
     setError("");
     try {
       await onSubmit(values, key);
+      if (storageKey) { try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ } void deleteServerDraft(storageKey.replace("resq-draft:", "")); setDraft(null); }
       setKey(crypto.randomUUID());
       setChanged(false);
     } catch (e) {
@@ -67,9 +123,12 @@ export function Form({
   }
   return (
     <form
+      ref={formRef}
+      key={epoch}
       onSubmit={send}
-      onChange={() => {
+      onChange={(e) => {
         setChanged(true);
+        saveDraft(e.currentTarget, true);
         setKey(crypto.randomUUID());
       }}
     >
@@ -120,13 +179,23 @@ export function Form({
           ))}
         </div>
         {children}
-        {error && <Notice error>{error}</Notice>}
+        {draft && (
+          <Notice>
+            Draft saved {new Date(draft.saved_at).toLocaleString()} on this device.
+            <span className="action-list">
+              <Button type="button" onClick={resumeDraft}>Resume draft</Button>
+              <Button type="button" onClick={discardDraft}>Discard draft</Button>
+            </span>
+          </Notice>
+        )}
+        {draftNotice && <Notice>{draftNotice}</Notice>}        {error && <Notice error>{error}</Notice>}
         <div className="form-actions">
           {onCancel && (
             <Button type="button" onClick={onCancel}>
               Cancel
             </Button>
           )}
+          {(draftKey || autoDraftKey) && (<Button type="button" disabled={busy} onClick={() => saveDraft(formRef.current)}>Save draft</Button>)}
           <Button variant="primary" type="submit" disabled={busy}>
             {busy ? "Saving…" : submit}
           </Button>

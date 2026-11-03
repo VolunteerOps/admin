@@ -44,7 +44,7 @@ test("chat shows outgoing message immediately, retries without duplicating and k
   await expect(
     page.getByRole("log").getByText("Plan a community preparedness visit"),
   ).toBeVisible();
-  await expect(page.getByText("Working on your plan…")).toBeVisible();
+  await expect(page.getByText(/Working on your plan/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Send message" }),
   ).toBeDisabled();

@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -93,6 +94,7 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
                     Row(Modifier.fillMaxWidth()){StatusPill(p.text("status"));Spacer(Modifier.weight(1f));TextButton(enabled=!locked,onClick={selected=null;confirmation=false}){Text("Close review")}}
                     Text(p.text("title").ifBlank{if(weather)"Weather assessment" else "Resource proposal"},style=MaterialTheme.typography.headlineSmall)
                     Text(p.text("model"),style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                    HarnessView(p["harness"] as? JsonObject)
                     if(p.text("status")=="RUNNING")Text("Analysis is processing. Refresh history to check its result.")
                     if(p.text("status")=="FAILED")Text(p.text("message").ifBlank{"Analysis did not complete. Check provider configuration before submitting a new request."})
                     if(weather) {
@@ -116,8 +118,11 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
                         if(evidence!=null) {
                             Text("Calculated indicators",style=MaterialTheme.typography.titleMedium)
                             Text(evidence.text("method"),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                            (evidence["thresholds"] as? JsonObject)?.let { limits ->
+                                Text("Regional thresholds · Heat ≥ ${limits.text("heat_c")} °C · Wind ≥ ${limits.text("wind_mps")} m/s · Rain ≥ ${limits.text("hourly_rain_mm")} mm/h",style=MaterialTheme.typography.bodySmall)
+                            }
                             (evidence["points"] as? JsonArray).orEmpty().take(12).forEach { item->val point=item.jsonObject
-                                Text("${point.text("latitude")}, ${point.text("longitude")} · Rain ${point.text("expected_rainfall_mm").takeUnless{it=="null"}.orEmpty().ifBlank{"incomplete"}} mm · Heat ${point.text("longest_median_heat_exceedance_hours")} h · Wind ${point.text("longest_median_wind_exceedance_hours")} h",style=MaterialTheme.typography.bodySmall)
+                                Text("${point.text("latitude")}, ${point.text("longitude")} · Rain ${point.text("expected_rainfall_mm").takeUnless{it=="null"}.orEmpty().ifBlank{"incomplete"}} mm · Heavy rain ${point.text("hours_with_mean_rain_at_or_above_threshold")} h · Heat ${point.text("longest_median_heat_exceedance_hours")} h · Wind ${point.text("longest_median_wind_exceedance_hours")} h",style=MaterialTheme.typography.bodySmall)
                             }
                             Text("Weather indicators do not establish local flood impacts.",style=MaterialTheme.typography.labelMedium)
                             OutlinedButton(enabled=!locked&&(evidence["points"] as? JsonArray)?.isNotEmpty()==true,onClick={navigate("Resource planning",record.text("id"))}){Text("Review staffing & resources")}
@@ -149,6 +154,9 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
                                 Text("Weather basis",style=MaterialTheme.typography.titleMedium)
                                 Text(context.text("summary"),style=MaterialTheme.typography.bodyMedium)
                                 Text("Forecast ${displayTime((context["source"] as? JsonObject)?.text("init_time").orEmpty())} · Policy ${context.text("policy_version")}",style=MaterialTheme.typography.bodySmall)
+                                (context["indicators"] as? JsonObject)?.let { peaks ->
+                                    Text("Peak rain ${peaks.text("maximum_expected_rainfall_mm")} mm · Heavy rain ${peaks.text("most_hours_with_mean_rain_at_or_above_threshold")} h · Heat ${peaks.text("longest_median_heat_exceedance_hours")} h · Wind ${peaks.text("longest_median_wind_exceedance_hours")} h",style=MaterialTheme.typography.bodySmall)
+                                }
                                 PlanningNotes("Missing weather evidence",context["missing_inputs"])
                             }
                             Text(plan.text("summary"))
@@ -202,13 +210,43 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
     }
 }
 
+@Composable internal fun HarnessView(harness:JsonObject?) {
+    if(harness==null)return
+    val plan=(harness["plan"] as? JsonArray).orEmpty()
+    val notes=(harness["notes"] as? JsonArray).orEmpty()
+    val steps=(harness["steps"] as? JsonArray).orEmpty()
+    if(plan.isEmpty()&&notes.isEmpty()&&steps.isEmpty())return
+    if(plan.isNotEmpty()){Text("Agent plan",style=MaterialTheme.typography.titleSmall);plan.forEach{val step=it.jsonObject
+        Text((when(step.text("status")){"done"->"✓ ";"in_progress"->"▶ ";else->"○ "})+step.text("title"),style=MaterialTheme.typography.bodySmall)}}
+    if(notes.isNotEmpty()){Text("Working notes",style=MaterialTheme.typography.titleSmall);notes.forEach{Text("• ${it.jsonPrimitive.contentOrNull.orEmpty()}",style=MaterialTheme.typography.bodySmall)}}
+    if(steps.isNotEmpty()){Text("Tool steps · ${harness.text("rounds")} rounds",style=MaterialTheme.typography.titleSmall);steps.forEach{val step=it.jsonObject
+        Text("• ${step.text("tool")}${if(step.text("ok")=="false")" — failed: ${step.text("error")}" else ""} · ${step.text("duration_ms")} ms",style=MaterialTheme.typography.bodySmall)}}
+}
+
 @Composable private fun PlanningNotes(title:String,value:JsonElement?) {
     val lines=(value as? JsonArray).orEmpty()
     if(lines.isNotEmpty()){Text(title,style=MaterialTheme.typography.titleSmall);lines.forEach{Text("• ${it.jsonPrimitive.content}",style=MaterialTheme.typography.bodySmall)}}
 }
 
 @Composable private fun PlanningComposer(api:LiveApiTransport,org:String,region:String,weather:Boolean,busy:Boolean,onClose:()->Unit,send:(JsonObject)->Unit,modifier:Modifier=Modifier,initialMission:String="",initialQuestion:String="") {
-    var question by remember{mutableStateOf(initialQuestion)};var mission by remember{mutableStateOf(if(initialMission.isBlank())emptySet<String>() else setOf(initialMission))}
+    var question by rememberSaveable{mutableStateOf(initialQuestion)};var mission by remember{mutableStateOf(if(initialMission.isBlank())emptySet<String>() else setOf(initialMission))}
+    // Server-synced draft: the same key the web portal uses, so work started
+    // on one device can be resumed in this app.
+    val draftKey="planning:"+(if(weather)"weather" else "resources")+":" + org + ":" + region
+    val draftScope=rememberCoroutineScope()
+    LaunchedEffect(draftKey){
+        runCatching{
+            val saved=api.execute(ApiEndpoint(HttpMethod.Get,"/api/me/drafts/$draftKey"){it.jsonObject})
+            val savedQuestion=((saved["payload"] as? JsonObject)?.get("values") as? JsonObject)?.text("question").orEmpty()
+            if(savedQuestion.isNotBlank()&&question.isBlank())question=savedQuestion
+        }
+    }
+    LaunchedEffect(question){
+        if(question.isBlank())return@LaunchedEffect
+        delay(900)
+        runCatching{api.execute(ApiEndpoint(HttpMethod.Put,"/api/me/drafts/$draftKey"){it.jsonObject},buildJsonObject{put("payload",buildJsonObject{put("values",buildJsonObject{put("question",question)});put("saved_at","")});put("base_version",0)})}
+    }
+    var mode by remember{mutableStateOf("EXECUTE")}
     var date by remember{mutableStateOf("")};var cycle by remember{mutableStateOf("00:00")}
     var first by remember{mutableStateOf("1")};var last by remember{mutableStateOf("24")}
     var stationDetail by remember{mutableStateOf(false)}
@@ -221,10 +259,12 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
             Row(verticalAlignment=Alignment.CenterVertically){Checkbox(stationDetail,{stationDetail=it},enabled=!busy);Column{Text("Include local temperature detail",style=MaterialTheme.typography.bodyMedium);Text("Separate 0.05° temperature and dew-point query",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}}
         }else ScopedRecordPicker(api,"/api/organizations/$org/regions/$region/operations","MISSION",mission,1,onChange={mission=it})
         OutlinedTextField(question,{question=it.take(2000)},label={Text(if(weather)"Preparedness question" else "Allocation requirements")},minLines=3,modifier=Modifier.fillMaxWidth())
+        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("EXECUTE" to "Execute","PLAN_FIRST" to "Plan first").forEach{(value,label)->FilterChip(selected=mode==value,onClick={mode=value},label={Text(label)})}}
+        if(mode=="PLAN_FIRST")Text("Plan-first: the agent records its plan before evidence tools, and allocations from this run cannot be approved.",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
         Text(if(weather)"BigQuery calculates the indicators. Wonder explains their basis and gaps." else "Spark checks applicants, skills, stock and commitments. This creates a proposal only.",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
         val validWindow=init!=null&&(first.toIntOrNull()?:0)>=1&&(last.toIntOrNull()?:0)>=(first.toIntOrNull()?:1)&&(last.toIntOrNull()?:0)-(first.toIntOrNull()?:0)<48
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            Button(enabled=!busy&&question.trim().length>=3&&(if(weather)validWindow else mission.isNotEmpty()),onClick={send(buildJsonObject{put("question",question);if(weather){put("include_station_detail",stationDetail);put("init_time",init.toString());put("from",Instant.fromEpochMilliseconds(init!!.toEpochMilliseconds()+(first.toLong()-1)*3600000).toString());put("to",Instant.fromEpochMilliseconds(init.toEpochMilliseconds()+last.toLong()*3600000).toString())}else put("mission_id",mission.first())})}){Text(if(weather)"Run assessment" else "Generate proposal")}
+            Button(enabled=!busy&&question.trim().length>=3&&(if(weather)validWindow else mission.isNotEmpty()),onClick={send(buildJsonObject{put("question",question);put("mode",mode);if(weather){put("include_station_detail",stationDetail);put("init_time",init.toString());put("from",Instant.fromEpochMilliseconds(init!!.toEpochMilliseconds()+(first.toLong()-1)*3600000).toString());put("to",Instant.fromEpochMilliseconds(init.toEpochMilliseconds()+last.toLong()*3600000).toString())}else put("mission_id",mission.first())})}){Text(if(weather)"Run assessment" else "Generate proposal")}
             TextButton(enabled=!busy,onClick=onClose){Text("Cancel")}
         }
     }

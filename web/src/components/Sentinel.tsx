@@ -4,21 +4,17 @@ import RequestForecast from "./RequestForecast";
 import WeatherChat, {weatherSuggestions} from "./WeatherChat";
 import { useEffect, useState } from "react";
 import PlanEditor from "./PlanEditor";
+import Specialised from "./Specialised";
+import AgentRuns from "./AgentRuns";
+import RadarMap from "./RadarMap";
+import OperationsMap from "./OperationsMap";
+import { HarnessSteps } from "./Harness";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { api, errorMessage } from "@/lib/api";
 import { useData, usePagedData, type Scope } from "@/lib/hooks";
 import { date, label, recordTitle, type Row } from "@/lib/catalog";
 import { Badge, Button, Drawer, Empty, Loading, Notice } from "./ui";
 import { Form, opts, reason, type Field } from "./Forms";
-const MapView = dynamic(() => import("./Map"), {
-  ssr: false,
-  loading: () => (
-    <div className="map-panel">
-      <Loading />
-    </div>
-  ),
-});
 export default function Sentinel({
   page,
   scope,
@@ -30,6 +26,12 @@ export default function Sentinel({
 }) {
   if (page === "assistance")
     return <Assistance scope={scope} revision={revision} />;
+  if (page === "specialised")
+    return <Specialised scope={scope} revision={revision} />;
+  if (page === "agent-runs")
+    return <AgentRuns scope={scope} revision={revision} />;
+  if (page === "deployment-map" || page === "operations-map")
+    return <OperationsMap scope={scope} revision={revision} />;
   if (["weather-analysis", "resource-planning"].includes(page))
     return (
       <Planning
@@ -248,11 +250,7 @@ function Radar({
       )}
       <div className={deployments ? "split single" : "split"}>
         <div className="stack">
-          <MapView
-            scope={scope.sentinel}
-            points={points}
-            onSelect={setSelected}
-          />
+          <RadarMap scope={scope} />
           <section className="panel">
             <div className="panel-head">
               <h2>Evidence & locations</h2>
@@ -500,7 +498,16 @@ function Planning({
           type: "checkbox",
           full: true,
         },
-      ]
+        {
+          key: "mode",
+          label: "Run mode",
+          value: "EXECUTE",
+          options: [
+            { value: "EXECUTE", label: "Execute - gather evidence and draft" },
+            { value: "PLAN_FIRST", label: "Plan first - record the agent plan before evidence" },
+          ],
+          full: true,
+        },      ]
     : [
         {
           key: "mission_id",
@@ -531,7 +538,16 @@ function Planning({
           })),
           full: true,
         },
-      ];
+        {
+          key: "mode",
+          label: "Run mode",
+          value: "EXECUTE",
+          options: [
+            { value: "EXECUTE", label: "Execute - gather evidence and draft" },
+            { value: "PLAN_FIRST", label: "Plan first - record the agent plan before evidence" },
+          ],
+          full: true,
+        },      ];
   return (
     <>
       {weather && <WeatherChat scope={scope} />} 
@@ -681,6 +697,7 @@ function Planning({
               selected.payload.recommendation?.summary ||
               errorMessage({code:selected.payload.error_code,message:selected.payload.message})}
           </p>
+          <HarnessSteps harness={selected.payload.harness} />
           {weather ? (
             <>
               <Evidence value={selected.payload.narrative} />
@@ -688,6 +705,14 @@ function Planning({
               <Evidence value={selected.payload.source} />
               {selected.payload.sources && <Evidence value={selected.payload.sources} />}
               <Evidence value={selected.payload.evidence} />
+              {selected.payload.evidence?.thresholds && (
+                <p>
+                  Regional thresholds: heat ≥{" "}
+                  {selected.payload.evidence.thresholds.heat_c} °C · wind ≥{" "}
+                  {selected.payload.evidence.thresholds.wind_mps} m/s · rain ≥{" "}
+                  {selected.payload.evidence.thresholds.hourly_rain_mm} mm/h
+                </p>
+              )}
               <Notice>
                 Weather indicators are not a validated local flood-impact
                 estimate.

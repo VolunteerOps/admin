@@ -25,6 +25,7 @@
   --surface: #fff;
   --line: #dce4ee;
   --soft: #eaf0f9;
+--tab-fill: #07336a;
   --gold: #e4d076;
   --danger: #a93232;
   --green: #197564;
@@ -560,23 +561,50 @@ select:focus-visible {
 }
 .tabs {
   display: flex;
-  gap: 24px;
+  gap: 6px;
+  align-items: flex-start;
   border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0 20px;
   margin-bottom: 27px;
   overflow-x: auto;
   scrollbar-width: thin;
 }
 .tabs a {
-  padding: 0 0 14px;
+  padding: 11px 16px 13px;
   white-space: nowrap;
   color: var(--muted);
   font-size: 14px;
   font-weight: 700;
   border-bottom: 2px solid transparent;
 }
+.tabs a:hover { color: var(--ink); }
 .tabs a.active {
-  color: var(--blue);
-  border-color: var(--blue);
+  color: #fff;
+  background: var(--tab-fill);
+  border-color: transparent;
+  border-radius: 0 0 18px 18px;
+  padding: 12px 36px 16px;
+  position: relative;
+  z-index: 1;
+}
+.notched-active, .mode-tabs [aria-pressed="true"] { position: relative; }
+.tabs a.active::before, .tabs a.active::after,
+.mode-tabs [aria-pressed="true"]::before, .mode-tabs [aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.tabs a.active::before, .mode-tabs [aria-pressed="true"]::before {
+  left: -18px;
+  background: radial-gradient(circle at 0 0, transparent 17px, var(--tab-fill) 18px);
+}
+.tabs a.active::after, .mode-tabs [aria-pressed="true"]::after {
+  right: -18px;
+  background: radial-gradient(circle at 100% 0, transparent 17px, var(--tab-fill) 18px);
 }
 .page-intro {
   font-size: 15px;
@@ -1174,6 +1202,7 @@ tbody tr:hover {
   --surface: #10233b;
   --line: #263b54;
   --soft: #1b3454;
+  --tab-fill: #14509e;
   color-scheme: dark;
 }
 .dark .button.primary {
@@ -1658,9 +1687,48 @@ html { scrollbar-gutter: stable; }
 .place-results { display:grid; gap:10px; margin:16px 0; }
 .place-result strong,.place-result small { display:block; }
 .selected-region { margin-top:24px; }
-.mode-tabs { display:flex; gap:12px; margin-bottom:24px; }
-.mode-tabs [aria-pressed=true] { background:var(--soft); border-color:var(--blue); }
+.mode-tabs { display:flex; gap:6px; align-items:flex-start; margin-bottom:24px; padding:0 20px; border-bottom:1px solid var(--line); background:var(--surface); overflow-x:auto; }
+.mode-tabs .button, .mode-tabs button { background:transparent; border:0; box-shadow:none; color:var(--muted); font-weight:700; padding:11px 16px 13px; border-radius:0; white-space:nowrap; cursor:pointer; }
+.mode-tabs [aria-pressed="true"] { background:var(--tab-fill); border-color:transparent; color:#fff; border-radius:0 0 16px 16px; padding:12px 34px 15px; }
+.radar-chip.active { background:var(--tab-fill); color:#fff; border-color:transparent; border-radius:0 0 14px 14px; padding-top:10px; padding-bottom:12px; }
 @media(max-width:700px) { .suggestions {grid-template-columns:1fr;} .weather-chat .panel-head {align-items:stretch;flex-direction:column;} }
 
 .region-preview { margin:20px 0; }
 .region-preview .map-panel { min-height:260px; height:260px; }
+
+/* Multi-hazard radar + operations map */
+.radar-hero { padding: 28px 4px 8px; }
+.radar-eyebrow { display: inline-block; padding: 6px 14px; border: 1px solid #10b981; border-radius: 999px; color: #10b981; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.radar-hero h2 { font-size: 34px; margin: 14px 0 8px; }
+.radar-hero p { max-width: 720px; opacity: .75; }
+.radar-hero-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.radar-hero-chips span { border: 1px solid rgba(16,185,129,.5); color: #10b981; border-radius: 8px; padding: 8px 14px; font-size: 13px; }
+.radar-layers { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+.radar-chip { border: 1px solid var(--border, #334155); background: transparent; border-radius: 8px; padding: 8px 12px; cursor: pointer; opacity: .65; }
+.radar-chip.active { opacity: 1; border-color: #38bdf8; }
+.radar-map-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b; }
+.radar-map { height: 520px; background: #0b1220; }
+.radar-sweep { position: absolute; width: 180px; height: 180px; transform: translate(-50%, -50%); pointer-events: none; }
+.radar-sweep span { position: absolute; inset: 0; border: 2px solid rgba(56,189,248,.55); border-radius: 50%; animation: radarPulse 3s infinite; }
+.radar-sweep span:nth-child(2) { animation-delay: 1s; }
+.radar-sweep span:nth-child(3) { animation-delay: 2s; }
+@keyframes radarPulse { 0% { transform: scale(.25); opacity: .9; } 100% { transform: scale(1); opacity: 0; } }
+.radar-legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 12px; background: rgba(2,6,23,.8); padding: 8px 12px; border-radius: 8px; font-size: 12px; }
+.radar-legend .dot, .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; background: #38bdf8; }
+.dot.ongoing { background: #f97316; } .dot.artificial { background: #ef4444; } .dot.sensor { background: #22c55e; }
+.radar-pin, .ops-pin { width: 18px; height: 18px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid rgba(255,255,255,.85); cursor: pointer; background: #38bdf8; padding: 0; }
+.radar-pin-flood { background: #0ea5e9; } .radar-pin-heatwind { background: #f59e0b; } .radar-pin-earthquake { background: #f97316; }
+.radar-pin-landslide { background: #a16207; } .radar-pin-drought { background: #eab308; } .radar-pin-artificial { background: #ef4444; }
+.radar-pin-sensors { background: #22c55e; border-radius: 50%; transform: none; width: 13px; height: 13px; }
+.radar-pin.severity-severe, .radar-pin.severity-high { box-shadow: 0 0 0 6px rgba(239,68,68,.25); }
+.radar-disclaimer { font-size: 12px; opacity: .7; margin: 8px 2px 16px; }
+.radar-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.radar-facts dt { font-size: 11px; text-transform: uppercase; opacity: .6; }
+.radar-facts dd { margin: 2px 0 0; }
+.radar-row { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; }
+.ops-map-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; flex-wrap: wrap; }
+.live-badge { color: #22c55e; font-weight: 700; letter-spacing: .08em; }
+.live-badge i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; margin-right: 6px; animation: radarPulse 2s infinite; }
+.ops-map { height: calc(100vh - 260px); min-height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b; }
+
+.mission-stream-preview { opacity:.75; font-style: italic; }

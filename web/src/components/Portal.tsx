@@ -420,6 +420,9 @@ export default function Portal() {
                 "sentinel",
                 "weather-analysis",
                 "resource-planning",
+                "specialised",
+                "agent-runs",
+                "operations-map",
                 "assistance",
                 "deployment-map",
               ].includes(path) ? (

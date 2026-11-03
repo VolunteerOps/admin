@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { api, ApiError, errorMessage } from "@/lib/api";
+import { api, errorMessage, ApiError } from "@/lib/api";
+import { postStream, partialField } from "@/lib/stream";
+import { fetchServerDraft, syncServerDraft, deleteServerDraft } from "@/lib/drafts";
 import type { Scope } from "@/lib/hooks";
 import { Button, Icon, Notice } from "./ui";
 
@@ -11,7 +13,11 @@ type Plan = {
   ready: boolean;
   notes: string[];
   issues: { field: string }[];
+  progress?: { completed_fields: string[]; missing_fields: string[] };
+  checkpoint?: { draft: Record<string, any>; completed_fields: string[]; at: string };
+  harness?: { plan: { title: string; status: string }[]; notes: string[]; steps: { tool: string; ok: boolean }[] };
 };
+type Checkpoint = { draft: Record<string, any>; at: string; fields: number };
 type Pending = { message: string; key: string };
 const fieldLabels: Record<string, string> = {
   title: "Mission name",
@@ -41,6 +47,9 @@ export default function MissionChat({
   const [history, setHistory] = useState<Turn[]>([]);
   const [pending, setPending] = useState<Pending | null>(null);
   const [result, setResult] = useState<Plan | null>(null);
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [elapsed, setElapsed] = useState(0);
+  const [streamPreview, setStreamPreview] = useState("");
   const [busy, setBusy] = useState(false),
     [saving, setSaving] = useState(false),
     [review, setReview] = useState(false);
@@ -50,6 +59,42 @@ export default function MissionChat({
     composer = useRef<HTMLTextAreaElement>(null);
   const createKey = useRef(crypto.randomUUID());
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  useEffect(() => {
+    if (!pending) { setElapsed(0); return; }
+    const started = Date.now();
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 500);
+    return () => clearInterval(id);
+  }, [pending]);  const serverDraftKey = "mission-chat:" + scope.sentinel.split("/organizations/")[1]?.replace("/sentinel/regions/", ":").replace(/\//g, ":");
+  useEffect(() => {
+    let live = true;
+    void fetchServerDraft(serverDraftKey).then((server) => {
+      if (!live || !server?.payload) return;
+      const saved = server.payload as any;
+      setHistory((current) => (current.length ? current : Array.isArray(saved.history) ? saved.history : current));
+      if (saved.result) setResult((current) => current ?? saved.result);
+      if (Array.isArray(saved.checkpoints)) setCheckpoints((current) => (current.length ? current : saved.checkpoints));
+    });
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverDraftKey]);  const storageKey = "resq-mission-chat:" + scope.sentinel;
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (Array.isArray(saved.history)) setHistory(saved.history);
+      if (saved.result) setResult(saved.result);
+      if (Array.isArray(saved.checkpoints)) setCheckpoints(saved.checkpoints);
+    } catch { /* Resume is best-effort. */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+  useEffect(() => {
+    try {
+      if (!history.length && !result) return;
+      window.localStorage.setItem(storageKey, JSON.stringify({ history, result, checkpoints }));
+      syncServerDraft(serverDraftKey, { history, result, checkpoints });
+    } catch { /* ignore */ }
+  }, [storageKey, history, result, checkpoints]);
   useEffect(() => {
     const el = transcript.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -74,24 +119,41 @@ export default function MissionChat({
     setMessage("");
     setReview(false);
     try {
-      const answer = await api(
-        scope.sentinel + "/conversations/mission",
-        {
-          message: outgoing.message,
-          history: history.slice(-20),
-          draft: result?.draft || {},
-          timezone,
-        },
-        "POST",
-        undefined,
-        outgoing.key,
-      );
+      const body = {
+        message: outgoing.message,
+        history: history.slice(-20),
+        draft: result?.draft || {},
+        timezone,
+      };
+      let streamed = "";
+      setStreamPreview("");
+      const answer = await postStream(scope.sentinel + "/conversations/mission/stream", body, (event) => {
+        if (event.type === "token") {
+          streamed += event.text;
+          setStreamPreview(partialField(streamed, "reply"));
+        } else if (event.type === "tool_start") setStreamPreview("Checking " + String(event.tool).replace(/_/g, " ") + "…");
+        else if (event.type === "round") setStreamPreview("Thinking…");
+      }).catch(async (streamError) => {
+        // Streaming is an enhancement: fall back to the JSON endpoint once.
+        if (streamed) throw streamError;
+        return api(scope.sentinel + "/conversations/mission", body, "POST", undefined, outgoing.key);
+      });
+      setStreamPreview("");
       setHistory((previous) => [
         ...previous,
         { role: "user", content: outgoing.message },
         { role: "assistant", content: answer.reply },
       ]);
       setResult(answer);
+      if (answer.checkpoint)
+        setCheckpoints((previous) => [
+          ...previous.slice(-9),
+          {
+            draft: answer.checkpoint.draft,
+            at: answer.checkpoint.at,
+            fields: answer.checkpoint.completed_fields.length,
+          },
+        ]);
       setPending(null);
       createKey.current = crypto.randomUUID();
     } catch (e) {
@@ -114,6 +176,25 @@ export default function MissionChat({
       setBusy(false);
       composer.current?.focus();
     }
+  }
+  function restore(checkpoint: Checkpoint) {
+    if (lock.current || busy) return;
+    setResult((previous) =>
+      previous
+        ? { ...previous, draft: checkpoint.draft, ready: false, issues: [] }
+        : previous,
+    );
+    setHistory((previous) => [
+      ...previous,
+      {
+        role: "assistant",
+        content:
+          "Draft restored to the checkpoint from " +
+          new Date(checkpoint.at).toLocaleString() +
+          ". Send your next message and the planner will continue from this draft.",
+      },
+    ]);
+    setReview(true);
   }
   async function create() {
     if (lock.current || !result?.ready || pending || message.trim()) return;
@@ -191,12 +272,9 @@ export default function MissionChat({
           )}
           {busy && (
             <div className="mission-thinking" role="status">
-              <span className="mission-thinking-dots" aria-hidden>
-                <i />
-                <i />
-                <i />
-              </span>
-              Working on your plan…
+              <span className="mission-thinking-dots" aria-hidden><i /><i /><i /></span>
+              Working on your plan{elapsed > 0 ? " - " + elapsed + "s" : ""}
+              {streamPreview && <p className="mission-stream-preview">{streamPreview}</p>}
             </div>
           )}
         </div>
@@ -227,6 +305,52 @@ export default function MissionChat({
             </button>
             {review && (
               <div className="mission-draft-content">
+                {result.progress && (
+                  <div aria-label="Draft progress">
+                    <p className="mission-review-note">
+                      Progress:{" "}
+                      {result.progress.completed_fields
+                        .map((f) => fieldLabels[f] || f)
+                        .join(", ") || "nothing yet"}
+                      {result.progress.missing_fields.length
+                        ? " · Still needed: " +
+                          result.progress.missing_fields
+                            .map((f) => fieldLabels[f] || f)
+                            .join(", ")
+                        : " · All fields complete"}
+                    </p>
+                  </div>
+                )}
+                {!!checkpoints.length && (
+                  <div aria-label="Draft checkpoints">
+                    <p className="mission-review-note">
+                      Checkpoints (restore rewinds the draft; your next
+                      message continues from it):
+                    </p>
+                    <ul>
+                      {checkpoints.map((checkpoint, i) => (
+                        <li key={i}>
+                          {new Date(checkpoint.at).toLocaleString()} ·{" "}
+                          {checkpoint.fields} fields{" "}
+                          <button
+                            type="button"
+                            onClick={() => restore(checkpoint)}
+                          >
+                            Restore
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {!!result.harness?.steps?.length && (
+                  <p className="mission-review-note">
+                    Agent steps:{" "}
+                    {result.harness.steps
+                      .map((s) => `${s.tool}${s.ok ? "" : " (failed)"}`)
+                      .join(" → ")}
+                  </p>
+                )}
                 <dl>
                   {Object.entries(fieldLabels)
                     .filter(

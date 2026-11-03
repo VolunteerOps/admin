@@ -1,5 +1,5 @@
 export const areas = [
-  { name: "Overview", icon: "overview", pages: [["overview", "Overview"]] },
+  { name: "Overview", icon: "overview", pages: [["overview", "Overview"], ["operations-map", "Operations map"]] },
   {
     name: "Missions",
     icon: "missions",
@@ -29,6 +29,8 @@ export const areas = [
     pages: [
       ["sentinel", "Radar"],
       ["weather-analysis", "Weather analysis"],
+      ["specialised", "Specialised planning"],
+      ["agent-runs", "Agent runs"],
       ["assistance", "Assistance"],
     ],
   },
