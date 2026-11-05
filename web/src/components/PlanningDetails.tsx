@@ -5,8 +5,8 @@ export type PlanningReferences = { people: Record<string,string>; resources: Rec
 export function ReferenceText({text,references}:{text:unknown;references:PlanningReferences}) {
  const value=displayText(text);
  // Numeric quantities remain numbers. Only explicitly identified people and known UUIDs are linked.
- const parts=value.split(/((?:volunteers?|responders?|users?)\s+[\d,\s]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi);
- return <>{parts.map((part,i)=>references.resources[part]?<Link key={i} href={'/resources?record='+encodeURIComponent(part)}>{references.resources[part]}</Link>:/^(volunteers?|responders?|users?)\s+\d/i.test(part)?<Fragment key={i}>{part.split(/(\d+)/).map((token,j)=>references.people[token]?<Link key={j} href={'/people?user='+token}>{references.people[token]}</Link>:token)}</Fragment>:<Fragment key={i}>{part}</Fragment>)}</>;
+ const parts=value.split(/((?:volunteers?|responders?|users?|excluded ineligible)\s+[\d,\s]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi);
+ return <>{parts.map((part,i)=>references.resources[part]?<Link key={i} href={'/resources?record='+encodeURIComponent(part)}>{references.resources[part]}</Link>:/^(volunteers?|responders?|users?|excluded ineligible)\s+\d/i.test(part)?<Fragment key={i}>{part.replace(/,\s*/g,', ').split(/(\d+)/).map((token,j)=>references.people[token]?<Link key={j} href={'/people?user='+token}>{references.people[token]}</Link>:token)}</Fragment>:<Fragment key={i}>{part}</Fragment>)}</>;
 }
 export function planningReferences(snapshot:any,roster:any[],inventory:any[]):PlanningReferences {
  return {people:Object.fromEntries([...(snapshot?.candidates||[]).map((p:any)=>[String(p.user_id),p.display_name||'Volunteer']),...roster.map(p=>[String(p.userId),p.user?.fullName||'Volunteer'])]),resources:Object.fromEntries([...(snapshot?.resources||[]).map((r:any)=>[r.id,resourceName(r)]),...inventory.map(r=>[r.id,resourceName(r.payload)])])};

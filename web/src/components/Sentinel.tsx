@@ -197,8 +197,8 @@ function Planning({
     weather ? null : scope.sentinel + "/planning/weather",
     revision,
   );
-  const roster=usePagedData(!weather && selected ? "/api/organizations/"+scope.org+"/memberships" : null,revision,100);
-  const inventory=usePagedData(!weather && selected ? scope.ops+"/records?kind=INVENTORY" : null,revision);
+  const roster=usePagedData(!weather ? "/api/organizations/"+scope.org+"/memberships" : null,revision,100);
+  const inventory=usePagedData(!weather ? scope.ops+"/records?kind=INVENTORY" : null,revision);
   const references=planningReferences(selected?.payload.snapshot,roster.data||[],inventory.data?.items||[]);
   const [recommendation, setRecommendation] = useState<any>(null);
   const [context, setContext] = useState({ mission: "", assessment: "" });
