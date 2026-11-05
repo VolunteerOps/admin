@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import { displayText, resourceName } from "@/lib/display-text";
-export type PlanningReferences = { people: Record<string,string>; resources: Record<string,string> };
+export type PlanningReferences = { people: Record<string,string>; resources: Record<string,string>; missions?: Record<string,string> };
 export function ReferenceText({text,references}:{text:unknown;references:PlanningReferences}) {
  const value=displayText(text);
  // Numeric quantities remain numbers. Only explicitly identified people and known UUIDs are linked.
- const parts=value.split(/((?:volunteers?|responders?|users?|excluded ineligible)\s+[\d,\s]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi);
- return <>{parts.map((part,i)=>references.resources[part]?<Link key={i} href={'/resources?record='+encodeURIComponent(part)}>{references.resources[part]}</Link>:/^(volunteers?|responders?|users?|excluded ineligible)\s+\d/i.test(part)?<Fragment key={i}>{part.replace(/,\s*/g,', ').split(/(\d+)/).map((token,j)=>references.people[token]?<Link key={j} href={'/people?user='+token}>{references.people[token]}</Link>:token)}</Fragment>:<Fragment key={i}>{part}</Fragment>)}</>;
+ const personPattern=/(?:volunteers?|responders?|users?|user_ids?|excluded ineligible|IDs?)\s*[:#(]?\s*\d+(?:\s*,\s*\d+)*\)?/i;
+ const parts=value.split(new RegExp('('+personPattern.source+'|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})','gi'));
+ return <>{parts.map((part,i)=>references.resources[part]?<Link key={i} href={'/resources?record='+encodeURIComponent(part)}>{references.resources[part]}</Link>:references.missions?.[part]?<Link key={i} href={'/missions?record='+encodeURIComponent(part)}>{references.missions[part]}</Link>:personPattern.test(part)?<Fragment key={i}>{part.replace(/,\s*/g,', ').split(/(\d+)/).map((token,j)=>references.people[token]?<Link key={j} href={'/people?user='+token}>{references.people[token]}</Link>:token)}</Fragment>:<Fragment key={i}>{part}</Fragment>)}</>;
 }
 export function planningReferences(snapshot:any,roster:any[],inventory:any[]):PlanningReferences {
- return {people:Object.fromEntries([...(snapshot?.candidates||[]).map((p:any)=>[String(p.user_id),p.display_name||'Volunteer']),...roster.map(p=>[String(p.userId),p.user?.fullName||'Volunteer'])]),resources:Object.fromEntries([...(snapshot?.resources||[]).map((r:any)=>[r.id,resourceName(r)]),...inventory.map(r=>[r.id,resourceName(r.payload)])])};
+ return {people:Object.fromEntries([...(snapshot?.candidates||[]).map((p:any)=>[String(p.user_id),p.display_name||'Volunteer']),...roster.map(p=>[String(p.userId),p.user?.fullName||'Volunteer'])]),resources:Object.fromEntries([...(snapshot?.resources||[]).map((r:any)=>[r.id,resourceName(r)]),...inventory.map(r=>[r.id,resourceName(r.payload)])]),missions:snapshot?.mission?{[snapshot.mission.id]:snapshot.mission.title}:{}};
 }
 export function PlanningContext({value,references}:{value:any;references:PlanningReferences}) {
  if(!value)return null;
