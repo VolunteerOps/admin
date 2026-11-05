@@ -35,6 +35,7 @@ export default function Administration({
   return <Platform scope={scope} revision={revision} allowed={platform} />;
 }
 function People({ scope, revision }: { scope: Scope; revision: number }) {
+  const [showInvitations,setShowInvitations]=useState(false);
   const roster = usePagedData(
     "/api/organizations/" + scope.org + "/memberships",
     revision,
@@ -42,7 +43,7 @@ function People({ scope, revision }: { scope: Scope; revision: number }) {
   );
   const { data, error, loading } = roster;
   const invitations = usePagedData(
-    "/api/organizations/" + scope.org + "/invitations",
+    showInvitations ? "/api/organizations/" + scope.org + "/invitations" : null,
     revision,
     100,
   );
@@ -135,6 +136,8 @@ function People({ scope, revision }: { scope: Scope; revision: number }) {
         <Button onClick={roster.loadMore}>Load more people</Button>
       )}
       <h2 className="section-title">Pending invitations</h2>
+      {!showInvitations ? <Button onClick={()=>setShowInvitations(true)}>Review invitations</Button> : <>
+      {invitations.error && <Notice error>{invitations.error}</Notice>}
       <section className="panel">
         {(invitations.data || [])
           .filter((i: any) => !i.acceptedAt && !i.revokedAt && !i.declinedAt)
@@ -152,11 +155,12 @@ function People({ scope, revision }: { scope: Scope; revision: number }) {
               </Button>
             </div>
           ))}
-        {!invitations.data?.length && <Empty title="No invitations pending" />}
+        {invitations.loading ? <Loading/> : !invitations.error && !invitations.data?.length && <Empty title="No invitations pending" />}
       </section>
       {invitations.hasMore && (
         <Button onClick={invitations.loadMore}>Load more invitations</Button>
       )}
+      </>}
       {invite && (
         <Drawer
           title="Invite to your workspace"

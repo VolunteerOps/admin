@@ -15,6 +15,14 @@ test('resource deep links open details even when the record is outside the first
  await page.goto('/resources?record='+stockRow.id);
  await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('dialog')).toContainText(stockRow.payload.title);
 });
+
+test('opening a volunteer profile does not trigger sensitive invitation access',async({page})=>{
+ await fixtures(page);let invitationRequests=0;
+ await page.route('**/organizations/*/invitations',route=>{invitationRequests++;return route.fulfill({status:403,json:{error:'RECENT_AUTH_REQUIRED'}});});
+ await page.goto('/people?user=8');
+ await expect(page.getByRole('dialog')).toContainText('Daniel Otieno');
+ expect(invitationRequests).toBe(0);
+});
 test('known legacy punctuation is repaired in Sentinel responses',async({page})=>{
  await fixtures(page);await page.route('**/conversations/weather/stream',r=>r.fulfill({contentType:'text/event-stream',body:'event: result\ndata: '+JSON.stringify({payload:{narrative:{summary:'River level â€” check locally. Temperature 30Â°C.',preparedness:[],missing_inputs:[],assumptions:[],source_ids:[]},sources:[]}})+'\n\n'}));
  await page.goto('/sentinel?ask=1');await page.getByLabel('Ask about your region').fill('What changed?');await page.locator('.weather-chat').getByRole('button',{name:'Ask Sentinel',exact:true}).click();

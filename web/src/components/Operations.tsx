@@ -840,6 +840,8 @@ function RecordDetail({
                 "capacity",
                 "assigned_count",
                 "location",
+                "vehicle_model",
+                "plate_number",
                 "quantity",
                 "reserved",
                 "unit",
