@@ -1,4 +1,5 @@
 "use client";
+import { DraftScope } from "./Forms";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname,useRouter } from "next/navigation";
@@ -43,6 +44,12 @@ export default function Portal() {
     [menu, setMenu] = useState(false),
     [dark, setDark] = useState(false);
   const [verifyNotice, setVerifyNotice] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 4);
+    update(); window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
   useEffect(() => {
     setDark(localStorage.getItem("resq-theme") === "dark");
     let stop = () => {};
@@ -194,7 +201,7 @@ export default function Portal() {
   ].includes(path);
   const title = titles[path] || "Page not found";
   return (
-    <div className={"app " + (dark ? "dark" : "")}>
+    <DraftScope.Provider value={[user.uid,org,region].join(":")}><div className={"app " + (dark ? "dark" : "")}>
       <Reauthenticate />
       <aside className={"sidebar " + (menu ? "open" : "")}>
         <Link href="/overview" aria-label="ResQOps home">
@@ -211,10 +218,10 @@ export default function Portal() {
         <nav aria-label="Main navigation">
           {areas.filter(a=>a.name!=="Administration").map((a,i) => <Fragment key={a.name}>{a.name==="Field reports"&&<span className="eyebrow sidebar-section">Plan & improve</span>}<Link className={"nav-link "+(area===a?"active":"")} href={"/"+a.pages[0][0]} aria-current={area===a?"page":undefined}><Icon name={a.icon}/>{a.name}</Link></Fragment>)}
         </nav>
-        <div className="sidebar-bottom"><Link className="sidebar-pro" href="/pro"><span className="sidebar-pro-mark"><Icon name="shield"/></span><span><strong>ResQOps <em>PRO</em></strong><small>A little extra support.</small></span><Icon name="arrow" size={16}/></Link><span className="sidebar-footnote">PREPARED TOGETHER.</span></div>
+        <div className="sidebar-bottom"><Link className="sidebar-pro" href="/pro"><span className="sidebar-pro-mark"><Icon name="shield" size={24}/></span><span><strong>ResQOps <em>PRO</em></strong><small>Explore your Pro benefits</small></span></Link></div>
       </aside>
       <div className="main-column">
-        <header className="topbar">
+        <header className={"topbar" + (scrolled ? " is-scrolled" : "")}>
           <div className="workspace-switch">
             <Button
               className="mobile-menu"
@@ -270,14 +277,6 @@ export default function Portal() {
         <main id="main" className="content">
           <header className="page-heading">
             <div>
-              <span className="eyebrow">
-                {area?.name || "Account"} /{" "}
-                {new Intl.DateTimeFormat("en-KE", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                }).format(new Date())}
-              </span>
               <h1>{title}</h1>
             </div>
             <div className="heading-actions">
@@ -296,9 +295,11 @@ export default function Portal() {
               )}
             </div>
           </header>
+          <div className={area && area.pages.length > 1 ? "page-folder" : "page-view"}>
           {area && area.pages.length > 1 && (
             <NavigationTabs pages={area.pages} current={path} label="Section navigation" />
           )}
+          <div className="page-folder-content">
           {(failure || me.error || regions.error) && (
             <Notice error>{failure || me.error || regions.error}</Notice>
           )}
@@ -382,8 +383,9 @@ export default function Portal() {
               <Operations page={path} scope={scope} revision={revision} />
             )}
           </ViewBoundary></Fragment>
+          </div></div>
         </main>
       </div>
-    </div>
+    </div></DraftScope.Provider>
   );
 }

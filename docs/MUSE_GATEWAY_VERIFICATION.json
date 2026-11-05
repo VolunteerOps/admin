@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-11-04T16:36:27Z",
+  "environment": "staging",
+  "service": "resq-api",
+  "deployment_id": "1bdf8c40-f506-449d-8a25-dafd86fa8100",
+  "deployment_status": "SUCCESS",
+  "api_region": "us-east4-eqdc4a",
+  "path": "Railway API -> signed HTTPS tunnel -> local Windows gateway -> Meta Model API",
+  "browser_contains_meta_key": false,
+  "api_readiness_http_status": 200,
+  "portal_api_proxy_http_status": 200,
+  "remote_checks": [
+    {"workflow": "mission planning", "model": "muse-spark-1.3", "success": true, "tools": ["read_mission_requirements"], "rounds": 6},
+    {"workflow": "weather explanation", "model": "muse-wonder-1.0", "success": true, "tools": ["read_weather_evidence"], "rounds": 7}
+  ],
+  "test_data": "Synthetic tool evidence; no missions created; no BigQuery/GCS queries executed",
+  "tests": {"local_gateway": 6, "backend_agent_and_transport": 19, "backend_compilation": "passed", "backend_test_types": "passed"},
+  "dependency": "This computer and its gateway/tunnel processes must remain awake and connected. Real weather analysis still requires data-provider permissions and billing."
+}

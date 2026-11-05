@@ -47,6 +47,7 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
   const [resourceId, setResourceId] = useState("");
   const [quantity, setQuantity] = useState(10);
   const [sourceKind, setSourceKind] = useState("ASSESSMENT");
+  const [sourceId,setSourceId]=useState("");
   const [audience, setAudience] = useState("COORDINATOR");
   const [language, setLanguage] = useState("en");
   const [reason, setReason] = useState("");
@@ -74,6 +75,7 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
     } finally { setBusy(false); }
   }
   async function run() {
+    if(!canRun)return;
     const body: any = {};
     if (cap.key === "flood" || cap.key === "heat") { body.question = question; if (assessmentId) body.assessment_id = assessmentId; }
     else if (cap.key === "watch" || cap.key === "multi-region") body.question = question;
@@ -94,18 +96,23 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
       body.requirements = [{ resource_id: resourceId, quantity }];
     } else if (cap.key === "briefings") {
       body.source_kind = sourceKind;
-      body.source_id = sourceKind === "ASSESSMENT" ? assessmentId : selected?.id;
+      body.source_id = sourceId;
       body.audience = audience; body.language = language || "en";
     }
     const result = await post(base + "/" + cap.key, body);
     if (result?.id) setSelected(result);
   }
   const p = selected?.payload ?? {};
+  const briefingSources:Row[]=(sourceKind==='ASSESSMENT'?assessments.data?.items:sourceKind==='PROPOSAL'?proposals.data?.items:history.data?.items)||[];
+  const usableSources=briefingSources.filter(r=>['DRAFT','APPROVED'].includes(r.payload.status));
   const canRun = !busy && (() => {
-    if (cap.key === "wind" || cap.key === "after-action") return !!missionId;
-    if (cap.key === "shortage") return !!missionId && !!resourceId;
+    if(cap.key!=='briefings'&&question.trim().length<3)return false;
+    if (cap.needs === "mission"&&!missionId)return false;
+    if(cap.key==='after-action'&&!(missions.data?.items||[]).some((r:Row)=>r.id===missionId&&['COMPLETED','CANCELLED'].includes(r.payload.status)))return false;
+    if(cap.key==='what-if'&&capacity!==''&&(!Number.isInteger(Number(capacity))||Number(capacity)<0||Number(capacity)>1000))return false;
+    if (cap.key === "shortage") return !!resourceId && Number.isInteger(quantity)&&quantity>0;
     if (cap.key === "outcome") return !!assessmentId;
-    if (cap.key === "briefings") return !!(sourceKind === "ASSESSMENT" ? assessmentId : selected);
+    if (cap.key === "briefings") return usableSources.some(r=>r.id===sourceId)&&language.trim().length>=2;
     return true;
   })();
 
@@ -129,7 +136,7 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
           <section className="panel">
             <div className="form-grid">
               <label className="full">Capability
-                <select value={cap.key} onChange={(e) => { const next = CAPS.find((c) => c.key === e.target.value)!; setCap(next); setQuestion(next.q); }}>
+                <select aria-label="Capability" value={cap.key} onChange={(e) => { const next = CAPS.find((c) => c.key === e.target.value)!; setCap(next); setQuestion(next.q); }}>
                   {CAPS.map((c) => <option key={c.key} value={c.key}>{c.label} · {c.model}</option>)}
                 </select>
               </label>
@@ -137,12 +144,12 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
                 <label className="full">Mission
                   <select value={missionId} onChange={(e) => setMissionId(e.target.value)}>
                     <option value="">Select a mission…</option>
-                    {(missions.data?.items || []).map((r: Row) => <option key={r.id} value={r.id}>{recordTitle(r)}</option>)}
+                    {(missions.data?.items || []).filter((r:Row)=>cap.key!=='after-action'||['COMPLETED','CANCELLED'].includes(r.payload.status)).map((r: Row) => <option key={r.id} value={r.id}>{recordTitle(r)}</option>)}
                   </select>
                 </label>
               )}
-              {(cap.needs === "assessment" || cap.key === "briefings") && (
-                <label className="full">{cap.key === "briefings" ? "Source assessment" : "Weather assessment (latest if unselected)"}
+              {cap.needs === "assessment" && (
+                <label className="full">Weather assessment (latest if unselected)
                   <select value={assessmentId} onChange={(e) => setAssessmentId(e.target.value)}>
                     <option value="">Select an assessment…</option>
                     {(assessments.data?.items || []).map((r: Row) => <option key={r.id} value={r.id}>{date(r.updatedAt)} · {r.payload.status}</option>)}
@@ -172,8 +179,14 @@ export default function Specialised({ scope, revision }: { scope: Scope; revisio
               </>}
               {cap.key === "briefings" && <>
                 <label>Source kind
-                  <select value={sourceKind} onChange={(e) => setSourceKind(e.target.value)}>
+                  <select aria-label="Source kind" value={sourceKind} onChange={(e) => {setSourceKind(e.target.value);setSourceId("");}}>
                     <option value="ASSESSMENT">Weather assessment</option><option value="PROPOSAL">Resource proposal</option><option value="ANALYSIS">Specialised analysis (select in history)</option>
+                  </select>
+                </label>
+                <label>Briefing source
+                  <select aria-label="Briefing source" value={sourceId} onChange={e=>setSourceId(e.target.value)}>
+                    <option value="">Select a completed source</option>
+                    {usableSources.map(r=><option key={r.id} value={r.id}>{recordTitle(r)}</option>)}
                   </select>
                 </label>
                 <label>Audience

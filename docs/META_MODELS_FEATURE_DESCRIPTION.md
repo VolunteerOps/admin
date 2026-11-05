@@ -111,7 +111,7 @@ interfaces, and were not covered in the description above.
 - **Expiring drafts and revalidation at approval.** Proposals expire after 30
   minutes. Approval rechecks the mission, stock versions and any linked
   weather assessment; if any of them changed, the proposal must be
-  recomputed. Approval requires recent MFA and commits all assignments and
+  recomputed. Approval requires recent authentication (with MFA only when the workspace policy requires it) and commits all assignments and
   reservations in one transaction, with an audit record.
 
 ### Model governance and resilience (both models)
@@ -272,9 +272,18 @@ a pin shows its type, severity, coordinates, source and provenance, and
 routes the coordinator to the relevant next step (weather analysis, flood
 synthesis, resource planning, assistance, or agent runs).
 
-The Dashboard gains a live operations map in the SOC/command style: the
-region's country outline, category-styled pins for predictions, ongoing
-disasters, missions, volunteer field reports and deployments, an indicative
-impact radius for selected disasters, 30-second live refresh, and 3D
-building extrusions with precise pinpointing when zoomed past street
-level.
+The Dashboard operations map shows the configured operating-region boundary,
+category-styled pins for predictions, reported hazards, missions, volunteer
+field reports and deployments, a 30-second refresh, and 3D building extrusions
+when supported by the configured map style. Report verification stays visible.
+It does not draw an affected-area radius without supporting impact evidence.
+Missing sources and truncated record lists are disclosed instead of suggesting
+that an empty map establishes safe conditions.
+
+## QA review — 5 November 2026
+
+See [SENTINEL_QA_REVIEW_2026-11-05.md](SENTINEL_QA_REVIEW_2026-11-05.md)
+for the implementation review, corrected defects, regression checks and live
+verification limits. Scheduled incident imports require an explicitly configured
+custodian (`INCIDENT_FEED_OWNER_USER_ID`) with active coordinator access; imports
+honour that account's region grants and never mark feed reports verified.

@@ -52,15 +52,58 @@ export default function Sentinel({
 }
 function Radar({scope,revision}:{scope:Scope;revision:number;deployments:boolean}) {
  const [ask,setAsk]=useState(false);
+ const [chatOpened,setChatOpened]=useState(false);
  useEffect(()=>{setAsk(new URLSearchParams(window.location.search).has("ask"));},[]);
- return <div className="sentinel-reference"><div className="sentinel-intro"><div><span className="eyebrow">A SHARED PICTURE. A CLEARER NEXT STEP.</span><h2>See what needs your attention.</h2><p>Review the source. Understand the local context. Prepare your next move.</p></div><div className="action-list"><Link className="button" href="/campaigns">Preparedness campaigns</Link><Button variant="primary" icon="sentinel" onClick={()=>setAsk(!ask)} aria-expanded={ask} aria-controls="sentinel-conversation">Ask Sentinel</Button></div></div><RadarMap scope={scope}/>{ask&&<div id="sentinel-conversation"><WeatherChat scope={scope}/></div>}<div className="sentinel-source-link"><span>Forecasts indicate possible conditions. Field reports and local checks establish what is happening on the ground.</span><Link className="text-button" href="/weather-analysis">Sources & coverage →</Link></div></div>;
+ useEffect(()=>{if(ask)setChatOpened(true);},[ask]);
+ return <div className="sentinel-reference">
+   <div className="sentinel-intro"><div><h2>See what needs your attention.</h2><p>Review the source. Understand the local context. Prepare your next move.</p></div><div className="action-list"><Link className="button" href="/campaigns">Preparedness campaigns</Link><Button id="ask-sentinel-toggle" variant="primary" icon="sentinel" onClick={()=>setAsk(!ask)} aria-expanded={ask} aria-controls="sentinel-conversation">Ask Sentinel</Button></div></div>
+   <div className={"sentinel-workspace"+(ask?" ask-open":"")}>
+     <div className="sentinel-map-column"><RadarMap scope={scope}/></div>
+     <aside id="sentinel-conversation" className="sentinel-assistant" aria-label="Sentinel assistant" hidden={!ask}>
+       <header className="sentinel-assistant-heading"><h2>Ask Sentinel</h2><Button icon="close" aria-label="Close Sentinel assistant" onClick={()=>{setAsk(false);document.getElementById('ask-sentinel-toggle')?.focus();}}/></header>
+       {chatOpened&&<WeatherChat scope={scope}/>}
+     </aside>
+   </div>
+   <div className="sentinel-source-link"><span>Forecasts indicate possible conditions. Field reports and local checks establish what is happening on the ground.</span><Link className="text-button" href="/weather-analysis">Sources & coverage →</Link></div>
+ </div>;
+}
+function PredictionsPanel({scope,revision}:{scope:Scope;revision:number}) {
+ const predictions=useData(scope.sentinel+'/predictions',revision);
+ const [busy,setBusy]=useState(false),[error,setError]=useState('');
+ const refresh=async()=>{setBusy(true);setError('');try{await api(scope.sentinel+'/predictions/refresh',{},'POST');scope.refresh();}catch(e){setError(errorMessage(e));}finally{setBusy(false);}};
+ const data=predictions.data,list=data?.predictions||[],srcs=data?.sources||[];
+ const probabilities=data?.weather_probability_estimates;
+ return <section className="panel preparedness-outlook"><div className="panel-head"><h2>Regional preparedness outlook</h2><Button icon="refresh" onClick={refresh} disabled={busy}>{busy?'Checking sources…':'Refresh outlook'}</Button></div><div className="panel-body">
+ <p>Experimental analysis of forecasts, official alerts and field reports. Review the time, location and source before acting.</p>
+ {error&&<Notice error>{error}</Notice>}{predictions.error&&<Notice error>{predictions.error}</Notice>}
+ {predictions.loading&&!data?<Loading/>:data&&<>
+ <p><Badge status={data.status}/>{data.generated_at&&<> · Checked {date(data.generated_at)}</>}</p>
+ <h3>Experimental weather probabilities</h3>
+ <p>Estimated ranges for a specific weather threshold, location and forecast time. They have not been calibrated against local outcomes and do not measure the chance of disaster damage.</p>
+ {probabilities?.estimates?.length?probabilities.estimates.map((p:any,i:number)=><div className="detail-line outlook-row" key={i}>
+  <span>{p.event}: {p.threshold} {p.unit}</span><strong>{Math.round(p.lower*100)}–{Math.round(p.upper*100)}% estimated range</strong>
+  <small>{date(p.valid_at)} · {p.latitude.toFixed(3)}, {p.longitude.toFixed(3)} · WeatherNext forecast issued {date(p.forecast_init)}</small>
+ </div>):<p>{probabilities?.unavailable_reason||'Probability estimates are not available from the current evidence.'}</p>}
+ {probabilities?.estimates?.length>0&&<small>{probabilities.selection}{probabilities.truncated&&` Showing 24 of ${probabilities.total} estimates.`}</small>}
+ <h3>Conditions to review</h3>
+ {list.length?list.map((p:any)=><div className="detail-line outlook-row" key={p.id}>
+  <span>{label(p.hazard)} · {p.kind==='PREDICTED'?'Experimental indicator':label(p.kind)}</span>
+  <strong>{p.kind==='PREDICTED'?`Risk score ${Math.round(p.severity*100)}/100`:'Source report'}</strong>
+  <small>{date(p.valid_from)} – {date(p.valid_to)} · {Number(p.latitude).toFixed(3)}, {Number(p.longitude).toFixed(3)}<br/>{(p.explanation||[]).join('; ')}<br/>Sources: {(p.sources||[]).map(label).join(', ')}{p.kind==='PREDICTED'?' · The risk score ranks indicators; it is not a probability.':''}{p.missing_inputs?.length>0&&<><br/>Still needed: {p.missing_inputs.join('; ')}</>}</small>
+ </div>):<Empty title={data.status==='UNAVAILABLE'?'Evidence is unavailable':'No conditions flagged in the available evidence'} body="Check coverage below. Missing observations and an empty outlook do not establish that the region is safe."/>}
+ {data.coverage_gaps?.length>0&&<details><summary>What this outlook cannot check</summary><ul>{data.coverage_gaps.map((gap:string)=><li key={gap}>{gap}</li>)}</ul></details>}
+ <h3>Source availability</h3>
+ {srcs.map((s:any)=><div className="detail-line outlook-row" key={s.source}><span>{s.label||s.source}</span><strong>{label(s.status)}</strong><small>{s.observations} records · {s.note||''}</small></div>)}
+ {data.capabilities?.length>0&&<details><summary>Engine capabilities and limitations</summary>{data.capabilities.map((c:any)=><p key={c.name}><strong>{c.name}: {label(c.status)}</strong><br/>{c.note}</p>)}</details>}
+ </>}
+ </div></section>;
 }
 function Sources({scope,revision}:{scope:Scope;revision:number}) {
  const forecast=useData(scope.sentinel+'/forecasts/latest',revision),readiness=useData(scope.sentinel+'/readiness',revision);
  const [open,setOpen]=useState(false),[job,setJob]=useState<any>(null),[error,setError]=useState('');
  useEffect(()=>{if(!job?.job_id||['DONE','SUCCEEDED','COMPLETED','DEAD','EXPIRED'].includes(job.state))return;
  const controller=new AbortController();const timer=setInterval(()=>{api(scope.sentinel+'/jobs/'+job.job_id,undefined,'GET',controller.signal).then(r=>{setJob({...r,job_id:job.job_id});if(['DONE','SUCCEEDED','COMPLETED'].includes(r.state))scope.refresh();}).catch(e=>{if(!controller.signal.aborted)setError(errorMessage(e));});},3000);return()=>{clearInterval(timer);controller.abort();};},[job?.job_id,job?.state,scope.sentinel]);
- return <><div className="toolbar"><p>Inspect the evidence behind Sentinel’s preparedness findings.</p><Button icon="refresh" onClick={()=>setOpen(true)}>Request latest forecast</Button></div>{(error||forecast.error||readiness.error)&&<Notice error>{error||forecast.error||readiness.error}</Notice>}{job&&<Notice>{['DONE','SUCCEEDED','COMPLETED'].includes(job.state)?'Your forecast is ready.':['DEAD','EXPIRED'].includes(job.state)?'The forecast could not be retrieved. Check source availability and try again.':'Your forecast is being prepared.'}</Notice>}<div className="source-panels"><section className="panel"><div className="panel-head"><h2>Forecast evidence</h2></div><div className="panel-body">{forecast.loading&&!forecast.data?<Loading/>:forecast.data?<><ForecastEvidence cells={forecast.data.cells||[]}/><Evidence value={forecast.data}/></>:<Empty title="No forecast loaded" body="Request the latest available forecast for this region."/>}</div></section><section className="panel"><div className="panel-head"><h2>Source availability & coverage</h2></div><div className="panel-body"><p>Missing inputs remain visible so your team can judge the limits of an assessment.</p><Evidence value={readiness.data}/><Link className="button" href="/sentinel">Ask Sentinel on the radar</Link></div></section></div>{open&&<Drawer title="Request a forecast" onClose={()=>setOpen(false)}><RequestForecast scope={scope} onRequested={r=>{setJob(r);setOpen(false);}}/></Drawer>}</>;
+ return <><div className="toolbar"><p>Inspect the evidence behind Sentinel’s preparedness findings.</p><Button icon="refresh" onClick={()=>setOpen(true)}>Request latest forecast</Button></div>{(error||forecast.error||readiness.error)&&<Notice error>{error||forecast.error||readiness.error}</Notice>}{job&&<Notice>{['DONE','SUCCEEDED','COMPLETED'].includes(job.state)?'Your forecast is ready.':['DEAD','EXPIRED'].includes(job.state)?'The forecast could not be retrieved. Check source availability and try again.':'Your forecast is being prepared.'}</Notice>}<PredictionsPanel scope={scope} revision={revision}/><div className="source-panels"><section className="panel"><div className="panel-head"><h2>Forecast evidence</h2></div><div className="panel-body">{forecast.loading&&!forecast.data?<Loading/>:forecast.data?<><ForecastEvidence cells={forecast.data.cells||[]}/><Evidence value={forecast.data}/></>:<Empty title="No forecast loaded" body="Request the latest available forecast for this region."/>}</div></section><section className="panel"><div className="panel-head"><h2>Source availability & coverage</h2></div><div className="panel-body"><p>Missing inputs remain visible so your team can judge the limits of an assessment.</p><Evidence value={readiness.data}/><Link className="button" href="/sentinel">Ask Sentinel on the radar</Link></div></section></div>{open&&<Drawer title="Request a forecast" onClose={()=>setOpen(false)}><RequestForecast scope={scope} onRequested={r=>{setJob(r);setOpen(false);}}/></Drawer>}</>;
 }
 export function Evidence({ value, depth = 0 }: { value: any; depth?: number }) {
   if (value == null) return null;
@@ -296,7 +339,7 @@ function Planning({
                           </small>
                         </button>
                       </td>
-                      <td>{r.payload.model || "Pending"}</td>
+                      <td>{r.payload.model || (r.payload.status === "FAILED" ? "Not recorded" : "Pending")}</td>
                       <td>
                         <Badge status={r.payload.status} />
                       </td>
@@ -388,7 +431,7 @@ function Planning({
         >
           <Badge status={selected.payload.status} />
           <h3 className="section-title">
-            {weather ? "Preparedness finding" : "Recommended allocation"}
+            {selected.payload.status === "FAILED" ? "Analysis did not finish" : weather ? "Preparedness finding" : "Recommended allocation"}
           </h3>
           <p className="detail-prose">
             {selected.payload.narrative?.summary ||
@@ -399,7 +442,7 @@ function Planning({
           {weather ? (
             <>
               <Evidence value={selected.payload.narrative} />
-              <h3 className="section-title">Source & limitations</h3>
+              <h3 className="section-title">{selected.payload.status === "FAILED" ? "What was completed" : "Source & limitations"}</h3>
               <Evidence value={selected.payload.source} />
               {selected.payload.sources && <Evidence value={selected.payload.sources} />}
               <Evidence value={selected.payload.evidence} />
@@ -411,10 +454,10 @@ function Planning({
                   {selected.payload.evidence.thresholds.hourly_rain_mm} mm/h
                 </p>
               )}
-              <Notice>
+              {selected.payload.status === "FAILED" ? <Notice error>No completed weather assessment is available for this request. The progress above shows any checks that finished.</Notice> : <Notice>
                 Weather indicators are not a validated local flood-impact
                 estimate.
-              </Notice>
+              </Notice>}
               {selected.payload.evidence?.points?.length > 0 && <Link
                 href={"/resource-planning?assessment=" + selected.id}
                 className="button primary"
@@ -503,8 +546,9 @@ function Planning({
           )}
           <p>
             <small>
-              Model: {selected.payload.model || "Not available"} · Created{" "}
+              Model: {selected.payload.model || "Not recorded for this run"} · Updated{" "}
               {date(selected.updatedAt)} · Version {selected.version}
+              {selected.payload.status === "FAILED" && <> · Reference: {selected.id}</>}
             </small>
           </p>
         </Drawer>

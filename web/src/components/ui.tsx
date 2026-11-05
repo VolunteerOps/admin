@@ -192,7 +192,6 @@ export function Drawer({
       <div className="drawer-body">
         <header>
           <div>
-            <span className="eyebrow">Workspace / Review</span>
             <h2>{title}</h2>
           </div>
           <Button aria-label="Close panel" icon="close" onClick={onClose} />

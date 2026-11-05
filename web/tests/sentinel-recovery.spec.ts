@@ -2,6 +2,24 @@ import {test,expect} from '@playwright/test';
 import {fixtures} from './fixtures';
 const answer={id:'answer',payload:{status:'DRAFT',coverage:'NO_FORECAST_EVIDENCE',narrative:{summary:'Check local reports before planning field work.',preparedness:['Confirm conditions with local officers.'],assumptions:[],missing_inputs:[],source_ids:[]},sources:[]}};
 const sse=(event:string,data:unknown)=>`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+test('failed assessment shows the saved model and failure without a green finding notice',async({page})=>{
+ await fixtures(page);
+ await page.route('**/planning/weather*',r=>r.fulfill({json:{items:[{id:'failed-weather-check',kind:'WEATHER_ANALYSIS',version:2,updatedAt:'2026-11-04T21:39:57Z',payload:{status:'FAILED',model:'muse-wonder-1.0',error_code:'AGENT_STEP_LIMIT',harness:{rounds:8,plan:[],notes:[],steps:[{tool:'read_local_reports',at:'2026-11-04T21:39:30Z',duration_ms:20,ok:true}]}}}],next_cursor:null}}));
+ await page.goto('/weather-analysis');await page.getByRole('button',{name:'Review assessment',exact:true}).click();
+ const dialog=page.getByRole('dialog');await expect(dialog.getByRole('heading',{name:'Analysis did not finish'})).toBeVisible();
+ await expect(dialog).toContainText('muse-wonder-1.0');await expect(dialog).toContainText('Reference: failed-weather-check');
+ await expect(dialog.getByText('Weather indicators are not a validated local flood-impact estimate.')).toHaveCount(0);
+ await expect(dialog.getByRole('alert')).toContainText('No completed weather assessment');
+ await page.screenshot({path:'test-results/sentinel-failed-assessment.png',fullPage:true});
+});
+test('analysis-limit failures explain recovery and a retry starts a new analysis',async({page})=>{
+ await fixtures(page);const keys:string[]=[];
+ await page.route('**/conversations/weather/stream',r=>{keys.push(r.request().headers()['idempotency-key']);return r.fulfill({contentType:'text/event-stream',body:keys.length===1?sse('error',{code:'AGENT_STEP_LIMIT'}):sse('result',answer)});});
+ await page.goto('/sentinel?ask=1');await page.getByLabel('Ask about your region').fill('Compare recent rain forecasts with the coming week');
+ const send=page.locator('.weather-chat').getByRole('button',{name:'Ask Sentinel',exact:true});await send.click();
+ await expect(page.locator('.weather-chat [role=alert]')).toContainText('Try a more focused question or a shorter date range');
+ await send.click();await expect(page.getByText(answer.payload.narrative.summary)).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).not.toBe(keys[1]);
+});
 test('weather provider errors do not launch a second run; explicit retry has a fresh key',async({page})=>{
  await fixtures(page);const keys:string[]=[];let jsonCalls=0;
  await page.route('**/conversations/weather',r=>{jsonCalls++;return r.fulfill({json:answer});});

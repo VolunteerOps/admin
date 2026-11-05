@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { api } from "@/lib/api";
+import { api, errorMessage } from "@/lib/api";
 import { useData, type Scope } from "@/lib/hooks";
 import { date, label, type Row } from "@/lib/catalog";
 import { Badge, Button, Empty, Loading, Notice } from "./ui";
@@ -36,17 +36,18 @@ export default function AgentRuns({ scope, revision }: { scope: Scope; revision:
   }
   async function cancel(id: string) {
     setBusy(true); setError("");
-    try { await api(base + "/" + id + "/cancel", {}, "POST", undefined, crypto.randomUUID()); setRev((v) => v + 1); setNotice("Run cancelled."); }
+    try { const cancelled=await api(base + "/" + id + "/cancel", {}, "POST", undefined, crypto.randomUUID()); if(selected?.id===id)setSelected(cancelled); setRev((v) => v + 1); setNotice("Run cancelled. Any request already sent to a provider may finish, but its answer will not replace the cancelled run."); }
     catch (e: any) { setError(e?.message || "Cancel failed"); }
     finally { setBusy(false); }
   }
   const p = selected?.payload ?? {};
+  const canFollowUp=!!selected&&!['RUNNING','FAILED'].includes(p.status)&&(selected.kind!=='SPECIALISED'||['FLOOD_SYNTHESIS','WATCH_BRIEF','HEAT_HEALTH','WIND_ACCESS','MULTI_REGION','OUTCOME_REVIEW','CREDENTIAL_FORESIGHT','WHAT_IF','SHORTAGE_OPTIONS'].includes(p.analysis_type));
   return (
     <div>
       <p className="page-intro">
         Every Meta-powered run in this region — resource plans, weather analyses and specialised
         capabilities — with its plan, working notes and tool steps. Branch a follow-up from any
-        completed run; the earlier context is carried into the new run.
+        supported completed run; the earlier context is carried into the new run.
       </p>
       {error && <Notice error>{error}</Notice>}
       {notice && <Notice>{notice}</Notice>}
@@ -93,15 +94,16 @@ export default function AgentRuns({ scope, revision }: { scope: Scope; revision:
             </>
           )}
           <HarnessSteps harness={p.harness} />
-          <h4 className="section-title">Branch a follow-up</h4>
+          {canFollowUp&&<><h4 className="section-title">Branch a follow-up</h4>
           <div className="form-grid">
             <label className="full">Follow-up question
               <textarea value={followUp} onChange={(e) => setFollowUp(e.target.value)} maxLength={2000}
                 placeholder="Ask the next question; the earlier summary and notes are included as context." />
             </label>
           </div>
+          </>}
           <div className="form-actions">
-            <Button variant="primary" disabled={busy || followUp.trim().length < 3} onClick={branch}>Run follow-up</Button>
+            {canFollowUp&&<Button variant="primary" disabled={busy || followUp.trim().length < 3} onClick={branch}>Run follow-up</Button>}
             {p.status === "RUNNING" && <Button disabled={busy} onClick={() => cancel(selected.id)}>Cancel run</Button>}
           </div>
         </section>

@@ -1,5 +1,17 @@
 /** User-facing recovery text. Raw provider errors and internal codes stay out of the UI. */
 export const errorGroups: [string[], string][] = [
+[["MISSION_NOT_CLOSED"],"Complete or cancel the mission before preparing its after-action summary."],
+[["DRAFT_CONFLICT"],"Another device changed this draft. Your local edits are safe. Reload to review the latest saved copy before saving again."],
+[["CANCELLED_BY_COORDINATOR"],"This run was cancelled. Start a new request when you are ready."],
+[["FOLLOW_UP_UNAVAILABLE","FOLLOW_UP_UNSUPPORTED"],"Choose a completed analysis that supports follow-up questions, or start a new request."],
+[["BASE_PROPOSAL_MISMATCH"],"Choose a completed resource proposal for the same mission before comparing scenarios."],
+[["ASSIGNEE_UNAVAILABLE"],"Choose an active workspace member who has access to this region."],
+[["AGENT_REQUEST_DECLINED"],"Muse declined this request, so no assessment was produced. Contact support if this was an ordinary weather or mission-planning question."],
+[["AGENT_STEP_LIMIT","AGENT_TOOL_BUDGET"],"Sentinel reached its analysis limit before finishing. Try a more focused question or a shorter date range."],
+[["AGENT_TIMEOUT"],"This analysis took too long to finish. Try a shorter date range or ask again shortly."],
+[["AGENT_UNSUPPORTED_ANSWER","AGENT_EVIDENCE_REQUIRED"],"Sentinel could not verify its answer against the information retrieved. No assessment was published. Please try again."],
+[["AGENT_FINISH_REQUIRED","AGENT_OUTPUT_REQUIRED","AGENT_RESPONSE_INVALID"],"Sentinel collected information but could not finish a readable answer. Please try again."],
+[["AGENT_TOOL_NOT_ALLOWED"],"Sentinel requested an unsupported action, so the analysis was stopped. No changes were made."],
 [["PROMO_UNAVAILABLE"],"This promotion code is expired, already used, or unavailable for your account. Check the code or contact the person who shared it."],
 [["CHECKOUT_REQUIRED"],"Apply this discount at checkout. Pro starts after payment is confirmed."],
 [["CHECKOUT_NOT_CONFIGURED"],"Online checkout is not available yet. You can keep using Standard or redeem an eligible no-charge promotion."],

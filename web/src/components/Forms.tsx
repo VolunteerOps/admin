@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from "react";
 import { Button, Notice } from "./ui";
 import { errorMessage } from "@/lib/api";
 import { fetchServerDraft, syncServerDraft, deleteServerDraft } from "@/lib/drafts";
@@ -16,6 +16,7 @@ export type Field = {
   value?: any;
   full?: boolean;
 };
+export const DraftScope = createContext("");
 export function Form({
   fields,
   onSubmit,
@@ -32,30 +33,48 @@ export function Form({
   draftKey?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const ownerScope = useContext(DraftScope);
+  const [resumed, setResumed] = useState<Record<string, any> | null>(null);
   const sensitive = fields.some(f => f.type === "password" || /password|secret|token|otp|verification_code/i.test(f.key));
   const legacyKey = typeof window !== "undefined" ? window.location.pathname + ":" + submit + ":" + (fields[0]?.key || "form") : "";
   const autoDraftKey = !sensitive && !fields.some((f) => f.key === "expected_version") ? legacyKey : "";
-  const storageKey = !sensitive && (draftKey || autoDraftKey) ? "resq-draft:" + (draftKey || autoDraftKey) : "";
+  const serverKey = ownerScope && !sensitive ? draftKey || (autoDraftKey ? ownerScope + ":" + autoDraftKey : "") : "";
+  const storageKey = serverKey ? "resq-draft:" + ownerScope + ":" + serverKey : "";
   const [draft, setDraft] = useState<{ values: Record<string, any>; saved_at: string } | null>(null);
   const [epoch, setEpoch] = useState(0);
   const [draftNotice, setDraftNotice] = useState("");
+  function hasEnteredData(values: Record<string, any>) {
+    return fields.some(f => Object.hasOwn(values, f.key) && (f.type === "checkbox"
+      ? !!values[f.key] !== !!f.value
+      : String(values[f.key] ?? "").trim() !== String(f.value ?? "").trim()));
+  }
   useEffect(() => {
+    setDraft(null); setResumed(null); setDraftNotice(""); setChanged(false);
     if (sensitive) {
       try { window.localStorage.removeItem("resq-draft:" + (draftKey || legacyKey)); } catch { /* ignore */ }
     }
     if (!storageKey) return;
     try {
       const raw = window.localStorage.getItem(storageKey);
-      if (raw) setDraft(JSON.parse(raw));
+      if (raw) { const saved = JSON.parse(raw); if (hasEnteredData(saved.values ?? {})) setDraft(saved); }
     } catch { /* Drafts are a convenience; storage may be unavailable. */ }
+  }, [storageKey]);
+  useEffect(() => {
+    const failed = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (detail?.key !== serverKey) return;
+      setDraftNotice(detail.conflict ? "Another device changed this draft. Your local copy is safe. Reload to review the other copy before saving again." : "Saved on this device. The online copy could not be updated.");
+    };
+    window.addEventListener("resq-draft-error", failed);
+    return () => window.removeEventListener("resq-draft-error", failed);
   }, [storageKey]);
   useEffect(() => {
     if (!storageKey) return;
     let live = true;
-    void fetchServerDraft(storageKey.replace("resq-draft:", "")).then((server) => {
+    void fetchServerDraft(serverKey).then((server) => {
       if (!live || !server?.payload) return;
       const serverEntry = { values: (server.payload.values ?? {}) as Record<string, any>, saved_at: server.updated_at || new Date().toISOString() };
-      setDraft((local) => (!local || serverEntry.saved_at > local.saved_at ? serverEntry : local));
+      if (hasEnteredData(serverEntry.values)) setDraft((local) => (!local || serverEntry.saved_at > local.saved_at ? serverEntry : local));
     });
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,28 +83,41 @@ export function Form({
     const values: Record<string, any> = {};
     for (const f of fields) {
       const v = fd.get(f.key);
-      if (v !== null && String(v) !== "") values[f.key] = String(v);
+      values[f.key] = f.type === "checkbox" ? v === "on" : String(v ?? "");
     }
     return values;
   }
   function saveDraft(form: HTMLFormElement | null, silent = false) {
     if (!storageKey || !form) return;
     const entry = { values: readValues(form), saved_at: new Date().toISOString() };
+    if (!hasEnteredData(entry.values)) {
+      setChanged(false);
+      if (changed) {
+        try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
+        void deleteServerDraft(serverKey);
+        setDraft(null); setDraftNotice("");
+      }
+      return;
+    }
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(entry));
-      syncServerDraft(storageKey.replace("resq-draft:", ""), entry as unknown as Record<string, any>);
+      syncServerDraft(serverKey, entry as unknown as Record<string, any>);
       setDraft(entry);
       if (!silent) setDraftNotice("Draft saved on this device. You can leave and resume later.");
     } catch { if (!silent) setDraftNotice("Drafts are not available in this browser."); }
   }
   function resumeDraft() {
+    setResumed(draft?.values ?? null);
+    setChanged(!!draft && hasEnteredData(draft.values));
     setEpoch((v) => v + 1);
     setDraftNotice("Draft resumed. Review it before submitting.");
   }
   function discardDraft() {
     try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
-    void deleteServerDraft(storageKey.replace("resq-draft:", ""));
+    void deleteServerDraft(serverKey);
     setDraft(null);
+    setChanged(false);
+    setResumed(null);
     setEpoch((v) => v + 1);
     setDraftNotice("Draft discarded.");
   }  const [busy, setBusy] = useState(false),
@@ -117,7 +149,7 @@ export function Form({
     setError("");
     try {
       await onSubmit(values, key);
-      if (storageKey) { try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ } void deleteServerDraft(storageKey.replace("resq-draft:", "")); setDraft(null); }
+      if (storageKey) { try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ } void deleteServerDraft(serverKey); setDraft(null); }
       setKey(crypto.randomUUID());
       setChanged(false);
     } catch (e) {
@@ -129,10 +161,10 @@ export function Form({
   return (
     <form
       ref={formRef}
-      key={epoch}
+      key={storageKey + ":" + epoch}
       onSubmit={send}
       onChange={(e) => {
-        setChanged(true);
+        setChanged(hasEnteredData(readValues(e.currentTarget)));
         saveDraft(e.currentTarget, true);
         setKey(crypto.randomUUID());
       }}
@@ -157,10 +189,10 @@ export function Form({
                   required={f.required !== false}
                   minLength={f.min}
                   maxLength={f.max}
-                  defaultValue={f.value}
+                  defaultValue={resumed?.[f.key] ?? f.value}
                 />
               ) : f.options ? (
-                <SelectField field={f} />
+                <SelectField field={{...f, value: resumed?.[f.key] ?? f.value}} />
               ) : (
                 <input
                   aria-label={f.label}
@@ -174,8 +206,8 @@ export function Form({
                   minLength={f.type !== "number" ? f.min : undefined}
                   maxLength={f.type !== "number" ? f.max : undefined}
                   step={f.step ?? (f.type === "number" ? "any" : undefined)}
-                  defaultValue={f.type === "checkbox" ? undefined : f.value}
-                  defaultChecked={f.type === "checkbox" ? !!f.value : undefined}
+                  defaultValue={f.type === "checkbox" ? undefined : resumed?.[f.key] ?? f.value}
+                  defaultChecked={f.type === "checkbox" ? !!(resumed?.[f.key] ?? f.value) : undefined}
                 />
               )}
               {f.type === "checkbox" && f.label}
@@ -200,7 +232,7 @@ export function Form({
               Cancel
             </Button>
           )}
-          {storageKey && (<Button type="button" disabled={busy} onClick={() => saveDraft(formRef.current)}>Save draft</Button>)}
+          {storageKey && (<Button type="button" disabled={busy || !changed} onClick={() => saveDraft(formRef.current)}>Save draft</Button>)}
           <Button variant="primary" type="submit" disabled={busy}>
             {busy ? "Saving…" : submit}
           </Button>

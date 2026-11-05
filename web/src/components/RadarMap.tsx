@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { api } from "@/lib/api";
+import {coordinates,publicSourceUrl} from "@/lib/map-data";
+import { api, errorMessage } from "@/lib/api";
 import { useData, type Scope } from "@/lib/hooks";
 import { date } from "@/lib/catalog";
 import { Badge, Button, Notice } from "./ui";
@@ -22,6 +23,7 @@ const GROUPS: Record<string, { label: string; types: string[]; categories?: stri
   landslide: { label: "Land & mud slides", types: ["LANDSLIDE"] },
   drought: { label: "Drought / famine / El Niño", types: ["DROUGHT", "FAMINE", "EL_NINO"] },
   artificial: { label: "Artificial disasters", types: [], categories: ["ARTIFICIAL"] },
+  other: { label: "Storms, wildfire & other", types: ["STORM","WILDFIRE","OTHER"] },
   sensors: { label: "Sensors", types: ["GAUGE_SENSOR"], categories: ["SENSOR"] },
 };
 function groupOf(pin: RadarPin): string {
@@ -29,21 +31,25 @@ function groupOf(pin: RadarPin): string {
     if (group.categories?.includes(pin.category) && key !== "sensors") return key;
     if (group.types.includes(pin.type)) return key;
   }
-  return pin.category === "SENSOR" ? "sensors" : "prediction";
+  return pin.category === "SENSOR" ? "sensors" : "other";
 }
 export default function RadarMap({ scope }: { scope: Scope }) {
   const [rev, setRev] = useState(0);
   const [mapReady,setMapReady]=useState(false);
   const radar = useData(scope.sentinel + "/radar", rev);
-  const pins: RadarPin[] = useMemo(() => (radar.data?.pins || []).filter((p: RadarPin) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude)), [radar.data]);
+  const pins: RadarPin[] = useMemo(() => (radar.data?.pins || []).filter((p: RadarPin) => coordinates(p)!==null), [radar.data]);
   const [enabled, setEnabled] = useState<Record<string, boolean>>(Object.fromEntries(Object.keys(GROUPS).map((k) => [k, true])));
   const [selected, setSelected] = useState<RadarPin | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [mapUnavailable, setMapUnavailable] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const framed=useRef("");
+  useEffect(()=>{setSelected(null);setReason("");framed.current="";},[scope.sentinel]);
+  useEffect(()=>{setSelected(previous=>previous?pins.find(p=>p.id===previous.id)??null:null);},[pins]);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const visible = useMemo(() => pins.filter((p) => enabled[groupOf(p)]), [pins, enabled]);
   useEffect(() => { const timer = setInterval(() => setRev((v) => v + 1), 60000); return () => clearInterval(timer); }, []);
@@ -53,16 +59,20 @@ export default function RadarMap({ scope }: { scope: Scope }) {
     fetch("/sentinel/map-widget-config", { signal: controller.signal, cache: "no-store" })
       .then((r) => r.json())
       .then((config) => {
-        if (disposed || !config.token || !mapboxgl.supported() || !container.current) return;
+        if(disposed||!container.current)return;
+        if(!config.token||!mapboxgl.supported()){setMapUnavailable(true);setError("The map is unavailable. You can still review hazards in the list below.");return;}
         const instance = new mapboxgl.Map({
           container: container.current, accessToken: config.token,
           style: "mapbox://styles/mapbox/dark-v11", center: [36.82, -1.28], zoom: 7, attributionControl: true,
         });
         instance.addControl(new mapboxgl.NavigationControl(), "top-right");
         mapRef.current = instance;
+        const resize = new ResizeObserver(() => instance.resize());
+        resize.observe(container.current);
+        instance.on('remove', () => resize.disconnect());
         setMapReady(true);
       })
-      .catch(() => { if(!disposed&&!controller.signal.aborted)setError("The map could not load. You can still review hazards in the list below."); });
+      .catch(() => { if(!disposed&&!controller.signal.aborted){setMapUnavailable(true);setError("The map could not load. You can still review hazards in the list below.");} });
     return () => { disposed = true; controller.abort(); mapRef.current?.remove(); mapRef.current = null; };
   }, []);
   useEffect(() => {
@@ -79,7 +89,8 @@ export default function RadarMap({ scope }: { scope: Scope }) {
       element.addEventListener("click", () => setSelected(pin));
       markers.current.push(new mapboxgl.Marker({ element }).setLngLat([pin.longitude, pin.latitude]).addTo(instance));
     }
-    if (visible.length && !selected) {
+    if (visible.length && !selected && framed.current!==scope.sentinel) {
+      framed.current=scope.sentinel;
       const bounds = new mapboxgl.LngLatBounds();
       visible.forEach((p) => bounds.extend([p.longitude, p.latitude]));
       instance.fitBounds(bounds, { padding: 70, maxZoom: 10, duration: 600 });
@@ -92,7 +103,7 @@ export default function RadarMap({ scope }: { scope: Scope }) {
       const result = await api(scope.sentinel + "/incidents/ingest", {}, "POST", undefined, crypto.randomUUID());
       setNotice(`Incident feeds checked. ${result.created} new reports added; every new item stays REPORTED until a coordinator verifies it.`);
       setRev((v) => v + 1);
-    } catch (e: any) { setError(e?.message || "Ingestion failed"); }
+    } catch (e: any) { setError(errorMessage(e)); }
     finally { setBusy(false); }
   }
   async function decide(decision: "verify" | "dismiss") {
@@ -102,7 +113,7 @@ export default function RadarMap({ scope }: { scope: Scope }) {
       await api(scope.sentinel + "/incidents/" + selected.id + "/" + decision, { reason }, "POST", undefined, crypto.randomUUID());
       setNotice(decision === "verify" ? "Incident verified." : "Incident dismissed.");
       setReason(""); setRev((v) => v + 1);
-    } catch (e: any) { setError(e?.message || "Decision failed"); }
+    } catch (e: any) { setError(errorMessage(e)); }
     finally { setBusy(false); }
   }
   const isIncident = selected && !selected.id.startsWith("forecast-") && !selected.id.startsWith("usgs-") && !selected.id.startsWith("gauge-");
@@ -127,7 +138,7 @@ export default function RadarMap({ scope }: { scope: Scope }) {
       {error && <Notice error>{error}</Notice>}
       {notice && <Notice>{notice}</Notice>}
       {radar.error && <Notice error>{radar.error}</Notice>}
-      <div className="radar-map-wrap">
+      <div className="radar-map-wrap" hidden={mapUnavailable}>
         <div ref={container} className="radar-map" aria-label="Multi-hazard radar map" />
         {center && (
           <div className="radar-sweep" style={{ left: "55%", top: "45%" }} aria-hidden>
@@ -141,6 +152,8 @@ export default function RadarMap({ scope }: { scope: Scope }) {
           <span><i className="dot sensor" />Sensor</span>
         </div>
       </div>
+      {!!radar.data?.unavailable_sources?.length&&<Notice error>Some sources could not be checked: {radar.data.unavailable_sources.join(", ")}. An empty map does not mean there are no hazards.</Notice>}
+      {radar.data?.truncated&&<Notice>Only the latest hazard records are shown. Older reports may be outside this view.</Notice>}
       <p className="radar-disclaimer">{radar.data?.disclaimer || "Pins show predictions, reported observations and recorded sensors — not impact estimates."}</p>
       {selected && (
         <section className="panel radar-detail" aria-label="Hazard detail">
@@ -153,7 +166,7 @@ export default function RadarMap({ scope }: { scope: Scope }) {
             <div><dt>Severity</dt><dd>{selected.severity}</dd></div>
             <div><dt>Coordinates</dt><dd>{Number(selected.latitude).toFixed(4)}, {Number(selected.longitude).toFixed(4)}</dd></div>
             <div><dt>When</dt><dd>{date(selected.observed_at)}</dd></div>
-            <div><dt>Source</dt><dd>{selected.source_url ? <a href={selected.source_url} target="_blank" rel="noreferrer">{selected.source}</a> : selected.source}</dd></div>
+            <div><dt>Source</dt><dd>{publicSourceUrl(selected.source_url) ? <a href={publicSourceUrl(selected.source_url)!} target="_blank" rel="noreferrer">{selected.source}</a> : selected.source}</dd></div>
             {!!selected.verification && <div><dt>Verification</dt><dd>{selected.verification}</dd></div>}
           </dl>
           <p>{selected.detail}</p>

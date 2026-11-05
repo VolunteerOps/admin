@@ -3,7 +3,7 @@ import {ProGate} from "./ProExperience";
 import {useState,useRef} from 'react';
 import {api,errorMessage} from '@/lib/api';
 import {postStream,partialField} from '@/lib/stream';
-import {fetchServerDraft,syncServerDraft,deleteServerDraft} from '@/lib/drafts';
+import {fetchServerDraft,syncServerDraft,deleteServerDraft,useDraftSyncNotice} from '@/lib/drafts';
 import {useEffect} from 'react';
 import type {Scope} from '@/lib/hooks';
 import {Button,Notice,Badge} from './ui';
@@ -15,13 +15,16 @@ export const weatherSuggestions=[
 ];
 type Turn={role:'user'|'assistant';content:string};
 const conversations=new Map<string,{history:Turn[];answer:any}>();
-export default function WeatherChat({scope}:{scope:Scope}){
+export default function WeatherChat({scope}:{scope:Scope}){return <WeatherChatSession key={[scope.userId,scope.org,scope.region].join(":")} scope={scope}/>;}
+function WeatherChatSession({scope}:{scope:Scope}){
+ const live=useRef(true);useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
  const [showUpgrade,setShowUpgrade]=useState(false);
  const cacheKey=[scope.userId,scope.org,scope.region].join(':');
  const [question,setQuestion]=useState(''),[history,setHistory]=useState<Turn[]>(conversations.get(cacheKey)?.history||[]),[answer,setAnswer]=useState<any>(conversations.get(cacheKey)?.answer||null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const pendingRequest=useRef<{fingerprint:string;key:string}|null>(null);
  const [streamPreview,setStreamPreview]=useState('');
  const serverDraftKey='weather-chat:'+cacheKey;
+ const draftSyncNotice=useDraftSyncNotice(serverDraftKey);
  useEffect(()=>{let live=true;void fetchServerDraft(serverDraftKey).then(server=>{if(!live||!server?.payload)return;const saved=server.payload as any;if(Array.isArray(saved.history)&&!conversations.get(cacheKey)) {conversations.set(cacheKey,{history:saved.history,answer:saved.answer});setHistory(saved.history);if(saved.answer)setAnswer(saved.answer);}});return()=>{live=false;};},[]);
  async function send(mode:'CHAT'|'DAILY_BRIEF',prompt=question){
   if(busy||prompt.trim().length<3)return;setBusy(true);setError('');
@@ -34,11 +37,12 @@ export default function WeatherChat({scope}:{scope:Scope}){
      else if(event.type==='tool_start')setStreamPreview('Checking '+String(event.tool).replace(/_/g,' ')+'...');
      else if(event.type==='round')setStreamPreview('Thinking...');
    },undefined,requestKey).catch(async streamError=>{if(streamError?.code!=='STREAM_UNAVAILABLE')throw streamError;const fallback=await api(scope.sentinel+'/conversations/weather',{question:prompt,history:history.slice(-16),mode},'POST',undefined,requestKey);return fallback;});
+   if(!live.current)return;
    setStreamPreview('');
    if(record.payload?.status==='FAILED')throw {code:record.payload.error_code,message:record.payload.message};
-   const result=record.payload;const next:Turn[]=[...history,{role:'user',content:prompt},{role:'assistant',content:result.narrative.summary}];
-   setHistory(next);setAnswer(result);conversations.set(cacheKey,{history:next,answer:result});syncServerDraft(serverDraftKey,{history:next,answer:result});setQuestion('');pendingRequest.current=null;scope.refresh();
-  }catch(e){if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);if(['AGENT_UNAVAILABLE','ANALYSIS_FAILED','ANALYSIS_INTERRUPTED','META_NOT_CONFIGURED','MODEL_UNAVAILABLE','META_ACCESS_DENIED'].includes((e as any)?.code))pendingRequest.current=null;setError(errorMessage(e));}finally{setBusy(false);setStreamPreview('');}
+   const result=record.payload;const next:Turn[]=[...history.slice(-14),{role:'user',content:prompt},{role:'assistant',content:result.narrative.summary}];
+   setHistory(next);setAnswer(result);conversations.set(cacheKey,{history:next,answer:result});syncServerDraft(serverDraftKey,{history:next.slice(-8).map(turn=>({...turn,content:turn.content.slice(-3000)})),answer:{...result,sources:result.sources?.map(({indicators,points,...source}:any)=>source),harness:undefined}});setQuestion('');pendingRequest.current=null;scope.refresh();
+  }catch(e){if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);if(['AGENT_UNAVAILABLE','ANALYSIS_FAILED','ANALYSIS_INTERRUPTED','META_NOT_CONFIGURED','MODEL_UNAVAILABLE','META_ACCESS_DENIED','AGENT_STEP_LIMIT','AGENT_TOOL_BUDGET','AGENT_TIMEOUT','AGENT_UNSUPPORTED_ANSWER','AGENT_EVIDENCE_REQUIRED','AGENT_FINISH_REQUIRED','AGENT_OUTPUT_REQUIRED','AGENT_RESPONSE_INVALID','AGENT_TOOL_NOT_ALLOWED'].includes((e as any)?.code))pendingRequest.current=null;setError(errorMessage(e));}finally{setBusy(false);setStreamPreview('');}
  }
  return <section className="panel weather-chat" aria-label="Ask Sentinel">{showUpgrade&&<ProGate feature="briefing" onClose={()=>setShowUpgrade(false)}/>}
   <div className="panel-head"><div><span className="eyebrow">SENTINEL / PREPAREDNESS</span><h2>What does your team need to know?</h2></div><Button icon="sentinel" variant="primary" disabled={busy} onClick={()=>{void send('DAILY_BRIEF',weatherSuggestions[0]);}}>Prepare today's briefing</Button></div>
@@ -52,6 +56,7 @@ export default function WeatherChat({scope}:{scope:Scope}){
     {answer.narrative.follow_up&&<p>{answer.narrative.follow_up}</p>}
    </div>}
    {busy&&streamPreview&&<p role="status" className="mission-stream-preview">{streamPreview}</p>}
+   {draftSyncNotice&&<Notice error>{draftSyncNotice}</Notice>}
    {error&&<Notice error>{error}</Notice>}
    <form onSubmit={e=>{e.preventDefault();void send('CHAT');}}><label htmlFor="weather-question">Ask about your region<textarea id="weather-question" value={question} minLength={3} maxLength={4000} required onChange={e=>{setQuestion(e.target.value);}} placeholder="For example: what do recent rainfall forecasts mean for our preparations this week?"/></label><div className="form-actions"><small>{busy?'Checking sources and preparing your answer. This may take a few minutes.':'Uses your selected operating region. No deployments are made from chat.'}</small><Button variant="primary" disabled={busy} type="submit">{busy?'Preparing...' :'Ask Sentinel'}</Button></div></form>
   </div>

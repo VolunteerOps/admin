@@ -7,11 +7,16 @@ export type HarnessData = {
   rounds?: number;
 };
 
+export function evidenceStepLabel(name:string){
+  const labels:Record<string,string>={analyze_weather_window:'Review weather forecasts',read_local_reports:'Check local reports',read_weather_evidence:'Review weather evidence',read_mission_requirements:'Check mission requirements',find_places:'Find the location',read_candidates:'Check volunteer availability',read_stock:'Check equipment stock',read_commitments:'Check existing commitments',read_mission:'Review the mission',read_weather_assessment:'Review the weather assessment',update_plan:'Update the analysis plan',record_note:'Record a finding'};
+  return labels[name] || 'Check supporting information';
+}
+
 export function HarnessSteps({ harness }: { harness?: HarnessData | null }) {
   if (!harness || (!harness.steps?.length && !harness.plan?.length && !harness.notes?.length))
     return null;
   return (
-    <div aria-label="Agent harness">
+    <div aria-label="Analysis progress">
       {!!harness.plan?.length && (
         <>
           <h4 className="section-title">Agent plan</h4>
@@ -38,14 +43,13 @@ export function HarnessSteps({ harness }: { harness?: HarnessData | null }) {
       {!!harness.steps?.length && (
         <>
           <h4 className="section-title">
-            Tool steps{harness.rounds ? ` · ${harness.rounds} rounds` : ""}
+            Checks performed
           </h4>
           <ol>
             {harness.steps.map((step, i) => (
               <li key={i}>
-                <code>{step.tool}</code>
-                {step.ok ? "" : ` — failed${step.error ? ": " + step.error : ""}`}
-                {typeof step.duration_ms === "number" ? ` · ${step.duration_ms} ms` : ""}
+                {evidenceStepLabel(step.tool)}
+                {step.ok ? " · Check finished" : " · Could not finish"}
               </li>
             ))}
           </ol>

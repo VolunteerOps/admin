@@ -3,6 +3,7 @@ import "./globals.css";
 import "./entry.css";
 import "./pro.css";
 import "./reference-experience.css";
+import "./workspace.css";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
   },
   description: "Coordinate people, missions and preparedness.",
   robots: { index: false, follow: false },
+  icons: { icon: [{ url: "/logo-monochrome.png", type: "image/png" }], apple: "/logo-monochrome.png" },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -234,17 +234,24 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
     // on one device can be resumed in this app.
     val draftKey="planning:"+(if(weather)"weather" else "resources")+":" + org + ":" + region
     val draftScope=rememberCoroutineScope()
+    var draftVersion by remember(draftKey){mutableStateOf(0)}
+    var draftLoaded by remember(draftKey){mutableStateOf(false)}
+    var draftError by remember(draftKey){mutableStateOf("")}
     LaunchedEffect(draftKey){
         runCatching{
-            val saved=api.execute(ApiEndpoint(HttpMethod.Get,"/api/me/drafts/$draftKey"){it.jsonObject})
+            val saved=api.execute(ApiEndpoint(HttpMethod.Get,"/api/me/drafts/$draftKey"){it as? JsonObject ?: buildJsonObject{}})
+            draftVersion=saved["version"]?.jsonPrimitive?.content?.toIntOrNull()?:0
+            draftLoaded=true
             val savedQuestion=((saved["payload"] as? JsonObject)?.get("values") as? JsonObject)?.text("question").orEmpty()
             if(savedQuestion.isNotBlank()&&question.isBlank())question=savedQuestion
         }
     }
-    LaunchedEffect(question){
-        if(question.isBlank())return@LaunchedEffect
+    LaunchedEffect(question,draftLoaded){
+        if(!draftLoaded||question.isBlank())return@LaunchedEffect
         delay(900)
-        runCatching{api.execute(ApiEndpoint(HttpMethod.Put,"/api/me/drafts/$draftKey"){it.jsonObject},buildJsonObject{put("payload",buildJsonObject{put("values",buildJsonObject{put("question",question)});put("saved_at","")});put("base_version",0)})}
+        runCatching{api.execute(ApiEndpoint(HttpMethod.Put,"/api/me/drafts/$draftKey"){it.jsonObject},buildJsonObject{put("payload",buildJsonObject{put("values",buildJsonObject{put("question",question)});put("saved_at","")});put("base_version",draftVersion)})}
+            .onSuccess{draftVersion=it["version"]?.jsonPrimitive?.content?.toIntOrNull()?:draftVersion;draftError=""}
+            .onFailure{draftError="Your draft could not sync. Keep this screen open to retain your edits; reopen it to load changes from another device."}
     }
     var mode by remember{mutableStateOf("EXECUTE")}
     var date by remember{mutableStateOf("")};var cycle by remember{mutableStateOf("00:00")}
@@ -252,6 +259,7 @@ private data class PlanningRequest(val path:String,val key:String,val body:JsonO
     var stationDetail by remember{mutableStateOf(false)}
     val init=runCatching{Instant.parse("${date}T${cycle}:00Z")}.getOrNull()
     Column(modifier,verticalArrangement=Arrangement.spacedBy(14.dp)) {
+        if(draftError.isNotBlank())Text(draftError,color=MaterialTheme.colorScheme.error)
         Text(if(weather)"Analyze a forecast window" else "Prepare a mission allocation",style=MaterialTheme.typography.titleLarge)
         if(weather){
             Row(horizontalArrangement=Arrangement.spacedBy(10.dp)){OutlinedTextField(date,{date=it},label={Text("Cycle date · YYYY-MM-DD")},modifier=Modifier.weight(1f));OutlinedTextField(cycle,{cycle=it},label={Text("Cycle time · HH:00 UTC")},modifier=Modifier.weight(1f))}

@@ -20,6 +20,8 @@ import kotlin.time.Clock
 
 @Composable internal fun SentinelWorkspace(api:LiveApiTransport,org:String,region:String) {
     var forecast by remember(org,region){mutableStateOf<JsonObject?>(null)}
+    var predictions by remember(org,region){mutableStateOf(JsonArray(emptyList()))}
+    var showPredictions by remember {mutableStateOf(true)}
     var hazards by remember(org,region){mutableStateOf(JsonArray(emptyList()))}
     var missions by remember(org,region){mutableStateOf(JsonArray(emptyList()))}
     var errors by remember {mutableStateOf(listOf<String>())}
@@ -45,6 +47,7 @@ import kotlin.time.Clock
             suspend fun read(url:String,params:Map<String,String> = emptyMap()):JsonElement? = try {api.execute(ApiEndpoint(HttpMethod.Get,url,params){it})}catch(c:CancellationException){throw c}catch(e:Exception){failures.add(workspaceError(e));null}
             val base="/api/organizations/$org/sentinel/regions/$region"
             forecast=read("$base/forecasts/latest") as? JsonObject
+            predictions=(read("$base/predictions") as? JsonObject)?.get("predictions") as? JsonArray ?: JsonArray(emptyList())
             hazards=(read("$base/hazards") as? JsonObject)?.get("observations") as? JsonArray ?: JsonArray(emptyList())
             missions=(read("/api/organizations/$org/regions/$region/operations/records",mapOf("kind" to "MISSION")) as? JsonObject)?.get("items") as? JsonArray ?: JsonArray(emptyList())
             errors=failures.distinct();refreshedAt=Clock.System.now().toEpochMilliseconds();loading=false
@@ -60,6 +63,9 @@ import kotlin.time.Clock
         if(showForecast)cells.filter{it.jsonObject.text("validTime")==validTime}.take(800).forEachIndexed { i,item ->
             val c=item.jsonObject;val value=c["values"]?.jsonObject?.get(variable)?.jsonObject?.get(statistic)?.jsonPrimitive?.doubleOrNull
             if(value!=null)add(buildJsonObject{put("id","forecast-$i");put("kind","forecast");put("longitude",c["longitude"]!!);put("latitude",c["latitude"]!!);put("label","$value $unit · ${displayTime(validTime)} · $statistic")})
+        }
+        if(showPredictions)predictions.take(200).forEach { item -> val p=item.jsonObject
+            add(buildJsonObject{put("id",p.text("id"));put("kind","prediction");put("longitude",p["longitude"]!!);put("latitude",p["latitude"]!!);put("label",(p.text("hazard")+" "+p.text("level")+" · severity "+p.text("severity")+" · confidence "+p.text("confidence")+" · UNVALIDATED SHADOW").take(300))})
         }
         if(showHazards)hazards.take(500).forEach { item -> val h=item.jsonObject
             add(buildJsonObject{put("id",h.text("id"));put("kind","hazard");put("longitude",h["longitude"]!!);put("latitude",h["latitude"]!!);put("label",(h.text("title")+" · "+displayTime(h.text("observed_at"))).take(300))})
@@ -86,6 +92,7 @@ import kotlin.time.Clock
             FlowRow(horizontalArrangement=Arrangement.spacedBy(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
                 WorkspacePicker("Variable",listOf("total_precipitation_1hr" to "Hourly rain","temperature_2m" to "Temperature","wind_speed_10m" to "Wind"),variable,true,{variable=it;selected=null})
                 WorkspacePicker("Statistic",listOf("p50" to "Median · P50","p90" to "Upper range · P90"),statistic,true,{statistic=it;selected=null})
+                FilterChip(showPredictions,{showPredictions=!showPredictions;selected=null},label={Text("Predictions")})
                 FilterChip(showForecast,{showForecast=!showForecast;selected=null},label={Text("Forecast")})
                 FilterChip(showHazards,{showHazards=!showHazards;selected=null},label={Text("Reported hazards")})
                 FilterChip(showMissions,{showMissions=!showMissions;selected=null},label={Text("Missions")})

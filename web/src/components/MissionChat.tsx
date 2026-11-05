@@ -3,7 +3,7 @@ import {ProGate} from "./ProExperience";
 import { useEffect, useRef, useState } from "react";
 import { api, errorMessage, ApiError } from "@/lib/api";
 import { postStream, partialField } from "@/lib/stream";
-import { fetchServerDraft, syncServerDraft, deleteServerDraft } from "@/lib/drafts";
+import { fetchServerDraft, syncServerDraft, deleteServerDraft, useDraftSyncNotice } from "@/lib/drafts";
 import type { Scope } from "@/lib/hooks";
 import { Button, Icon, Notice } from "./ui";
 
@@ -37,13 +37,15 @@ const starters = [
   "Coordinate an emergency response",
 ];
 
-export default function MissionChat({
+export default function MissionChat(props: {scope:Scope;done:()=>void}) {return <MissionChatSession key={[props.scope.userId,props.scope.org,props.scope.region].join(":")} {...props}/>;}
+function MissionChatSession({
   scope,
   done,
 }: {
   scope: Scope;
   done: () => void;
 }) {
+ const live=useRef(true);useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
  const [showUpgrade,setShowUpgrade]=useState(false);
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<Turn[]>([]);
@@ -67,6 +69,7 @@ export default function MissionChat({
     const id = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 500);
     return () => clearInterval(id);
   }, [pending]);  const serverDraftKey = "mission-chat:" + scope.sentinel.split("/organizations/")[1]?.replace("/sentinel/regions/", ":").replace(/\//g, ":");
+  const draftSyncNotice=useDraftSyncNotice(serverDraftKey);
   useEffect(() => {
     let live = true;
     void fetchServerDraft(serverDraftKey).then((server) => {
@@ -78,7 +81,7 @@ export default function MissionChat({
     });
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverDraftKey]);  const storageKey = "resq-mission-chat:" + scope.sentinel;
+  }, [serverDraftKey]);  const storageKey = "resq-mission-chat:" + scope.userId + ":" + scope.sentinel;
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(storageKey);
@@ -94,7 +97,7 @@ export default function MissionChat({
     try {
       if (!history.length && !result) return;
       window.localStorage.setItem(storageKey, JSON.stringify({ history, result, checkpoints }));
-      syncServerDraft(serverDraftKey, { history, result, checkpoints });
+      syncServerDraft(serverDraftKey, { history:history.slice(-8).map(turn=>({...turn,content:turn.content.slice(-3000)})), result, checkpoints:checkpoints.slice(-2) });
     } catch { /* ignore */ }
   }, [storageKey, history, result, checkpoints]);
   useEffect(() => {
@@ -140,9 +143,10 @@ export default function MissionChat({
         if (streamError?.code !== "STREAM_UNAVAILABLE") throw streamError;
         return api(scope.sentinel + "/conversations/mission", body, "POST", undefined, outgoing.key);
       });
+      if(!live.current)return;
       setStreamPreview("");
       setHistory((previous) => [
-        ...previous,
+        ...previous.slice(-18),
         { role: "user", content: outgoing.message },
         { role: "assistant", content: answer.reply },
       ]);
@@ -166,6 +170,9 @@ export default function MissionChat({
         e instanceof ApiError &&
         [
           "AGENT_UNAVAILABLE",
+          "AGENT_STEP_LIMIT", "AGENT_TOOL_BUDGET", "AGENT_TIMEOUT",
+          "AGENT_UNSUPPORTED_ANSWER", "AGENT_EVIDENCE_REQUIRED", "AGENT_FINISH_REQUIRED",
+          "AGENT_OUTPUT_REQUIRED", "AGENT_RESPONSE_INVALID", "AGENT_TOOL_NOT_ALLOWED",
           "ANALYSIS_FAILED",
           "ANALYSIS_INTERRUPTED",
           "META_NOT_CONFIGURED",
@@ -212,6 +219,8 @@ export default function MissionChat({
         undefined,
         createKey.current,
       );
+      window.localStorage.removeItem(storageKey);
+      await deleteServerDraft(serverDraftKey);
       done();
     } catch (e) {
       if((e as any)?.code==="PRO_REQUIRED")setShowUpgrade(true);
@@ -439,7 +448,8 @@ export default function MissionChat({
         )}
       </div>
       <div className="mission-compose-area">
-        {error && (
+        {draftSyncNotice&&<Notice error>{draftSyncNotice}</Notice>}
+      {error && (
           <div className="mission-chat-error">
             <Notice error>{error}</Notice>
             {pending && (
