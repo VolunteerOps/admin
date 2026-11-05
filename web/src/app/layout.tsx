@@ -1,3 +1,4 @@
+import {Suspense} from "react";
 import Portal from "@/components/Portal";
 import "./globals.css";
 import "./entry.css";
@@ -21,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <a className="skip-link" href="#main">
           Skip to content
         </a>
-        <Portal />{children}
+        <Suspense fallback={<main>Opening your workspace…</main>}><Portal /></Suspense>{children}
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+import {resourceName} from "@/lib/display-text";
 import { Button } from "./ui";
 
 export default function PlanEditor({
@@ -69,7 +70,7 @@ export default function PlanEditor({
                 )
                 .map((c: any) => (
                   <option value={c.user_id} key={c.user_id}>
-                    Responder {c.user_id}
+                    {c.display_name || "Volunteer profile"}
                   </option>
                 ))}
             </select>
@@ -100,7 +101,7 @@ export default function PlanEditor({
             );
             return (
               <div className="panel panel-body" key={s.resource_id}>
-                <strong>{resource?.title || "Resource"}</strong>
+                <strong>{resourceName(resource)}</strong>
                 <small>
                   {resource?.location} ·{" "}
                   {Math.max(0, (resource?.available || 0) - other)} available
@@ -179,7 +180,7 @@ export default function PlanEditor({
                 )
                 .map((r: any) => (
                   <option value={r.id} key={r.id}>
-                    {r.title} · {r.location}
+                    {resourceName(r)} · {r.location}
                   </option>
                 ))}
             </select>

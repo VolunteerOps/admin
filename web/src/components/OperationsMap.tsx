@@ -36,6 +36,7 @@ export default function OperationsMap({ scope, revision }: { scope: Scope; revis
   const tick = revision + rev;
   const missions = useData(scope.ops + "/records?kind=MISSION", tick);
   const reports = useData(scope.ops + "/records?kind=REPORT", tick);
+  const inventory = useData(scope.ops + "/records?kind=INVENTORY", tick);
   const assignments = useData(scope.ops + "/records?kind=ASSIGNMENT", tick);
   const radar = useData(scope.sentinel + "/radar", tick);
   const container = useRef<HTMLDivElement>(null);
@@ -66,8 +67,12 @@ export default function OperationsMap({ scope, revision }: { scope: Scope; revis
       const c = mission ? coords(mission.payload) : coords(assignment.payload);
       if (c) out.push({ id: assignment.id, category: "deployment", title: "Deployment: " + (mission ? recordTitle(mission) : "Assignment"), latitude: c[1], longitude: c[0], detail: assignment.payload.status || "Assigned team", href: "/assignments" });
     }
+    for (const resource of inventory.data?.items || []) {
+      const c=coords(resource.payload);
+      if(c)out.push({id:resource.id,category:"resource",title:[resource.payload.vehicle_model||resource.payload.title,resource.payload.plate_number].filter(Boolean).join(" · "),latitude:c[1],longitude:c[0],detail:resource.payload.location||"",href:"/resources?record="+resource.id});
+    }
     return out.filter((p) => coords(p)!==null);
-  }, [missions.data, reports.data, assignments.data, radar.data]);
+  }, [missions.data, reports.data, assignments.data, radar.data,inventory.data]);
   const visible = useMemo(()=>pins.filter((p) => enabled[p.category]),[pins,enabled]);
   useEffect(()=>{setSelected(null);},[scope.sentinel]);
   useEffect(()=>{setSelected(previous=>previous ? pins.find(p=>p.id===previous.id)??null : null);},[pins]);
@@ -76,6 +81,7 @@ export default function OperationsMap({ scope, revision }: { scope: Scope; revis
   useEffect(() => {
     let disposed = false;
     const controller = new AbortController();
+    setError("");setMapReady(false);
     fetch("/sentinel/map-widget-config", { signal: controller.signal, cache: "no-store" })
       .then((r) => r.json())
       .then((config) => {
@@ -87,7 +93,7 @@ export default function OperationsMap({ scope, revision }: { scope: Scope; revis
         });
         instance.addControl(new mapboxgl.NavigationControl(), "top-right");
         instance.on("load", () => {
-          if(!disposed)setMapReady(true);
+          if(!disposed){setError("");setMapReady(true);}
         });
         instance.on("zoomend", () => {
           const zoom = instance.getZoom();
@@ -104,7 +110,7 @@ export default function OperationsMap({ scope, revision }: { scope: Scope; revis
         });
         mapRef.current = instance;
       })
-      .catch(() => setError("The operations map could not start. Check the map configuration."));
+      .catch(() => { if (!disposed && !controller.signal.aborted) setError("The map could not load. Refresh this page to try again; locations are still available below."); });
     return () => { disposed = true; controller.abort(); mapRef.current?.remove(); mapRef.current = null; };
   }, []);
 

@@ -1,4 +1,5 @@
 "use client";
+import {displayText} from "@/lib/display-text";
 import {ProGate} from "./ProExperience";
 import {useState,useRef} from 'react';
 import {api,errorMessage} from '@/lib/api';
@@ -49,8 +50,9 @@ function WeatherChatSession({scope}:{scope:Scope}){
   <div className="panel-body">
    <p>Ask in your own words. Sentinel checks available forecasts, compares recent trends and explains what needs attention.</p>
    {!history.length&&<div className="suggestions">{weatherSuggestions.map(q=><button className="suggestion" key={q} onClick={()=>{setQuestion(q);}}>{q}</button>)}</div>}
-   <div className="conversation" aria-live="polite">{history.slice(-8).map((turn,i)=><div className={'chat-turn '+turn.role} key={i}><strong>{turn.role==='user'?'You':'Sentinel'}</strong><p>{turn.content}</p></div>)}</div>
-   {answer&&<div className="briefing"><h3>Preparation priorities</h3><ul>{answer.narrative.preparedness.map((x:string)=><li key={x}>{x}</li>)}</ul>
+   {answer?.demo&&<small className="demo-label">Demo workspace · Sample evidence · Recorded model result</small>}
+   <div className="conversation" aria-live="polite">{history.slice(-8).map((turn,i)=><div className={'chat-turn '+turn.role} key={i}><strong>{turn.role==='user'?'You':'Sentinel'}</strong><p>{displayText(turn.content)}</p></div>)}</div>
+   {answer&&<div className="briefing"><h3>Preparation priorities</h3><ul>{answer.narrative.preparedness.map((x:string)=><li key={x}>{displayText(x)}</li>)}</ul>
     {answer.coverage==='NO_FORECAST_EVIDENCE'&&<Notice error>No forecast data could be retrieved. These are general preparation checks, not a weather-based assessment.</Notice>}
     <details><summary>Sources, coverage and limitations</summary><p>Past forecasts describe what was predicted, not what was measured. BigQuery and Cloud Storage hold the same model's output.</p>{answer.sources?.map((s:any,i:number)=><div className="source-entry" key={i}><strong>{s.surface} / {new Date(s.from).toLocaleDateString()} to {new Date(s.to).toLocaleDateString()}</strong><Badge status={s.status==='UNAVAILABLE'?'UNAVAILABLE':'RETRIEVED'}/>{s.status==='UNAVAILABLE'?<p>{errorMessage({code:s.code})}</p>:<Evidence value={s}/>}</div>)}<Evidence value={{assumptions:answer.narrative.assumptions,missing_inputs:answer.narrative.missing_inputs}}/></details>
     {answer.narrative.follow_up&&<p>{answer.narrative.follow_up}</p>}

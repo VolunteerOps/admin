@@ -3,7 +3,8 @@ import RecordExports from "./RecordExports";
 import ImpactByRegion from "./ImpactByRegion";
 import { UserFacingError } from "@/lib/friendly-errors";
 import RegionSetup from "./RegionSetup";
-import { useState } from "react";
+import {useSearchParams} from "next/navigation";
+import { useEffect, useState } from "react";
 import { api, identity } from "@/lib/api";
 import { useData, usePagedData, type Scope } from "@/lib/hooks";
 import { date, label } from "@/lib/catalog";
@@ -49,6 +50,8 @@ function People({ scope, revision }: { scope: Scope; revision: number }) {
     [invite, setInvite] = useState(false),
     [member, setMember] = useState<any>(null),
     [notice, setNotice] = useState("");
+  const query=useSearchParams();const selectedUser=query.get("user");
+  useEffect(()=>{setMember(selectedUser ? (data||[]).find((m:any)=>String(m.userId)===selectedUser)||null : null);},[selectedUser,data]);
   const rows = (data || []).filter((m: any) =>
     [(m.user?.fullName || "Member " + m.userId), (m.user?.email || "Contact details unavailable"), m.role]
       .join(" ")

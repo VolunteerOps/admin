@@ -3,6 +3,7 @@ import { UserFacingError } from "@/lib/friendly-errors";
 import MissionChat from "./MissionChat";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {useSearchParams} from "next/navigation";
 import { api } from "@/lib/api";
 import { useData, type Scope } from "@/lib/hooks";
 import { date, kinds, label, recordTitle, type Row } from "@/lib/catalog";
@@ -81,11 +82,11 @@ export default function Operations({
     revision + rev,
   );
   const rows = [...prior, ...(data?.items || [])];
+  const params=useSearchParams();const linkedRecord=params.get("record");
+  const linked=useData(linkedRecord ? scope.ops+"/records/"+encodeURIComponent(linkedRecord) : null,revision+rev);
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("record");
-    if (id && data?.items)
-      setSelected(data.items.find((r: Row) => r.id === id) || null);
-  }, [data]);
+    if(linkedRecord){const row=linked.data?.record||linked.data||data?.items?.find((r:Row)=>r.id===linkedRecord);if(row?.kind===kind)setSelected(row);}
+  }, [linkedRecord,linked.data,data,kind]);
   const done = () => {
     setSelected(null);
     setCreate(false);
@@ -400,6 +401,8 @@ export function CreateRecord({
         : kind === "INVENTORY"
           ? [
               baseTitle,
+              {key:"vehicle_model",label:"Vehicle model (if applicable)",required:false,max:120},
+              {key:"plate_number",label:"Registration plate (if applicable)",required:false,max:40},
               { key: "unit", label: "Unit", value: "items" },
               {
                 key: "quantity",

@@ -1,4 +1,6 @@
 "use client";
+import type {ReactNode} from "react";
+import {displayText} from "@/lib/display-text";
 
 export type HarnessData = {
   plan?: { title: string; status: string }[];
@@ -12,7 +14,7 @@ export function evidenceStepLabel(name:string){
   return labels[name] || 'Check supporting information';
 }
 
-export function HarnessSteps({ harness }: { harness?: HarnessData | null }) {
+export function HarnessSteps({ harness,renderText=displayText }: { harness?: HarnessData | null;renderText?:(text:string)=>ReactNode }) {
   if (!harness || (!harness.steps?.length && !harness.plan?.length && !harness.notes?.length))
     return null;
   return (
@@ -24,7 +26,7 @@ export function HarnessSteps({ harness }: { harness?: HarnessData | null }) {
             {harness.plan.map((step, i) => (
               <li key={i}>
                 {step.status === "done" ? "✓" : step.status === "in_progress" ? "▶" : "○"}{" "}
-                {step.title}
+                {renderText(step.title)}
               </li>
             ))}
           </ul>
@@ -35,7 +37,7 @@ export function HarnessSteps({ harness }: { harness?: HarnessData | null }) {
           <h4 className="section-title">Working notes</h4>
           <ul>
             {harness.notes.map((note, i) => (
-              <li key={i}>{note}</li>
+              <li key={i}>{renderText(note)}</li>
             ))}
           </ul>
         </>

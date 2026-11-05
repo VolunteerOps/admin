@@ -5,6 +5,8 @@ import ForecastEvidence from "./ForecastEvidence";
 import WeatherChat, {weatherSuggestions} from "./WeatherChat";
 import { useEffect, useState } from "react";
 import PlanEditor from "./PlanEditor";
+import PlanningDetails,{PlanningContext,planningReferences,ReferenceText} from "./PlanningDetails";
+import {displayText} from "@/lib/display-text";
 import Specialised from "./Specialised";
 import AgentRuns from "./AgentRuns";
 import RadarMap from "./RadarMap";
@@ -110,7 +112,7 @@ export function Evidence({ value, depth = 0 }: { value: any; depth?: number }) {
   if (typeof value !== "object")
     return (
       <span>
-        {typeof value === "boolean" ? (value ? "Yes" : "No") : String(value)}
+        {typeof value === "boolean" ? (value ? "Yes" : "No") : displayText(value)}
       </span>
     );
   if (depth > 4)
@@ -195,6 +197,9 @@ function Planning({
     weather ? null : scope.sentinel + "/planning/weather",
     revision,
   );
+  const roster=usePagedData(!weather && selected ? "/api/organizations/"+scope.org+"/memberships" : null,revision,100);
+  const inventory=usePagedData(!weather && selected ? scope.ops+"/records?kind=INVENTORY" : null,revision);
+  const references=planningReferences(selected?.payload.snapshot,roster.data||[],inventory.data?.items||[]);
   const [recommendation, setRecommendation] = useState<any>(null);
   const [context, setContext] = useState({ mission: "", assessment: "" });
   useEffect(() => {
@@ -423,22 +428,21 @@ function Planning({
       )}
       {selected && (
         <Drawer
-          title={recordTitle(selected)}
+          title={displayText(recordTitle(selected))}
           onClose={() => {
             setSelected(null);
             setAction("");
           }}
         >
           <Badge status={selected.payload.status} />
+          {selected.payload.demo && <small className="demo-label">Demo workspace · Sample evidence · Recorded model result</small>}
           <h3 className="section-title">
             {selected.payload.status === "FAILED" ? "Analysis did not finish" : weather ? "Preparedness finding" : "Recommended allocation"}
           </h3>
           <p className="detail-prose">
-            {selected.payload.narrative?.summary ||
-              selected.payload.recommendation?.summary ||
-              errorMessage({code:selected.payload.error_code,message:selected.payload.message})}
+            <ReferenceText text={selected.payload.narrative?.summary || selected.payload.recommendation?.summary || errorMessage({code:selected.payload.error_code,message:selected.payload.message})} references={references}/>
           </p>
-          <HarnessSteps harness={selected.payload.harness} />
+          <HarnessSteps harness={selected.payload.harness} renderText={text=><ReferenceText text={text} references={references}/>} />
           {weather ? (
             <>
               <Evidence value={selected.payload.narrative} />
@@ -467,9 +471,9 @@ function Planning({
             </>
           ) : (
             <>
-              <Evidence value={selected.payload.recommendation} />
+              <PlanningDetails value={selected.payload.recommendation} references={references}/>
               <h3 className="section-title">Verified planning context</h3>
-              <Evidence value={selected.payload.snapshot} />
+              <PlanningContext value={selected.payload.snapshot} references={references}/>
               <Evidence value={selected.payload.weather_evidence} />
               {selected.payload.status === "DRAFT" && (
                 <div className="action-list">
@@ -688,6 +692,7 @@ function Assistance({ scope, revision }: { scope: Scope; revision: number }) {
       {selected && (
         <Drawer title="Assistance case" onClose={() => setSelected(null)}>
           <Badge status={selected.payload.status} />
+          {selected.payload.demo && <small className="demo-label">Demo workspace · Sample evidence · Recorded model result</small>}
           <p>{selected.payload.summary}</p>
           <Evidence value={selected.payload} />
           <h3 className="section-title">Response timeline</h3>
